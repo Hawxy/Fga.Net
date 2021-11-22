@@ -1,6 +1,11 @@
-﻿namespace Sandcastle.AspNetCore;
+﻿using Microsoft.Extensions.DependencyInjection;
 
-public class ServiceCollectionExtensions
+namespace Sandcastle.AspNetCore;
+
+public static class ServiceCollectionExtensions
 {
-
+    public static IServiceCollection RegisterSandcastle(this IServiceCollection collection)
+    {
+        return collection;
+    }
 }

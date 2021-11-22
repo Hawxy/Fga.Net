@@ -14,7 +14,7 @@ internal class SandcastleAuthorizationHandler: IAuthorizationHandler
 {
     private readonly IHttpContextAccessor _accessor;
 
-    public SandcastleAuthorizationPolicy(IHttpContextAccessor accessor)
+    public SandcastleAuthorizationHandler(IHttpContextAccessor accessor)
     {
         _accessor = accessor;
     }
@@ -23,6 +23,7 @@ internal class SandcastleAuthorizationHandler: IAuthorizationHandler
     {
        var routeData =  _accessor.HttpContext!.GetRouteData();
 
+       return Task.CompletedTask;
     }
 }
 

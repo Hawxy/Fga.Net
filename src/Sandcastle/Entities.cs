@@ -1,18 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
+﻿using System.Text.Json.Serialization;
 
 namespace Sandcastle;
 
 public class AccessTokenRequest
 {
-    public string GrantType { get; set; } = null!;
+    public readonly string GrantType = "client_credentials";
     public string ClientId { get; set; } = null!;
     public string ClientSecret { get; set; } = null!;
-    public string Audience { get; set; } = null!;
+    public string Environment { get; set; } = null!;
 
 }
 
@@ -26,4 +21,29 @@ public record AccessTokenResponse
     public string Scope { get; init; } = null!;
     [JsonPropertyName("token_type")]
     public string TokenType { get; init; } = null!;
+}
+
+public class CheckRequest
+{
+    [JsonPropertyName("tuple_key")]
+    public TupleKey TupleKey { get; init; } = null!;
+
+    [JsonPropertyName("authorization_model_id")]
+    public string AuthorizationModelId { get; init; } = null!;
+}
+
+public class TupleKey
+{
+    [JsonPropertyName("object")]
+    public string Object { get; init; } = null!;
+    [JsonPropertyName("relation")]
+    public string Relation { get; init; } = null!;
+    [JsonPropertyName("user")]
+    public string User { get; init; } = null!;
+}
+
+public record CheckResponse
+{
+    [JsonPropertyName("allowed")]
+    public bool Allowed { get; init; }
 }
