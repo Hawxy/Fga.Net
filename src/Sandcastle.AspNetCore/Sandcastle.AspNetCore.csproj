@@ -10,5 +10,9 @@
 		<FrameworkReference Include="Microsoft.AspNetCore.App" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <ProjectReference Include="..\Sandcastle\Sandcastle.csproj" />
+	</ItemGroup>
+
 
 </Project>
