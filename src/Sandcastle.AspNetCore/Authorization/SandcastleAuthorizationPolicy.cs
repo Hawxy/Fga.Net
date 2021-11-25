@@ -35,7 +35,7 @@ public class SandcastleAuthorizationHandler : AuthorizationHandler<SandcastleReq
             foreach (var attribute in attributes)
             {
                 var @object = attribute.Object.Invoke(httpContext);
-                var relation = attribute.Relation;
+                var relation = attribute.Relation.Invoke(httpContext);
                 var user = attribute.User.Invoke(httpContext);
 
                 var result = await _client.CheckAsync(new CheckRequest()
@@ -66,10 +66,12 @@ public class SandcastleAuthorizeAttribute : AuthorizeAttribute
 }
 
 
+
+
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = true)]
 public class SandcastleComputedAuthorizeAttribute : Attribute
 {
-    public SandcastleComputedAuthorizeAttribute(Func<HttpContext, string> @object, string relation, Func<HttpContext, string> user)
+    public SandcastleComputedAuthorizeAttribute(Func<HttpContext, string> @object, Func<HttpContext, string> relation, Func<HttpContext, string> user)
     {
         Object = @object;
         Relation = relation;
@@ -77,16 +79,33 @@ public class SandcastleComputedAuthorizeAttribute : Attribute
     }
 
     public Func<HttpContext, string> Object { get; }
-    // Might be worth making this a func so people can compute the relation based on path
-    public string Relation { get; }
+    public Func<HttpContext, string> Relation { get; }
     public Func<HttpContext, string> User { get; }
 
+}
+
+public class RequireEntityAccessAttribute : SandcastleComputedAuthorizeAttribute
+{
+    public RequireEntityAccessAttribute(string prefix = "document", string routeValue = "documentId") 
+        : base(context => $"{prefix}:{context.GetRouteValue(routeValue)}", GetOperationByRoute, context => context.User.Identity!.Name!)
+    {
+    }
+
+    private static string GetOperationByRoute(HttpContext context)
+    {
+        return context.Request.Method switch
+        {
+            "GET" => "reader",
+            "POST" => "writer",
+            _ => "owner"
+        };
+    }
 }
 
 public class RequireSiteAccessAttribute : SandcastleComputedAuthorizeAttribute
 {
     public RequireSiteAccessAttribute() 
-        : base(context => $"site:{context.GetRouteValue("siteId")}", "member", context => context.User.Identity!.Name!)
+        : base(context => $"site:{context.GetRouteValue("siteId")}", _ => "member", context => context.User.Identity!.Name!)
     {
     }
 }
