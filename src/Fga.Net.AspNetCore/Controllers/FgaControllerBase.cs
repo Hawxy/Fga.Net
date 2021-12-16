@@ -1,12 +1,11 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
-namespace Sandcastle.AspNetCore.Controllers;
+namespace Fga.Net.AspNetCore.Controllers;
 
-public class SandcastleControllerBase : ControllerBase
+public class FgaControllerBase : ControllerBase
 {
-    private readonly SandcastleAuthorizationClient _client;
-    public SandcastleControllerBase(SandcastleAuthorizationClient client)
+    private readonly FgaAuthorizationClient _client;
+    public FgaControllerBase(FgaAuthorizationClient client)
     {
         _client = client;
     }
@@ -15,7 +14,6 @@ public class SandcastleControllerBase : ControllerBase
     {
         var checkRes = await _client.CheckAsync(new CheckRequest
         {
-            AuthorizationModelId = "",
             TupleKey = new TupleKey
             {
                 Object = @object,

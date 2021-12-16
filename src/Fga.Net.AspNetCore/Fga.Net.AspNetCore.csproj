@@ -11,7 +11,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\Sandcastle\Sandcastle.csproj" />
+	  <ProjectReference Include="..\Fga.Net\Fga.Net.csproj" />
 	</ItemGroup>
 
 

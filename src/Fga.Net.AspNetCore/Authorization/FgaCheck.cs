@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using System.Security.Claims;
 
-namespace Sandcastle.AspNetCore.Authorization;
+namespace Fga.Net.AspNetCore.Authorization;
 
 // TODO delete this?
 
@@ -15,12 +14,12 @@ public record FgaCheck(string Object, string Relation, string User)
 {
 
     private const char Separator = '-';
-    public override string ToString() => $"{SandcastleAuthorizationDefaults.PolicyKey}-{Object}-{Relation}-{User}";
+    public override string ToString() => $"{FgaAuthorizationDefaults.PolicyKey}-{Object}-{Relation}-{User}";
 
     public static bool TryParse(string input, [NotNullWhen(true)] out FgaCheck? fgaCheck)
     {
         var str = input.Split(Separator, 4);
-        if (str.Length == 4 && str[0].Equals(SandcastleAuthorizationDefaults.PolicyKey))
+        if (str.Length == 4 && str[0].Equals(FgaAuthorizationDefaults.PolicyKey))
         {
             fgaCheck = new FgaCheck(str[1], str[2], str[3]);
             return true;

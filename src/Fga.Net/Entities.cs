@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Sandcastle;
+namespace Fga.Net;
 
 public class AccessTokenRequest
 {

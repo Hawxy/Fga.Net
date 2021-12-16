@@ -1,10 +1,15 @@
 ﻿using System.Net.Http.Json;
 
-namespace Sandcastle;
+namespace Fga.Net;
 
-public class SandcastleAuthenticationClient
+public class FgaAuthenticationClient
 {
-    private readonly HttpClient _httpClient = new() {BaseAddress = new Uri(SandcastleConstants.Url)};
+    private readonly HttpClient _httpClient;
+
+    public FgaAuthenticationClient(HttpClient? client)
+    {
+        _httpClient = client ?? new HttpClient { BaseAddress = new Uri(FgaConstants.AuthenticationUrl) };
+    }
     public async Task<AccessTokenResponse?> FetchTokenAsync(AccessTokenRequest request)
     {
         var dict = new Dictionary<string, string>
@@ -12,7 +17,7 @@ public class SandcastleAuthenticationClient
             { "grant_type", request.GrantType },
             { "client_id", request.ClientId },
             { "client_secret", request.ClientSecret },
-            { "audience", string.Format(SandcastleConstants.Audience, request.Environment) }
+            { "audience", string.Format(FgaConstants.Audience, request.Environment) }
         };
         var content = new FormUrlEncodedContent(dict);
 

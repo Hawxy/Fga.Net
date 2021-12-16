@@ -1,15 +1,15 @@
 ﻿using System.Net.Http.Json;
 
-namespace Sandcastle;
-public class SandcastleAuthorizationClient
+namespace Fga.Net;
+public class FgaAuthorizationClient
 {
     // Rate limiting
     // error handling
     // etc
     private readonly HttpClient _client;
-    private readonly SandcastleClientConfiguration _configuration;
+    private readonly FgaClientConfiguration _configuration;
 
-    public SandcastleAuthorizationClient(SandcastleClientConfiguration configuration, HttpClient client)
+    public FgaAuthorizationClient(FgaClientConfiguration configuration, HttpClient client)
     {
         _client = client;
         _configuration = configuration;
@@ -25,10 +25,4 @@ public class SandcastleAuthorizationClient
 
 }
 
-public class SandcastleClientConfiguration
-{
-    public string ClientId { get; set; } = null!;
-    public string ClientSecret { get; set; } = null!;
-    public string Environment { get; set; } = null!;
-    public string StoreId { get; set; } = null!;
-}
+
