@@ -8,7 +8,8 @@ public class FgaAuthenticationClient
 
     public FgaAuthenticationClient(HttpClient? client)
     {
-        _httpClient = client ?? new HttpClient { BaseAddress = new Uri(FgaConstants.AuthenticationUrl) };
+        _httpClient = client ?? new HttpClient();
+        _httpClient.BaseAddress = new Uri(FgaConstants.AuthenticationUrl);
     }
     public async Task<AccessTokenResponse?> FetchTokenAsync(AccessTokenRequest request)
     {
@@ -21,7 +22,9 @@ public class FgaAuthenticationClient
         };
         var content = new FormUrlEncodedContent(dict);
 
-        var res = await _httpClient.PostAsync("/oauth/token", content);
+        var res = await _httpClient.PostAsync("oauth/token", content);
+
+        var output = await res.Content.ReadAsStringAsync();
 
         return await res.Content.ReadFromJsonAsync<AccessTokenResponse>();
     }

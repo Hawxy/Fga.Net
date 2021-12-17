@@ -16,7 +16,7 @@ public record AccessTokenResponse
     [JsonPropertyName("access_token")]
     public string AccessToken { get; init; } = null!;
     [JsonPropertyName("expires_in")]
-    public string ExpiresIn { get; init; } = null!;
+    public double ExpiresIn { get; init; }
     [JsonPropertyName("scope")]
     public string Scope { get; init; } = null!;
     [JsonPropertyName("token_type")]

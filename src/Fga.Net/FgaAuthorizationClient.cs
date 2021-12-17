@@ -9,9 +9,11 @@ public class FgaAuthorizationClient
     private readonly HttpClient _client;
     private readonly FgaClientConfiguration _configuration;
 
-    public FgaAuthorizationClient(FgaClientConfiguration configuration, HttpClient client)
+    public FgaAuthorizationClient(HttpClient client, FgaClientConfiguration configuration)
     {
+        client.BaseAddress = new Uri(string.Format(FgaConstants.AuthorizationUrl, configuration.Environment));
         _client = client;
+
         _configuration = configuration;
     }
 
@@ -21,8 +23,4 @@ public class FgaAuthorizationClient
 
        return await res.Content.ReadFromJsonAsync<CheckResponse>(cancellationToken: ct);
     }
-  
-
 }
-
-
