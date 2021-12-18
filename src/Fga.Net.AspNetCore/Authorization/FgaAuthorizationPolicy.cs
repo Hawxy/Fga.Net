@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Fga.Net.AspNetCore.Authorization.Attributes;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 
 namespace Fga.Net.AspNetCore.Authorization;
@@ -23,26 +24,28 @@ public class SandcastleAuthorizationHandler : AuthorizationHandler<SandcastleReq
         if (context.Resource is HttpContext httpContext)
         {
             var endpoint = httpContext.GetEndpoint();
-            var attributes = endpoint!.Metadata.GetOrderedMetadata<ComputedAuthorizeAttribute>();
+            if (endpoint is null)
+                return;
+            var attributes = endpoint!.Metadata.GetOrderedMetadata<ComputedAuthorizationAttribute>();
             // The user is enforcing the sandcastle policy but there's no attributes here, bit odd.
             if (attributes.Count == 0)
                 return;
             foreach (var attribute in attributes)
             {
-                var @object = attribute.Object.Invoke(httpContext);
-                var relation = attribute.Relation.Invoke(httpContext);
-                var user = attribute.User.Invoke(httpContext);
+                var @object = await attribute.GetObject(httpContext);
+                var relation = await attribute.GetRelation(httpContext);
+                var user = await attribute.GetUser(httpContext);
 
-                var result = await _client.CheckAsync(new CheckRequest()
+                var result = await _client.CheckAsync(new CheckRequest
                 {
-                    TupleKey = new TupleKey()
+                    TupleKey = new TupleKey
                     {
                         Object = @object,
                         Relation = relation,
                         User = user
                     }
                 });
-                if (!result!.Allowed)
+                if (result is null || !result.Allowed)
                     context.Fail(new AuthorizationFailureReason(this, "Sandcastle check was denied for {reason}"));
             }
             context.Succeed(requirement);

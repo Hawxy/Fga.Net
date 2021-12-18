@@ -1,4 +1,5 @@
 using Fga.Net.AspNetCore.Authorization;
+using Fga.Net.AspNetCore.Authorization.Attributes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,7 +19,7 @@ namespace Fga.Example.Controllers
         }
 
         [HttpGet]
-        [DangerHardcodedAuthorize("document:Z", "read", "anne")]
+        [StringComputedAuthorization("doc:Z", "read", "anne")]
         public string Get(string documentId)
         {
             return string.Empty;
