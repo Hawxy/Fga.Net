@@ -32,17 +32,17 @@ public class SandcastleAuthorizationHandler : AuthorizationHandler<SandcastleReq
                 return;
             foreach (var attribute in attributes)
             {
-                var @object = await attribute.GetObject(httpContext);
-                var relation = await attribute.GetRelation(httpContext);
                 var user = await attribute.GetUser(httpContext);
+                var relation = await attribute.GetRelation(httpContext);
+                var @object = await attribute.GetObject(httpContext);
 
                 var result = await _client.CheckAsync(new CheckRequest
                 {
                     TupleKey = new TupleKey
                     {
-                        Object = @object,
+                        User = user,
                         Relation = relation,
-                        User = user
+                        Object = @object
                     }
                 });
                 if (result is null || !result.Allowed)

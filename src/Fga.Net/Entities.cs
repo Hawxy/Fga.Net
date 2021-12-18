@@ -34,12 +34,13 @@ public class CheckRequest
 
 public class TupleKey
 {
-    [JsonPropertyName("object")]
-    public string Object { get; init; } = null!;
-    [JsonPropertyName("relation")]
-    public string Relation { get; init; } = null!;
     [JsonPropertyName("user")]
     public string User { get; init; } = null!;
+    [JsonPropertyName("relation")]
+    public string Relation { get; init; } = null!;
+    [JsonPropertyName("object")]
+    public string Object { get; init; } = null!;
+
 }
 
 public record CheckResponse

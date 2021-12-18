@@ -13,9 +13,9 @@ public class EntityAuthorizationAttribute : ComputedAuthorizationAttribute
     }
 
 
-    public override ValueTask<string> GetObject(HttpContext context)
+    public override ValueTask<string> GetUser(HttpContext context)
     {
-        return ValueTask.FromResult($"{_prefix}:{context.GetRouteValue(_routeValue)}");
+        return ValueTask.FromResult(context.User.Identity!.Name!);
     }
 
     public override ValueTask<string> GetRelation(HttpContext context)
@@ -28,8 +28,8 @@ public class EntityAuthorizationAttribute : ComputedAuthorizationAttribute
         });
     }
 
-    public override ValueTask<string> GetUser(HttpContext context)
+    public override ValueTask<string> GetObject(HttpContext context)
     {
-        return ValueTask.FromResult(context.User.Identity!.Name!);
+        return ValueTask.FromResult($"{_prefix}:{context.GetRouteValue(_routeValue)}");
     }
 }
