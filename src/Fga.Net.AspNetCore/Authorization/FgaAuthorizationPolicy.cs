@@ -46,10 +46,9 @@ public class SandcastleAuthorizationHandler : AuthorizationHandler<SandcastleReq
                         Object = @object
                     }
                 });
-                if (result is null || !result.Allowed)
-                    context.Fail(new AuthorizationFailureReason(this, "Sandcastle check was denied for {reason}"));
+                if (result is not null && result.Allowed)
+                    context.Succeed(requirement);
             }
-            context.Succeed(requirement);
         }
     }
 }

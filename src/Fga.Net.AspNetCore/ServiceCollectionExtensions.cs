@@ -14,9 +14,8 @@ public static class ServiceCollectionExtensions
         return collection;
     }
 
-    public static AuthorizationOptions AddFgaPolicy(this AuthorizationOptions options, string name = "Sandcastle")
+    public static AuthorizationPolicyBuilder AddFgaRequirement(this AuthorizationPolicyBuilder builder)
     {
-        options.AddPolicy(name, p => p.AddRequirements(new SandcastleRequirement()));
-        return options;
+        return builder.AddRequirements(new SandcastleRequirement());
     }
 }

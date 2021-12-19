@@ -11,7 +11,7 @@ public class FgaControllerBase : ControllerBase
         _client = client;
     }
 
-    public async Task<bool> Check(string @object, string relation, string user)
+    public async Task<bool> Check(string user, string relation, string @object)
     {
         var checkRes = await _client.CheckAsync(new CheckRequest
         {

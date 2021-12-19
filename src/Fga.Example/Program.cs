@@ -1,4 +1,5 @@
 using Fga.Net.AspNetCore;
+using Fga.Net.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -6,13 +7,6 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
-
-builder.Services.AddAuth0Fga(x =>
-{
-    x.ClientId = builder.Configuration["Auth0Fga:ClientId"];
-    x.ClientSecret = builder.Configuration["Auth0Fga:ClientSecret"];
-    x.StoreId = builder.Configuration["Auth0Fga:StoreId"];
-});
 
 builder.Services.AddAuthentication(options =>
     {
@@ -25,10 +19,18 @@ builder.Services.AddAuthentication(options =>
         options.Audience = builder.Configuration["Auth0:Audience"];
     });
 
+builder.Services.AddAuth0Fga(x =>
+{
+    x.ClientId = builder.Configuration["Auth0Fga:ClientId"];
+    x.ClientSecret = builder.Configuration["Auth0Fga:ClientSecret"];
+    x.StoreId = builder.Configuration["Auth0Fga:StoreId"];
+});
+
 builder.Services.AddAuthorization(options =>
 {
-    options.AddFgaPolicy();
+    options.AddPolicy(FgaAuthorizationDefaults.PolicyKey, p => p.RequireAuthenticatedUser().AddFgaRequirement());
 });
+
 
 var app = builder.Build();
 
@@ -36,10 +38,10 @@ var app = builder.Build();
 
 app.UseHttpsRedirection();
 
+app.UseHttpLogging();
 
-//app.UseAuthentication();
+app.UseAuthentication();
 app.UseAuthorization();
-
 
 app.MapControllers();
 
