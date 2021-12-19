@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fga.Net", "src\Fga.Net\Fga.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fga.Net.AspNetCore", "src\Fga.Net.AspNetCore\Fga.Net.AspNetCore.csproj", "{D346482C-1C65-4122-8809-D1EF34140112}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fga.Example", "samples\Fga.Example\Fga.Example.csproj", "{DB891535-88D2-4D33-B1C8-5A22873AD8E3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fga.Example.AspNetCore", "samples\Fga.Example.AspNetCore\Fga.Example.AspNetCore.csproj", "{DB891535-88D2-4D33-B1C8-5A22873AD8E3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,6 +1,6 @@
 ﻿using Fga.Net.AspNetCore.Authorization.Attributes;
 
-namespace Fga.Example;
+namespace Fga.Example.AspNetCore;
 
 public class EntityAuthorizationAttribute : ComputedAuthorizationAttribute
 {
@@ -11,7 +11,6 @@ public class EntityAuthorizationAttribute : ComputedAuthorizationAttribute
         _prefix = prefix;
         _routeValue = routeValue;
     }
-
 
     public override ValueTask<string> GetUser(HttpContext context)
     {

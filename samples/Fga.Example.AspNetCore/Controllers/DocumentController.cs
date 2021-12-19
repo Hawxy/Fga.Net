@@ -3,7 +3,7 @@ using Fga.Net.AspNetCore.Authorization.Attributes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Fga.Example.Controllers
+namespace Fga.Example.AspNetCore.Controllers
 {
     [ApiController]
     [Route("[controller]")]
