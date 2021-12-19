@@ -19,5 +19,5 @@ jobs:
         dotnet-version: '6.0.x'
         
     - name: Run nuke build
-      run: .\build.sh Compile
+      run: ./build.sh Compile
       shell: bash
