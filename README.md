@@ -6,7 +6,10 @@ Please ensure you have a basic understanding of how FGA works before continuing:
 
 ### ASP.NET Core Setup
 
-Before getting started, ensure you have a Store ID, Client ID, and Client Secret ready from [How to get your API keys](https://docs.fga.dev/integration/getting-your-api-keys)
+Before getting started, ensure you have a Store ID, Client ID, and Client Secret ready from [How to get your API keys](https://docs.fga.dev/integration/getting-your-api-keys).
+
+I'm also assuming you have authentication setup within your project, such as [JWT bearer authentication via Auth0](https://auth0.com/docs/quickstart/backend/aspnet-core-webapi/01-authorization).
+
 
 1. Install `Fga.Net.AspNetCore` from Nuget
 2. Add your `StoreId`, `ClientId` and `ClientSecret` to your application configuration, ideally via the [dotnet secrets manager](https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-6.0&tabs=windows#enable-secret-storage)
@@ -80,6 +83,7 @@ public class EntityAuthorizationAttribute : ComputedAuthorizationAttribute
 
 If you need to manually perform checks, inject the `FgaAuthorizationClient` as required.
 
+An additional pre-made attribute that allows all tuple values to be hardcoded strings ships with the package (`StringComputedAuthorizationAttribute`). This attrbute is useful for testing and debug purposes, but should not be used in a real application.
 
 ### Worker Service setup
 Coming soon!
