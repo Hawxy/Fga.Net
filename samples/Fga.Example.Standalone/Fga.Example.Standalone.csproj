@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\Fga.Net\Fga.Net.csproj" />
+    <ProjectReference Include="..\..\src\Fga.Net.AspNetCore\Fga.Net.AspNetCore.csproj" />
   </ItemGroup>
 
 </Project>
