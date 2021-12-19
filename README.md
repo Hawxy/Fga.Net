@@ -11,7 +11,6 @@ Before getting started, ensure you have a Store ID, Client ID, and Client Secret
 1. Install `Fga.Net.AspNetCore` from Nuget
 2. Add your `StoreId`, `ClientId` and `ClientSecret` to your application configuration, ideally via the [dotnet secrets manager](https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-6.0&tabs=windows#enable-secret-storage)
 3. Add the following code to your ASP.NET Core configuration:
-4. 
 ```cs
 // Registers FgaAuthenticationClient & FgaAuthorizationClient, and the authorization handler
 builder.Services.AddAuth0Fga(x =>
