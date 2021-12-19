@@ -4,7 +4,7 @@ Please ensure you have a basic understanding of how FGA works before continuing:
 
 #### Note: This project is an early alpha and is subject to breaking changes without notice.
 
-### ASP.NET Core Setup
+## ASP.NET Core Setup
 
 Before getting started, ensure you have a Store ID, Client ID, and Client Secret ready from [How to get your API keys](https://docs.fga.dev/integration/getting-your-api-keys).
 
@@ -85,18 +85,17 @@ If you need to manually perform checks, inject the `FgaAuthorizationClient` as r
 
 An additional pre-made attribute that allows all tuple values to be hardcoded strings ships with the package (`StringComputedAuthorizationAttribute`). This attrbute is useful for testing and debug purposes, but should not be used in a real application.
 
-### Worker Service / Generic Host setup
+## Worker Service / Generic Host setup
 Full docs coming soon.
 
 `Fga.Net` ships with the `AddAuth0FgaAuthenticationClient` and `AddAuth0FgaAuthorizationClient` service collection extensions that should be self-explanatory. To use the authorization client, both clients must be registered.
 
-### Standalone client setup
-Full docs coming soon.
+## Standalone client setup
 
-Seriously consider if you need to run a standalone client before picking this option. 
+Seriously consider if you need to run a standalone client before picking this option.
 
-Basic example:
-
+1. Install `Fga.Net`
+2. Create the authorization client as below:
 ```cs
 var client = FgaAuthorizationClient.Create(FgaAuthenticationClient.Create(), new FgaClientConfiguration()
 {
