@@ -20,9 +20,16 @@ namespace Fga.Example.Controllers
 
         [HttpGet]
         [StringComputedAuthorization("anne", "read", "doc:Z")]
-        public string Get(string documentId)
+        public string GetHardcoded()
         {
             return string.Empty;
+        }
+
+        [HttpGet("view/{documentId}")]
+        [EntityAuthorization("doc", "documentId")]
+        public string GetByConvention(string documentId)
+        {
+            return documentId;
         }
     }
 }

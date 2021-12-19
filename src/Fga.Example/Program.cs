@@ -1,6 +1,8 @@
+using System.Security.Claims;
 using Fga.Net.AspNetCore;
 using Fga.Net.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +19,10 @@ builder.Services.AddAuthentication(options =>
     {
         options.Authority = $"https://{builder.Configuration["Auth0:Domain"]}/";
         options.Audience = builder.Configuration["Auth0:Audience"];
+        options.TokenValidationParameters = new TokenValidationParameters()
+        {
+            NameClaimType = ClaimTypes.NameIdentifier
+        };
     });
 
 builder.Services.AddAuth0Fga(x =>

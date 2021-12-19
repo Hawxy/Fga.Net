@@ -6,7 +6,7 @@ public class EntityAuthorizationAttribute : ComputedAuthorizationAttribute
 {
     private readonly string _prefix;
     private readonly string _routeValue;
-    public EntityAuthorizationAttribute(string prefix = "doc", string routeValue = "documentId")
+    public EntityAuthorizationAttribute(string prefix, string routeValue)
     {
         _prefix = prefix;
         _routeValue = routeValue;
@@ -22,8 +22,8 @@ public class EntityAuthorizationAttribute : ComputedAuthorizationAttribute
     {
         return ValueTask.FromResult(context.Request.Method switch
         {
-            "GET" => "read",
-            "POST" => "write",
+            "GET" => "viewer",
+            "POST" => "writer",
             _ => "owner"
         });
     }
