@@ -66,7 +66,6 @@ public class FgaAuthorizationClient : IDisposable
     {
        var res= await _client.PostAsJsonAsync($"/{_configuration.StoreId}/check", request, ct);
 
-       var output = await res.Content.ReadAsStringAsync();
        return await res.Content.ReadFromJsonAsync<CheckResponse>(cancellationToken: ct);
     }
 

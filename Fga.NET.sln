@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fga.Net", "src\Fga.Net\Fga.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fga.Net.AspNetCore", "src\Fga.Net.AspNetCore\Fga.Net.AspNetCore.csproj", "{D346482C-1C65-4122-8809-D1EF34140112}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fga.Example", "src\Fga.Example\Fga.Example.csproj", "{1A70ED24-15A6-41E4-8E2B-0D79D20BA206}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fga.Example", "samples\Fga.Example\Fga.Example.csproj", "{DB891535-88D2-4D33-B1C8-5A22873AD8E3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,10 +23,10 @@ Global
 		{D346482C-1C65-4122-8809-D1EF34140112}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D346482C-1C65-4122-8809-D1EF34140112}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D346482C-1C65-4122-8809-D1EF34140112}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1A70ED24-15A6-41E4-8E2B-0D79D20BA206}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1A70ED24-15A6-41E4-8E2B-0D79D20BA206}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1A70ED24-15A6-41E4-8E2B-0D79D20BA206}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1A70ED24-15A6-41E4-8E2B-0D79D20BA206}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DB891535-88D2-4D33-B1C8-5A22873AD8E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DB891535-88D2-4D33-B1C8-5A22873AD8E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DB891535-88D2-4D33-B1C8-5A22873AD8E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DB891535-88D2-4D33-B1C8-5A22873AD8E3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

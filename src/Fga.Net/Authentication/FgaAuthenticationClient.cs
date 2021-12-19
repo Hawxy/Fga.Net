@@ -34,7 +34,6 @@ public class FgaAuthenticationClient
         {
 
         }
-        var output = await res.Content.ReadAsStringAsync();
 
         return await res.Content.ReadFromJsonAsync<AccessTokenResponse>();
     }

@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Fga.Net.AspNetCore\Fga.Net.AspNetCore.csproj" />
+    <ProjectReference Include="..\..\src\Fga.Net.AspNetCore\Fga.Net.AspNetCore.csproj" />
   </ItemGroup>
 
 </Project>
