@@ -28,7 +28,7 @@ public class SandcastleAuthorizationHandler : AuthorizationHandler<SandcastleReq
             if (endpoint is null)
                 return;
             var attributes = endpoint!.Metadata.GetOrderedMetadata<ComputedAuthorizationAttribute>();
-            // The user is enforcing the sandcastle policy but there's no attributes here, pass through..
+            // The user is enforcing the sandcastle policy but there's no attributes here, pass through.
             if (attributes.Count == 0)
                 return;
             foreach (var attribute in attributes)
