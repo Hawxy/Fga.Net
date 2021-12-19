@@ -19,7 +19,7 @@ namespace Fga.Example.Controllers
         }
 
         [HttpGet]
-        [StringComputedAuthorization("doc:Z", "read", "anne")]
+        [StringComputedAuthorization("anne", "read", "doc:Z")]
         public string Get(string documentId)
         {
             return string.Empty;

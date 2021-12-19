@@ -1,4 +1,5 @@
 ﻿using Fga.Net.AspNetCore.Authorization.Attributes;
+using Fga.Net.Authorization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 

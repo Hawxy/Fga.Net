@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Fga.Net.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Fga.Net.AspNetCore.Controllers;
 
@@ -16,9 +17,9 @@ public class FgaControllerBase : ControllerBase
         {
             TupleKey = new TupleKey
             {
-                Object = @object,
+                User = user,
                 Relation = relation,
-                User = user
+                Object = @object
             }
         });
         return checkRes!.Allowed;

@@ -1,7 +1,8 @@
-﻿using LazyCache;
+﻿using Fga.Net.Authentication;
+using LazyCache;
 using Microsoft.Extensions.Options;
 
-namespace Fga.Net.AspNetCore;
+namespace Fga.Net.Http;
 
 public class FgaTokenCache
 {
@@ -10,13 +11,19 @@ public class FgaTokenCache
     private readonly FgaClientConfiguration _config;
     private const string CacheKey = "FgaToken";
 
+    public FgaTokenCache(IAppCache cache, FgaAuthenticationClient client, FgaClientConfiguration config)
+    {
+        _cache = cache;
+        _client = client;
+        _config = config;
+    }
+
     public FgaTokenCache(IAppCache cache, FgaAuthenticationClient client, IOptions<FgaClientConfiguration> config)
     {
         _cache = cache;
         _client = client;
         _config = config.Value;
     }
-
 
     public async Task<string> GetOrUpdateTokenAsync()
     {
