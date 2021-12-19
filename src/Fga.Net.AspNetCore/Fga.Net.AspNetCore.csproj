@@ -13,17 +13,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-		<FrameworkReference Include="Microsoft.AspNetCore.App" />
-	</ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
 
-	<ItemGroup>
-	  <PackageReference Include="LazyCache.AspNetCore" Version="2.4.0" />
+  <ItemGroup>
     <PackageReference Include="DotNet.ReproducibleBuilds" Version="1.1.1" PrivateAssets="All"/>
-	</ItemGroup>
+  </ItemGroup>
 
-	<ItemGroup>
-	  <ProjectReference Include="..\Fga.Net\Fga.Net.csproj" />
-	</ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Fga.Net\Fga.Net.csproj" />
+  </ItemGroup>
 
   <Import Project="../../Package.Build.props"/>
 </Project>
