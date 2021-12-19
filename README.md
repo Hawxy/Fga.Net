@@ -11,8 +11,8 @@ Before getting started, ensure you have a Store ID, Client ID, and Client Secret
 I'm also assuming you have authentication setup within your project, such as [JWT bearer authentication via Auth0](https://auth0.com/docs/quickstart/backend/aspnet-core-webapi/01-authorization).
 
 
-1. Install `Fga.Net.AspNetCore` from Nuget
-2. Add your `StoreId`, `ClientId` and `ClientSecret` to your application configuration, ideally via the [dotnet secrets manager](https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-6.0&tabs=windows#enable-secret-storage)
+1. Install `Fga.Net.AspNetCore` from Nuget.
+2. Add your `StoreId`, `ClientId` and `ClientSecret` to your application configuration, ideally via the [dotnet secrets manager](https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-6.0&tabs=windows#enable-secret-storage).
 3. Add the following code to your ASP.NET Core configuration:
 ```cs
 // Registers FgaAuthenticationClient & FgaAuthorizationClient, and the authorization handler
@@ -85,9 +85,34 @@ If you need to manually perform checks, inject the `FgaAuthorizationClient` as r
 
 An additional pre-made attribute that allows all tuple values to be hardcoded strings ships with the package (`StringComputedAuthorizationAttribute`). This attrbute is useful for testing and debug purposes, but should not be used in a real application.
 
-### Worker Service setup
-Coming soon!
+### Worker Service / Generic Host setup
+Full docs coming soon.
+
+`Fga.Net` ships with the `AddAuth0FgaAuthenticationClient` and `AddAuth0FgaAuthorizationClient` service collection extensions that should be self-explanatory. To use the authorization client, both clients must be registered.
 
 ### Standalone client setup
-Coming soon!
+Full docs coming soon.
+
+Seriously consider if you need to run a standalone client before picking this option. 
+
+Basic example:
+
+```cs
+var client = FgaAuthorizationClient.Create(FgaAuthenticationClient.Create(), new FgaClientConfiguration()
+{
+    ClientId = args[0],
+    ClientSecret = args[1],
+    StoreId = args[2]
+});
+
+var response = await client.CheckAsync(new CheckTupleRequest()
+{
+    TupleKey = new TupleKey()
+    {
+        User = "",
+        Relation = "",
+        Object = ""
+    }
+});
+```
 
