@@ -11,12 +11,16 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fga.Example.AspNetCore", "s
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fga.Example.Standalone", "samples\Fga.Example.Standalone\Fga.Example.Standalone.csproj", "{A1860744-0B7F-45DE-AC6C-C0B57D69FCB2}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "_build", "build\_build.csproj", "{7C318096-13A3-4788-98AC-123904C78379}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7C318096-13A3-4788-98AC-123904C78379}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7C318096-13A3-4788-98AC-123904C78379}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FFEC7554-C5AF-4B8D-B697-36A0CF9828A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{FFEC7554-C5AF-4B8D-B697-36A0CF9828A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FFEC7554-C5AF-4B8D-B697-36A0CF9828A9}.Release|Any CPU.ActiveCfg = Release|Any CPU

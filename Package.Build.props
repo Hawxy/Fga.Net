@@ -1,0 +1,13 @@
+<Project>
+ <PropertyGroup>
+    <Version>0.0.1-alpha</Version>
+    <Authors>Hawxy</Authors>
+	<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+	<PackageProjectUrl>https://github.com/Hawxy/Fga.Net</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Hawxy/Fga.Net</RepositoryUrl>
+	<RepositoryType>git</RepositoryType>
+    <Copyright>Hawxy 2022</Copyright>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+ </PropertyGroup>
+</Project>

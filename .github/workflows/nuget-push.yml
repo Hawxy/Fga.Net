@@ -1,0 +1,22 @@
+name: NuGet Manual Push
+
+on: [workflow_dispatch]
+
+jobs:
+  push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '6.0.x'
+
+      - name: Run Nuget Pack
+        run: ./build.sh NugetPack
+
+      - name: Run Nuget Push
+        run: ./build.sh NugetPush -NugetApiKey ${{secrets.NUGET_API_KEY}}
