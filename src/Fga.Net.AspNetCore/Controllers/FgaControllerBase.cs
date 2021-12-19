@@ -13,7 +13,7 @@ public class FgaControllerBase : ControllerBase
 
     public async Task<bool> Check(string user, string relation, string @object)
     {
-        var checkRes = await _client.CheckAsync(new CheckRequest
+        var checkRes = await _client.CheckAsync(new CheckTupleRequest
         {
             TupleKey = new TupleKey
             {

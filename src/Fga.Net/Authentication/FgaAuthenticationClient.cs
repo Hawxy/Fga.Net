@@ -30,10 +30,6 @@ public class FgaAuthenticationClient
         var content = new FormUrlEncodedContent(dict);
 
         var res = await _httpClient.PostAsync("oauth/token", content);
-        if (!res.IsSuccessStatusCode)
-        {
-
-        }
 
         return await res.Content.ReadFromJsonAsync<AccessTokenResponse>();
     }

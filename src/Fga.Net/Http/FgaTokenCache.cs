@@ -4,7 +4,7 @@ using Microsoft.Extensions.Options;
 
 namespace Fga.Net.Http;
 
-public class FgaTokenCache
+internal class FgaTokenCache
 {
     private readonly IAppCache _cache;
     private readonly FgaAuthenticationClient _client;
@@ -36,8 +36,7 @@ public class FgaTokenCache
                 Environment = _config.Environment
             });
 
-            entry.AbsoluteExpirationRelativeToNow =
-                TimeSpan.FromSeconds(res!.ExpiresIn).Subtract(TimeSpan.FromMinutes(15));
+            entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(res!.ExpiresIn).Subtract(TimeSpan.FromMinutes(15));
 
             return res.AccessToken;
 

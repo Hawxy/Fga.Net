@@ -5,7 +5,7 @@ namespace Fga.Net.Http;
 /// <summary>
 /// A <see cref="DelegatingHandler"/> that adds a authentication header with a Auth0-generated JWT token for the Fga request
 /// </summary>
-public class FgaTokenHandler : DelegatingHandler
+internal class FgaTokenHandler : DelegatingHandler
 {
     private const string Scheme = "Bearer";
     private readonly FgaTokenCache _cache;

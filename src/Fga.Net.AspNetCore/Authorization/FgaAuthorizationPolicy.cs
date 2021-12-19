@@ -28,7 +28,7 @@ public class SandcastleAuthorizationHandler : AuthorizationHandler<SandcastleReq
             if (endpoint is null)
                 return;
             var attributes = endpoint!.Metadata.GetOrderedMetadata<ComputedAuthorizationAttribute>();
-            // The user is enforcing the sandcastle policy but there's no attributes here, bit odd.
+            // The user is enforcing the sandcastle policy but there's no attributes here, pass through..
             if (attributes.Count == 0)
                 return;
             foreach (var attribute in attributes)
@@ -37,7 +37,7 @@ public class SandcastleAuthorizationHandler : AuthorizationHandler<SandcastleReq
                 var relation = await attribute.GetRelation(httpContext);
                 var @object = await attribute.GetObject(httpContext);
 
-                var result = await _client.CheckAsync(new CheckRequest
+                var result = await _client.CheckAsync(new CheckTupleRequest
                 {
                     TupleKey = new TupleKey
                     {

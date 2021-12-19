@@ -7,9 +7,9 @@ using Microsoft.Extensions.Options;
 namespace Fga.Net.Authorization;
 public class FgaAuthorizationClient : IDisposable
 {
-    // Rate limiting
-    // error handling
-    // etc
+    //TODO Rate limiting
+    //TODO Error handling
+    
     private readonly HttpClient _client;
     private readonly FgaClientConfiguration _configuration;
     private readonly bool _isInternalHttpClient;
@@ -35,6 +35,7 @@ public class FgaAuthorizationClient : IDisposable
 
     /// <summary>
     /// Creates a standalone instance of the authorization client with an internally managed HttpClient and token caching middleware enabled by default.
+    /// This client should be long-lived and disposed after use.
     /// </summary>
     /// <param name="client"></param>
     /// <param name="configuration"></param>
@@ -61,14 +62,47 @@ public class FgaAuthorizationClient : IDisposable
     {
         return new FgaAuthorizationClient(httpClient, configuration, false);
     }
-
-    public async Task<CheckResponse?> CheckAsync(CheckRequest request, CancellationToken ct = default)
+    /// <summary>
+    /// The check API will return whether the user has a certain relationship with an object in a certain store.
+    /// </summary>
+    /// <param name="request"></param>
+    /// <param name="ct"></param>
+    /// <returns></returns>
+    public async Task<CheckTupleResponse?> CheckAsync(CheckTupleRequest request, CancellationToken ct = default)
     {
        var res= await _client.PostAsJsonAsync($"/{_configuration.StoreId}/check", request, ct);
-
-       return await res.Content.ReadFromJsonAsync<CheckResponse>(cancellationToken: ct);
+       res.EnsureSuccessStatusCode();
+       return await res.Content.ReadFromJsonAsync<CheckTupleResponse>(cancellationToken: ct);
+    }
+    /// <summary>
+    /// The POST read API will return the tuples for a certain store that matches a query filter specified in the body. Tuples and type definitions allow Auth0 FGA to determine whether a relationship exists between an object and an user.
+    /// In the body: <example><code>Object is mandatory. An object can be a full object (e.g., type:object_id) or type only (e.g., type:).</code></example>
+    /// <example><code>User is mandatory in the case the object is type only.</code></example>
+    /// </summary>
+    /// <param name="request"></param>
+    /// <param name="ct"></param>
+    /// <returns></returns>
+    public async Task<ReadTupleResponse?> ReadAsync(ReadTupleRequest request, CancellationToken ct = default)
+    {
+        var res = await _client.PostAsJsonAsync($"/{_configuration.StoreId}/check", request, ct);
+        res.EnsureSuccessStatusCode();
+        return await res.Content.ReadFromJsonAsync<ReadTupleResponse>(cancellationToken: ct);
     }
 
+    /// <summary>
+    /// The POST write API will update the tuples for a certain store. Tuples and type definitions allow Auth0 FGA to determine whether a relationship exists between an object and an user.
+    /// Path parameter store_id is required.In the body, writes adds new tuples while deletes remove existing tuples.
+    /// </summary>
+    /// <param name="request"></param>
+    /// <param name="ct"></param>
+    /// <returns></returns>
+    public async Task WriteAsync(WriteTupleRequest request, CancellationToken ct = default)
+    {
+        var res = await _client.PostAsJsonAsync($"/{_configuration.StoreId}/write", request, ct);
+        res.EnsureSuccessStatusCode();
+    }
+
+    /// <inheritdoc />
     public void Dispose()
     {
         if(_isInternalHttpClient)
