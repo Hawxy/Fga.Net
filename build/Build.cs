@@ -81,6 +81,7 @@ class Build : NukeBuild
         .Executes(() =>
         {
             DotNetNuGetPush(_ => _
+                .SetSource("https://api.nuget.org/v3/index.json")
                 .SetTargetPath(ArtifactsDirectory / "*.nupkg")
                 .EnableSkipDuplicate()
                 .EnableNoSymbols()
