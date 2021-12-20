@@ -1,5 +1,8 @@
 # Auth0 FGA for .NET & ASP.NET Core
 
+[![Nuget (with prereleases)](https://img.shields.io/nuget/vpre/Fga.Net?label=Fga.Net&style=flat-square)](https://www.nuget.org/packages/Fga.Net)
+[![Nuget (with prereleases)](https://img.shields.io/nuget/vpre/Fga.Net?label=Fga.Net.AspNetCore&style=flat-square)](https://www.nuget.org/packages/Fga.Net.AspNetCore)
+
 Please ensure you have a basic understanding of how FGA works before continuing: https://docs.fga.dev/
 
 #### Note: This project is an early alpha and is subject to breaking changes without notice.
