@@ -6,15 +6,15 @@ using Microsoft.AspNetCore.Http;
 namespace Fga.Net.AspNetCore.Authorization;
 
 
-public class SandcastleRequirement : IAuthorizationRequirement
+internal class SandcastleRequirement : IAuthorizationRequirement
 {
 }
 // Think about if this should be a 1:1 handler, A IAuthorizationHandler or a requirement that implements its own handler.
-public class SandcastleAuthorizationHandler : AuthorizationHandler<SandcastleRequirement>
+internal class SandcastleAuthorizationHandler : AuthorizationHandler<SandcastleRequirement>
 {
-    private readonly FgaAuthorizationClient _client;
+    private readonly IFgaAuthorizationClient _client;
 
-    public SandcastleAuthorizationHandler(FgaAuthorizationClient client)
+    public SandcastleAuthorizationHandler(IFgaAuthorizationClient client)
     {
         _client = client;
     }
@@ -27,7 +27,7 @@ public class SandcastleAuthorizationHandler : AuthorizationHandler<SandcastleReq
             var endpoint = httpContext.GetEndpoint();
             if (endpoint is null)
                 return;
-            var attributes = endpoint!.Metadata.GetOrderedMetadata<ComputedAuthorizationAttribute>();
+            var attributes = endpoint.Metadata.GetOrderedMetadata<ComputedAuthorizationAttribute>();
             // The user is enforcing the sandcastle policy but there's no attributes here, pass through.
             if (attributes.Count == 0)
                 return;

@@ -2,6 +2,9 @@
 
 namespace Fga.Net.AspNetCore.Authorization.Attributes;
 
+/// <summary>
+/// An authorization attribute that provides metadata from the current HTTP request.
+/// </summary>
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = true)]
 public abstract class ComputedAuthorizationAttribute : Attribute
 {

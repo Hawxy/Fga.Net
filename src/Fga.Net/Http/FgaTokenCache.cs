@@ -4,21 +4,21 @@ using Microsoft.Extensions.Options;
 
 namespace Fga.Net.Http;
 
-internal class FgaTokenCache
+internal class FgaTokenCache : IFgaTokenCache
 {
     private readonly IAppCache _cache;
-    private readonly FgaAuthenticationClient _client;
+    private readonly IFgaAuthenticationClient _client;
     private readonly FgaClientConfiguration _config;
     private const string CacheKey = "FgaToken";
 
-    public FgaTokenCache(IAppCache cache, FgaAuthenticationClient client, FgaClientConfiguration config)
+    public FgaTokenCache(IAppCache cache, IFgaAuthenticationClient client, FgaClientConfiguration config)
     {
         _cache = cache;
         _client = client;
         _config = config;
     }
 
-    public FgaTokenCache(IAppCache cache, FgaAuthenticationClient client, IOptions<FgaClientConfiguration> config)
+    public FgaTokenCache(IAppCache cache, IFgaAuthenticationClient client, IOptions<FgaClientConfiguration> config)
     {
         _cache = cache;
         _client = client;

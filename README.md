@@ -84,7 +84,7 @@ public class EntityAuthorizationAttribute : ComputedAuthorizationAttribute
     }
 ```
 
-If you need to manually perform checks, inject the `FgaAuthorizationClient` as required.
+If you need to manually perform checks, inject the `IFgaAuthorizationClient` as required.
 
 An additional pre-made attribute that allows all tuple values to be hardcoded strings ships with the package (`StringComputedAuthorizationAttribute`). This attrbute is useful for testing and debug purposes, but should not be used in a real application.
 
@@ -118,3 +118,6 @@ var response = await client.CheckAsync(new CheckTupleRequest()
 });
 ```
 
+## Disclaimer
+
+I am not affiliated with nor represent Auth0. All support queries regarding the underlying service go to the [Auth0 Labs Discord](https://discord.gg/8naAwJfWN6).

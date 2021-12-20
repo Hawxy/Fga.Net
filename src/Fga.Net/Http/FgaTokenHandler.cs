@@ -8,12 +8,12 @@ namespace Fga.Net.Http;
 internal class FgaTokenHandler : DelegatingHandler
 {
     private const string Scheme = "Bearer";
-    private readonly FgaTokenCache _cache;
+    private readonly IFgaTokenCache _cache;
     /// <summary>
     /// Constructs a new instance of the <see cref="FgaTokenHandler"/>
     /// </summary>
     /// <param name="cache">An instance of an <see cref="FgaTokenCache"/>.</param>
-    public FgaTokenHandler(FgaTokenCache cache)
+    public FgaTokenHandler(IFgaTokenCache cache)
     {
         _cache = cache;
     }
