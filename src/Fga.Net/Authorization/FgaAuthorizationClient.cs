@@ -17,6 +17,7 @@
 #endregion
 
 using System.Net.Http.Json;
+using System.Text;
 using Fga.Net.Authentication;
 using Fga.Net.Http;
 using LazyCache;
@@ -81,6 +82,16 @@ public class FgaAuthorizationClient : IFgaAuthorizationClient
     public static FgaAuthorizationClient Create(FgaClientConfiguration configuration, HttpClient httpClient)
     {
         return new FgaAuthorizationClient(httpClient, configuration, false);
+    }
+
+    /// <inheritdoc />
+    public async Task<AuthorizationModelsResponse?> GetAuthorizationModelsAsync(int? pageSize, string? continuationToken, CancellationToken ct = default)
+    {
+        var path = $"/{_configuration.StoreId}/check".BuildQueryString(("page_size", pageSize?.ToString()), ("continuation_token", continuationToken));
+
+        var res = await _client.GetAsync(path, ct);
+        res.EnsureSuccessStatusCode();
+        return await res.Content.ReadFromJsonAsync<AuthorizationModelsResponse>(cancellationToken: ct);
     }
 
     /// <inheritdoc />

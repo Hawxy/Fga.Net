@@ -24,6 +24,16 @@ namespace Fga.Net.Authorization;
 public interface IFgaAuthorizationClient : IDisposable
 {
     /// <summary>
+    /// Return all the IDs of the authorization models for a certain store.
+    /// </summary>
+    /// <param name="pageSize"></param>
+    /// <param name="continuationToken"></param>
+    /// <param name="ct"></param>
+    /// <returns>Contain an array of all authorization model IDs, sorted in descending order of creation.</returns>
+    Task<AuthorizationModelsResponse?> GetAuthorizationModelsAsync(int? pageSize, string? continuationToken, CancellationToken ct = default);
+
+
+    /// <summary>
     /// The check API will return whether the user has a certain relationship with an object in a certain store.
     /// </summary>
     /// <param name="request"></param>

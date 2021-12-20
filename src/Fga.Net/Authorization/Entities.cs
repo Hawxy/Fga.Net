@@ -20,6 +20,20 @@ using System.Text.Json.Serialization;
 
 namespace Fga.Net.Authorization;
 
+
+// store/authorization-models
+
+public record AuthorizationModelsResponse
+{
+    [JsonPropertyName("authorization_model_ids")]
+    public IReadOnlyList<string> AuthorizationModelIds { get; init; }
+
+    [JsonPropertyName("continuation_token")]
+    public string? ContinuationToken { get; set; }
+}
+
+
+
 public class TupleKey
 {
     [JsonPropertyName("user")]
@@ -68,7 +82,7 @@ public class ReadTupleRequest
 public record ReadTupleResponse
 {
     [JsonPropertyName("tuples")]
-    public List<Tuple> Tuples { get; set; } = null!;
+    public IReadOnlyList<Tuple> Tuples { get; set; } = null!;
 }
 
 // store/write

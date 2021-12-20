@@ -56,6 +56,14 @@ class Build : NukeBuild
                 .EnableNoRestore());
         });
 
+    Target Test => _ => _
+        .DependsOn(Compile)
+        .Executes(() =>
+        {
+            DotNetTest(s => s
+                .SetProjectFile(Solution.Fga_Net_Tests));
+        });
+
     Target NugetPack => _ => _
         .DependsOn(Compile)
         .Executes(() =>

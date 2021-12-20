@@ -18,6 +18,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Package.Build.props = Package.Build.props
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fga.Net.Tests", "tests\Fga.Net.Tests\Fga.Net.Tests.csproj", "{C3849ACA-38F3-41D4-8DD5-0726506BE02B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,6 +44,10 @@ Global
 		{A1860744-0B7F-45DE-AC6C-C0B57D69FCB2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7C318096-13A3-4788-98AC-123904C78379}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7C318096-13A3-4788-98AC-123904C78379}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C3849ACA-38F3-41D4-8DD5-0726506BE02B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C3849ACA-38F3-41D4-8DD5-0726506BE02B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C3849ACA-38F3-41D4-8DD5-0726506BE02B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C3849ACA-38F3-41D4-8DD5-0726506BE02B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
