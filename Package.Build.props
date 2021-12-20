@@ -1,17 +1,17 @@
 <Project>
- <PropertyGroup>
-    <Version>0.1.0-alpha</Version>
+  <PropertyGroup>
+    <Version>0.1.1-alpha</Version>
     <Authors>Hawxy</Authors>
-	<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-	<PackageProjectUrl>https://github.com/Hawxy/Fga.Net</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/Hawxy/Fga.Net</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Hawxy/Fga.Net</RepositoryUrl>
-	<RepositoryType>git</RepositoryType>
+    <RepositoryType>git</RepositoryType>
     <Copyright>Hawxy 2022</Copyright>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-	<PackageReadmeFile>README.md</PackageReadmeFile>
- </PropertyGroup>
-   <ItemGroup>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+  <ItemGroup>
     <None Include="..\..\README.md" Pack="true" PackagePath="\"/>
   </ItemGroup>
 </Project>

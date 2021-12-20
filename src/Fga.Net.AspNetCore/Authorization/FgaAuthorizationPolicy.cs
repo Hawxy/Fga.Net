@@ -37,7 +37,10 @@ internal class SandcastleAuthorizationHandler : AuthorizationHandler<SandcastleR
                 var user = await attribute.GetUser(httpContext);
                 var relation = await attribute.GetRelation(httpContext);
                 var @object = await attribute.GetObject(httpContext);
-
+                // If we get back nulls from anything we cannot perform a check.
+                if (string.IsNullOrEmpty(user) || string.IsNullOrEmpty(relation) || string.IsNullOrEmpty(@object))
+                    return;
+                
                 var result = await _client.CheckAsync(new CheckTupleRequest
                 {
                     TupleKey = new TupleKey
