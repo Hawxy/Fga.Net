@@ -105,3 +105,52 @@ public class WriteTupleRequest
     [JsonPropertyName("deletes")]
     public Deletes Deletes { get; set; } = null!;
 }
+
+// store/settings
+
+public record StoreSettingsResponse
+{
+    [JsonPropertyName("environment")]
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    public StoreEnvironment Environment { get; init; }
+    [JsonPropertyName("token_issuers")]
+    public IReadOnlyList<TokenIssuer> TokenIssuers { get; init; }
+}
+
+public enum StoreEnvironment
+{
+    ENVIRONMENT_UNSPECIFIED = 0,
+    DEVELOPMENT,
+    STAGING,
+    PRODUCTION
+}
+
+public class TokenIssuer
+{
+    [JsonPropertyName("id")]
+    public string Id { get; set; }
+    [JsonPropertyName("issuer_url")]
+    public string IssuerUrl { get; set; }
+}
+
+public class UpdateStoreSettingsRequest
+{
+    [JsonPropertyName("environment")]
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    public StoreEnvironment Environment { get; set; }
+}
+
+
+public class AddTokenIssuersRequest
+{
+    [JsonPropertyName("issuer_url")]
+    public string IssuerUrl { get; set; }
+}
+
+public record AddTokenIssuerResponse
+{
+    [JsonPropertyName("id")]
+    public string Id { get; init; }
+    [JsonPropertyName("issuer_url")]
+    public string IssuerUrl { get; init; }
+}

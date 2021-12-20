@@ -59,4 +59,35 @@ public interface IFgaAuthorizationClient : IDisposable
     /// <param name="ct"></param>
     /// <returns></returns>
     Task WriteAsync(WriteTupleRequest request, CancellationToken ct = default);
+
+    /// <summary>
+    /// Returns the store's settings, including environment tag and an array of Auth0 FGA's allowed 3rd party token issuers.
+    /// </summary>
+    /// <param name="ct"></param>
+    /// <returns></returns>
+    Task<StoreSettingsResponse?> GetStoreSettingsAsync(CancellationToken ct = default);
+
+    /// <summary>
+    /// Updates the environment tag to differentiate between development, staging, and production environments.
+    /// </summary>
+    /// <param name="request"></param>
+    /// <param name="ct"></param>
+    /// <returns></returns>
+    Task PatchStoreSettingsAsync(UpdateStoreSettingsRequest request, CancellationToken ct = default);
+
+    /// <summary>
+    /// Configure the system so that tokens issued by the specified 3rd party token issuer will be allowed for Auth0 FGA's read and write operations. 
+    /// </summary>
+    /// <param name="request"></param>
+    /// <param name="ct"></param>
+    /// <returns></returns>
+    Task<AddTokenIssuerResponse?> AddTokenIssuersAsync(AddTokenIssuersRequest request, CancellationToken ct = default);
+
+    /// <summary>
+    /// Remove the 3rd party token issuer as a token issuer that are allowed by Auth0 FGA. 
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="ct"></param>
+    /// <returns></returns>
+    Task DeleteTokenIssuerAsync(string id, CancellationToken ct = default);
 }

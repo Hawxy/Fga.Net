@@ -17,7 +17,6 @@
 #endregion
 
 using System.Net.Http.Json;
-using System.Text;
 using Fga.Net.Authentication;
 using Fga.Net.Http;
 using LazyCache;
@@ -34,7 +33,6 @@ public class FgaAuthorizationClient : IFgaAuthorizationClient
     private readonly HttpClient _client;
     private readonly FgaClientConfiguration _configuration;
     private readonly bool _isInternalHttpClient;
-
 
     /// <summary>
     /// Creates a new Authorization client. This constructor is designed for use with dependency injection.
@@ -113,6 +111,37 @@ public class FgaAuthorizationClient : IFgaAuthorizationClient
     public async Task WriteAsync(WriteTupleRequest request, CancellationToken ct = default)
     {
         var res = await _client.PostAsJsonAsync($"/{_configuration.StoreId}/write", request, ct);
+        res.EnsureSuccessStatusCode();
+    }
+
+    /// <inheritdoc />
+    public async Task<StoreSettingsResponse?> GetStoreSettingsAsync(CancellationToken ct = default)
+    {
+        var res = await _client.GetAsync($"/{_configuration.StoreId}/settings", ct);
+        res.EnsureSuccessStatusCode();
+
+        return await res.Content.ReadFromJsonAsync<StoreSettingsResponse?>(cancellationToken: ct);
+    }
+
+    /// <inheritdoc />
+    public async Task PatchStoreSettingsAsync(UpdateStoreSettingsRequest request, CancellationToken ct = default)
+    {
+        var res = await _client.PatchAsync($"/{_configuration.StoreId}", JsonContent.Create(request), ct);
+        res.EnsureSuccessStatusCode();
+    }
+
+    /// <inheritdoc />
+    public async Task<AddTokenIssuerResponse?> AddTokenIssuersAsync(AddTokenIssuersRequest request, CancellationToken ct = default)
+    {
+        var res = await _client.PostAsJsonAsync($"/{_configuration.StoreId}/settings/token-issuers", request, ct);
+        res.EnsureSuccessStatusCode();
+        return await res.Content.ReadFromJsonAsync<AddTokenIssuerResponse>(cancellationToken: ct);
+    }
+
+    /// <inheritdoc />
+    public async Task DeleteTokenIssuerAsync(string id, CancellationToken ct = default)
+    {
+        var res = await _client.DeleteAsync($"/{_configuration.StoreId}/settings/token-issuers/{id}", ct);
         res.EnsureSuccessStatusCode();
     }
 

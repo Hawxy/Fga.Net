@@ -118,6 +118,12 @@ var response = await client.CheckAsync(new CheckTupleRequest()
 });
 ```
 
+## Internal Cache
+
+The `FgaTokenCache` will cache the FGA authorization token until 15 minutes before expiry. This is not currently customizable.
+
+This cache is automatically enabled if you use any of the DI extensions, as well as `FgaAuthorizationClient.Create`.
+
 ## Disclaimer
 
 I am not affiliated with nor represent Auth0. All support queries regarding the underlying service should go to the [Auth0 Labs Discord](https://discord.gg/8naAwJfWN6).
