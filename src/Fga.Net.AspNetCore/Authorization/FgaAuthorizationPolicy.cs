@@ -31,6 +31,7 @@ public class SandcastleAuthorizationHandler : AuthorizationHandler<SandcastleReq
             // The user is enforcing the sandcastle policy but there's no attributes here, pass through.
             if (attributes.Count == 0)
                 return;
+            var results = new List<bool>();
             foreach (var attribute in attributes)
             {
                 var user = await attribute.GetUser(httpContext);
@@ -46,9 +47,14 @@ public class SandcastleAuthorizationHandler : AuthorizationHandler<SandcastleReq
                         Object = @object
                     }
                 });
-                if (result is not null && result.Allowed)
-                    context.Succeed(requirement);
+                //Something has gone wrong, short-circuit
+                if (result is null)
+                    return;
+                results.Add(result.Allowed);
             }
+
+            if(results.All(x=> x))
+                context.Succeed(requirement);
         }
     }
 }
