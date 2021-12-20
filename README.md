@@ -120,4 +120,4 @@ var response = await client.CheckAsync(new CheckTupleRequest()
 
 ## Disclaimer
 
-I am not affiliated with nor represent Auth0. All support queries regarding the underlying service go to the [Auth0 Labs Discord](https://discord.gg/8naAwJfWN6).
+I am not affiliated with nor represent Auth0. All support queries regarding the underlying service should go to the [Auth0 Labs Discord](https://discord.gg/8naAwJfWN6).
