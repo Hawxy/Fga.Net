@@ -7,7 +7,7 @@ public static class MockJwtConfiguration
 {
     public const string DefaultUser = "auth0|real-fake-user";
     public const string FakeUser = "fake-user";
-    public const string Issuer = "https://hawxy.au.auth0.com/";
+    public const string Issuer = "https://test.au.auth0.com/";
 
     private static readonly Claim[] DefaultClaims = {
         new("iss", Issuer),
