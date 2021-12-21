@@ -15,4 +15,7 @@
     <ProjectReference Include="..\..\src\Fga.Net.AspNetCore\Fga.Net.AspNetCore.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="Fga.Net.Tests" />
+  </ItemGroup>
 </Project>

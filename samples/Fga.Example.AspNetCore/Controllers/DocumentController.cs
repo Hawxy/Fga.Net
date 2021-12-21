@@ -11,13 +11,6 @@ namespace Fga.Example.AspNetCore.Controllers
     public class DocumentController : ControllerBase
     {
 
-        private readonly ILogger<DocumentController> _logger;
-
-        public DocumentController(ILogger<DocumentController> logger)
-        {
-            _logger = logger;
-        }
-
         [HttpGet]
         [StringComputedAuthorization("anne", "read", "doc:Z")]
         public string GetHardcoded()
