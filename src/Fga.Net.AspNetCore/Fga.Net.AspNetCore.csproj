@@ -24,5 +24,6 @@
     <ProjectReference Include="..\Fga.Net\Fga.Net.csproj" />
   </ItemGroup>
 
+
   <Import Project="../../Package.Build.props"/>
 </Project>
