@@ -33,8 +33,8 @@ namespace Fga.Net.Tests.Middleware
         {
             await _alba.Scenario(_ =>
             {
-                _.RemoveClaim(ClaimTypes.Name);
-                _.WithClaim(new Claim(ClaimTypes.Name, MockJwtConfiguration.FakeUser));
+                _.RemoveClaim(ClaimTypes.NameIdentifier);
+                _.WithClaim(new Claim(ClaimTypes.NameIdentifier, MockJwtConfiguration.FakeUser));
                 _.Get.Url($"/test/{Guid.NewGuid()}");
                 _.StatusCodeShouldBe(HttpStatusCode.Forbidden);
             });
