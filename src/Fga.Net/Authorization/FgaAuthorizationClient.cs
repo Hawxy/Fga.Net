@@ -85,7 +85,7 @@ public class FgaAuthorizationClient : IFgaAuthorizationClient
     /// <inheritdoc />
     public async Task<AuthorizationModelsResponse?> GetAuthorizationModelsAsync(int? pageSize, string? continuationToken, CancellationToken ct = default)
     {
-        var path = $"/{_configuration.StoreId}/check".BuildQueryString(("page_size", pageSize?.ToString()), ("continuation_token", continuationToken));
+        var path = $"/store/{_configuration.StoreId}/check".BuildQueryString(("page_size", pageSize?.ToString()), ("continuation_token", continuationToken));
 
         var res = await _client.GetAsync(path, ct);
         res.EnsureSuccessStatusCode();
@@ -95,14 +95,14 @@ public class FgaAuthorizationClient : IFgaAuthorizationClient
     /// <inheritdoc />
     public async Task<CheckTupleResponse?> CheckAsync(CheckTupleRequest request, CancellationToken ct = default)
     {
-       var res= await _client.PostAsJsonAsync($"/{_configuration.StoreId}/check", request, ct);
+       var res= await _client.PostAsJsonAsync($"/store/{_configuration.StoreId}/check", request, ct);
        res.EnsureSuccessStatusCode();
        return await res.Content.ReadFromJsonAsync<CheckTupleResponse>(cancellationToken: ct);
     }
     /// <inheritdoc />
     public async Task<ReadTupleResponse?> ReadAsync(ReadTupleRequest request, CancellationToken ct = default)
     {
-        var res = await _client.PostAsJsonAsync($"/{_configuration.StoreId}/check", request, ct);
+        var res = await _client.PostAsJsonAsync($"/store/{_configuration.StoreId}/check", request, ct);
         res.EnsureSuccessStatusCode();
         return await res.Content.ReadFromJsonAsync<ReadTupleResponse>(cancellationToken: ct);
     }
@@ -110,14 +110,14 @@ public class FgaAuthorizationClient : IFgaAuthorizationClient
     /// <inheritdoc />
     public async Task WriteAsync(WriteTupleRequest request, CancellationToken ct = default)
     {
-        var res = await _client.PostAsJsonAsync($"/{_configuration.StoreId}/write", request, ct);
+        var res = await _client.PostAsJsonAsync($"/store/{_configuration.StoreId}/write", request, ct);
         res.EnsureSuccessStatusCode();
     }
 
     /// <inheritdoc />
     public async Task<StoreSettingsResponse?> GetStoreSettingsAsync(CancellationToken ct = default)
     {
-        var res = await _client.GetAsync($"/{_configuration.StoreId}/settings", ct);
+        var res = await _client.GetAsync($"/store/{_configuration.StoreId}/settings", ct);
         res.EnsureSuccessStatusCode();
 
         return await res.Content.ReadFromJsonAsync<StoreSettingsResponse?>(cancellationToken: ct);
@@ -126,14 +126,14 @@ public class FgaAuthorizationClient : IFgaAuthorizationClient
     /// <inheritdoc />
     public async Task PatchStoreSettingsAsync(UpdateStoreSettingsRequest request, CancellationToken ct = default)
     {
-        var res = await _client.PatchAsync($"/{_configuration.StoreId}", JsonContent.Create(request), ct);
+        var res = await _client.PatchAsync($"/store/{_configuration.StoreId}", JsonContent.Create(request), ct);
         res.EnsureSuccessStatusCode();
     }
 
     /// <inheritdoc />
     public async Task<AddTokenIssuerResponse?> AddTokenIssuersAsync(AddTokenIssuersRequest request, CancellationToken ct = default)
     {
-        var res = await _client.PostAsJsonAsync($"/{_configuration.StoreId}/settings/token-issuers", request, ct);
+        var res = await _client.PostAsJsonAsync($"/store/{_configuration.StoreId}/settings/token-issuers", request, ct);
         res.EnsureSuccessStatusCode();
         return await res.Content.ReadFromJsonAsync<AddTokenIssuerResponse>(cancellationToken: ct);
     }
@@ -141,7 +141,7 @@ public class FgaAuthorizationClient : IFgaAuthorizationClient
     /// <inheritdoc />
     public async Task DeleteTokenIssuerAsync(string id, CancellationToken ct = default)
     {
-        var res = await _client.DeleteAsync($"/{_configuration.StoreId}/settings/token-issuers/{id}", ct);
+        var res = await _client.DeleteAsync($"/store/{_configuration.StoreId}/settings/token-issuers/{id}", ct);
         res.EnsureSuccessStatusCode();
     }
 
