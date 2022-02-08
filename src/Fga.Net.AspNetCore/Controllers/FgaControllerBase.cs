@@ -35,24 +35,26 @@ public class FgaControllerBase : ControllerBase
     {
         _client = client;
     }
+
     /// <summary>
     /// 
     /// </summary>
+    /// <param name="storeId"></param>
     /// <param name="user"></param>
     /// <param name="relation"></param>
     /// <param name="object"></param>
     /// <returns></returns>
-    public async Task<bool> Check(string user, string relation, string @object)
+    public async Task<bool> Check(string storeId, string user, string relation, string @object)
     {
-        var checkRes = await _client.CheckAsync(new CheckTupleRequest
+        var checkRes = await _client.CheckAsync(storeId, new CheckRequestParams()
         {
-            TupleKey = new TupleKey
+            Tuple_key = new TupleKey
             {
                 User = user,
                 Relation = relation,
                 Object = @object
             }
         });
-        return checkRes!.Allowed;
+        return checkRes.Allowed ?? false;
     }
 }

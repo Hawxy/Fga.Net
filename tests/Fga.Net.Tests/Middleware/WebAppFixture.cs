@@ -18,13 +18,13 @@ public class WebAppFixture : IAsyncLifetime
         var authorizationClientMock = new Mock<IFgaAuthorizationClient>();
 
         authorizationClientMock.Setup(c =>
-            c.CheckAsync(
-                It.IsAny<CheckTupleRequest>(),
+            c.CheckAsync(It.IsAny<string>(),
+                It.IsAny<CheckRequestParams>(),
                 It.IsAny<CancellationToken>()))
-            .ReturnsAsync((CheckTupleRequest res, CancellationToken _) => 
-                res.TupleKey.User == MockJwtConfiguration.DefaultUser 
-                    ? new CheckTupleResponse() { Allowed = true } 
-                    : new CheckTupleResponse() { Allowed = false });
+            .ReturnsAsync((string _, CheckRequestParams res, CancellationToken _) => 
+                res.Tuple_key!.User == MockJwtConfiguration.DefaultUser 
+                    ? new CheckResponse() { Allowed = true } 
+                    : new CheckResponse() { Allowed = false });
 
 
         AlbaHost = await Alba.AlbaHost.For<Program>(builder =>

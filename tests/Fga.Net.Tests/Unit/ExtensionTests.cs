@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Fga.Net.AspNetCore;
+﻿using Fga.Net.AspNetCore;
 using Fga.Net.AspNetCore.Authorization;
 using Fga.Net.Authentication;
 using Fga.Net.Authorization;
@@ -12,7 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
-namespace Fga.Net.Tests
+namespace Fga.Net.Tests.Unit
 {
     public class ExtensionTests
     {
@@ -69,7 +64,7 @@ namespace Fga.Net.Tests
         [Fact]
         public void AuthorizationPolicyExtension_RegisterCorrectly()
         {
-            var policy = new AuthorizationPolicyBuilder().AddFgaRequirement().Build();
+            var policy = new AuthorizationPolicyBuilder().AddFgaRequirement(string.Empty).Build();
 
             Assert.Contains(policy.Requirements, requirement => requirement.GetType() == typeof(SandcastleRequirement));
         }

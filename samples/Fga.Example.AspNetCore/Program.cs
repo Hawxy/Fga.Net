@@ -29,12 +29,14 @@ builder.Services.AddAuth0Fga(x =>
 {
     x.ClientId = builder.Configuration["Auth0Fga:ClientId"];
     x.ClientSecret = builder.Configuration["Auth0Fga:ClientSecret"];
-    x.StoreId = builder.Configuration["Auth0Fga:StoreId"];
 });
 
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy(FgaAuthorizationDefaults.PolicyKey, p => p.RequireAuthenticatedUser().AddFgaRequirement());
+    options.AddPolicy(FgaAuthorizationDefaults.PolicyKey, 
+        p => p
+            .RequireAuthenticatedUser()
+            .AddFgaRequirement(builder.Configuration["Auth0Fga:StoreId"]));
 });
 
 

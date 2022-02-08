@@ -26,6 +26,11 @@ namespace Fga.Net.AspNetCore.Authorization;
 
 internal class SandcastleRequirement : IAuthorizationRequirement
 {
+    public string StoreId { get; }
+    public SandcastleRequirement(string storeId)
+    {
+        StoreId = storeId;
+    }
 }
 // Think about if this should be a 1:1 handler, A IAuthorizationHandler or a requirement that implements its own handler.
 internal class SandcastleAuthorizationHandler : AuthorizationHandler<SandcastleRequirement>
@@ -59,19 +64,17 @@ internal class SandcastleAuthorizationHandler : AuthorizationHandler<SandcastleR
                 if (string.IsNullOrEmpty(user) || string.IsNullOrEmpty(relation) || string.IsNullOrEmpty(@object))
                     return;
                 
-                var result = await _client.CheckAsync(new CheckTupleRequest
+                var result = await _client.CheckAsync(requirement.StoreId, new CheckRequestParams()
                 {
-                    TupleKey = new TupleKey
+                    Tuple_key = new TupleKey
                     {
                         User = user,
                         Relation = relation,
                         Object = @object
                     }
                 });
-                //Something has gone wrong, short-circuit
-                if (result is null)
-                    return;
-                results.Add(result.Allowed);
+
+                results.Add(result.Allowed ?? false);
             }
 
             if(results.All(x=> x))

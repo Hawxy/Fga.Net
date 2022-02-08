@@ -37,6 +37,8 @@ public static class ServiceCollectionExtensions
     /// <returns>The service collection</returns>
     public static IServiceCollection AddAuth0Fga(this IServiceCollection collection, Action<FgaClientConfiguration> config)
     {
+        ArgumentNullException.ThrowIfNull(config);
+
         collection.AddAuth0FgaAuthenticationClient();
         collection.AddAuth0FgaAuthorizationClient(config);
         collection.AddScoped<IAuthorizationHandler, SandcastleAuthorizationHandler>();
@@ -47,9 +49,12 @@ public static class ServiceCollectionExtensions
     /// Adds an FGA Authorization requirement to the given policy.
     /// </summary>
     /// <param name="builder">The Authorization Policy Builder to configure</param>
+    /// <param name="storeId"></param>
     /// <returns>The authorization policy builder that is being configured</returns>
-    public static AuthorizationPolicyBuilder AddFgaRequirement(this AuthorizationPolicyBuilder builder)
+    public static AuthorizationPolicyBuilder AddFgaRequirement(this AuthorizationPolicyBuilder builder, string storeId)
     {
-        return builder.AddRequirements(new SandcastleRequirement());
+        ArgumentNullException.ThrowIfNull(storeId);
+
+        return builder.AddRequirements(new SandcastleRequirement(storeId));
     }
 }

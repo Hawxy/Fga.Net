@@ -16,42 +16,15 @@
  */
 #endregion
 
-using System.Net.Http.Json;
 using Fga.Net.Authentication;
 using Fga.Net.Http;
 using LazyCache;
-using Microsoft.Extensions.Options;
 
 namespace Fga.Net.Authorization;
 
 /// <inheritdoc />
-public class FgaAuthorizationClient : IFgaAuthorizationClient
+public partial class FgaAuthorizationClient
 {
-    //TODO Rate limiting
-    //TODO Error handling
-    
-    private readonly HttpClient _client;
-    private readonly FgaClientConfiguration _configuration;
-    private readonly bool _isInternalHttpClient;
-
-    /// <summary>
-    /// Creates a new Authorization client. This constructor is designed for use with dependency injection.
-    /// </summary>
-    /// <param name="client"></param>
-    /// <param name="configuration"></param>
-    public FgaAuthorizationClient(HttpClient client, IOptions<FgaClientConfiguration> configuration)
-    {
-        _client = client;
-        _configuration = configuration.Value;
-    }
-
-    private FgaAuthorizationClient(HttpClient client, FgaClientConfiguration configuration, bool isInternalHttpClient)
-    {
-        _client = client;
-        _configuration = configuration;
-        _isInternalHttpClient = isInternalHttpClient;
-    }
-
     /// <summary>
     /// Creates a standalone instance of the authorization client with an internally managed HttpClient and token caching middleware enabled by default.
     /// This client should be long-lived and disposed after use.
@@ -64,91 +37,22 @@ public class FgaAuthorizationClient : IFgaAuthorizationClient
         var cache = new CachingService();
         var tokenCache = new FgaTokenCache(cache, client, configuration);
 
-        var httpClient = new HttpClient(new FgaTokenHandler(tokenCache));
-        httpClient.BaseAddress = FgaUtilities.GetAuthorizationUri(configuration.Environment);
+        var httpClient = new HttpClient(new FgaTokenHandler(tokenCache))
+        {
+            BaseAddress = FgaUtilities.GetAuthorizationUri(configuration.Environment)
+        };
 
-        return new FgaAuthorizationClient(httpClient, configuration, true);
+        return new FgaAuthorizationClient(httpClient);
     }
 
     /// <summary>
     /// Creates a standalone instance of the authorization client with your own <see cref="HttpClient"/>. No defaults are set.
     /// The lifetime of the HttpClient should be managed yourself.
     /// </summary>
-    /// <param name="configuration"></param>
     /// <param name="httpClient"></param>
     /// <returns></returns>
-    public static FgaAuthorizationClient Create(FgaClientConfiguration configuration, HttpClient httpClient)
+    public static FgaAuthorizationClient Create(HttpClient httpClient)
     {
-        return new FgaAuthorizationClient(httpClient, configuration, false);
-    }
-
-    /// <inheritdoc />
-    public async Task<AuthorizationModelsResponse?> GetAuthorizationModelsAsync(int? pageSize, string? continuationToken, CancellationToken ct = default)
-    {
-        var path = $"/store/{_configuration.StoreId}/check".BuildQueryString(("page_size", pageSize?.ToString()), ("continuation_token", continuationToken));
-
-        var res = await _client.GetAsync(path, ct);
-        res.EnsureSuccessStatusCode();
-        return await res.Content.ReadFromJsonAsync<AuthorizationModelsResponse>(cancellationToken: ct);
-    }
-
-    /// <inheritdoc />
-    public async Task<CheckTupleResponse?> CheckAsync(CheckTupleRequest request, CancellationToken ct = default)
-    {
-       var res= await _client.PostAsJsonAsync($"/store/{_configuration.StoreId}/check", request, ct);
-       res.EnsureSuccessStatusCode();
-       return await res.Content.ReadFromJsonAsync<CheckTupleResponse>(cancellationToken: ct);
-    }
-    /// <inheritdoc />
-    public async Task<ReadTupleResponse?> ReadAsync(ReadTupleRequest request, CancellationToken ct = default)
-    {
-        var res = await _client.PostAsJsonAsync($"/store/{_configuration.StoreId}/check", request, ct);
-        res.EnsureSuccessStatusCode();
-        return await res.Content.ReadFromJsonAsync<ReadTupleResponse>(cancellationToken: ct);
-    }
-
-    /// <inheritdoc />
-    public async Task WriteAsync(WriteTupleRequest request, CancellationToken ct = default)
-    {
-        var res = await _client.PostAsJsonAsync($"/store/{_configuration.StoreId}/write", request, ct);
-        res.EnsureSuccessStatusCode();
-    }
-
-    /// <inheritdoc />
-    public async Task<StoreSettingsResponse?> GetStoreSettingsAsync(CancellationToken ct = default)
-    {
-        var res = await _client.GetAsync($"/store/{_configuration.StoreId}/settings", ct);
-        res.EnsureSuccessStatusCode();
-
-        return await res.Content.ReadFromJsonAsync<StoreSettingsResponse?>(cancellationToken: ct);
-    }
-
-    /// <inheritdoc />
-    public async Task PatchStoreSettingsAsync(UpdateStoreSettingsRequest request, CancellationToken ct = default)
-    {
-        var res = await _client.PatchAsync($"/store/{_configuration.StoreId}", JsonContent.Create(request), ct);
-        res.EnsureSuccessStatusCode();
-    }
-
-    /// <inheritdoc />
-    public async Task<AddTokenIssuerResponse?> AddTokenIssuersAsync(AddTokenIssuersRequest request, CancellationToken ct = default)
-    {
-        var res = await _client.PostAsJsonAsync($"/store/{_configuration.StoreId}/settings/token-issuers", request, ct);
-        res.EnsureSuccessStatusCode();
-        return await res.Content.ReadFromJsonAsync<AddTokenIssuerResponse>(cancellationToken: ct);
-    }
-
-    /// <inheritdoc />
-    public async Task DeleteTokenIssuerAsync(string id, CancellationToken ct = default)
-    {
-        var res = await _client.DeleteAsync($"/store/{_configuration.StoreId}/settings/token-issuers/{id}", ct);
-        res.EnsureSuccessStatusCode();
-    }
-
-    /// <inheritdoc />
-    public void Dispose()
-    {
-        if(_isInternalHttpClient)
-            _client.Dispose();
+        return new FgaAuthorizationClient(httpClient);
     }
 }

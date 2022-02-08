@@ -2,16 +2,16 @@
 using Fga.Net.Authentication;
 using Fga.Net.Authorization;
 
+
 var client = FgaAuthorizationClient.Create(FgaAuthenticationClient.Create(), new FgaClientConfiguration()
 {
     ClientId = args[0],
-    ClientSecret = args[1],
-    StoreId = args[2]
+    ClientSecret = args[1]
 });
 
-var response = await client.CheckAsync(new CheckTupleRequest()
+var response = await client.CheckAsync(args[2], new CheckRequestParams()
 {
-    TupleKey = new TupleKey()
+    Tuple_key = new TupleKey()
     {
         User = "",
         Relation = "",
