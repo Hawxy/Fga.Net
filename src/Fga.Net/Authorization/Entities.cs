@@ -114,7 +114,7 @@ public record StoreSettingsResponse
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public StoreEnvironment Environment { get; init; }
     [JsonPropertyName("token_issuers")]
-    public IReadOnlyList<TokenIssuer> TokenIssuers { get; init; }
+    public IReadOnlyList<TokenIssuer> TokenIssuers { get; init; } = null!;
 }
 
 public enum StoreEnvironment
@@ -128,29 +128,137 @@ public enum StoreEnvironment
 public class TokenIssuer
 {
     [JsonPropertyName("id")]
-    public string Id { get; set; }
+    public string Id { get; set; } = null!;
     [JsonPropertyName("issuer_url")]
-    public string IssuerUrl { get; set; }
-}
+    public string IssuerUrl { get; set; } = null!;
+} 
 
 public class UpdateStoreSettingsRequest
 {
     [JsonPropertyName("environment")]
     [JsonConverter(typeof(JsonStringEnumConverter))]
-    public StoreEnvironment Environment { get; set; }
+    public StoreEnvironment Environment { get; set; } 
 }
 
 
 public class AddTokenIssuersRequest
 {
     [JsonPropertyName("issuer_url")]
-    public string IssuerUrl { get; set; }
+    public string IssuerUrl { get; set; } = null!;
 }
 
 public record AddTokenIssuerResponse
 {
     [JsonPropertyName("id")]
-    public string Id { get; init; }
+    public string Id { get; init; } = null!;
     [JsonPropertyName("issuer_url")]
-    public string IssuerUrl { get; init; }
+    public string IssuerUrl { get; init; } = null!;
 }
+
+
+// storeid/authorization-models/get
+public class This
+{
+}
+
+public class ComputedUserset
+{
+    [JsonPropertyName("object")]
+    public string Object { get; set; }
+
+    [JsonPropertyName("relation")]
+    public string Relation { get; set; }
+}
+
+public class Tupleset
+{
+    [JsonPropertyName("object")]
+    public string Object { get; set; }
+
+    [JsonPropertyName("relation")]
+    public string Relation { get; set; }
+}
+
+public class TupleToUserset
+{
+    [JsonPropertyName("tupleset")]
+    public Tupleset Tupleset { get; set; }
+
+    [JsonPropertyName("computedUserset")]
+    public ComputedUserset ComputedUserset { get; set; }
+}
+
+public class Union
+{
+    [JsonPropertyName("child")]
+    public List<object> Child { get; set; }
+}
+
+public class Intersection
+{
+    [JsonPropertyName("child")]
+    public List<object> Child { get; set; }
+}
+
+public class Difference
+{
+    [JsonPropertyName("base")]
+    public string Base { get; set; }
+
+    [JsonPropertyName("subtract")]
+    public string Subtract { get; set; }
+}
+
+
+public class Relation
+{
+    [JsonPropertyName("this")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public This? This { get; set; }
+
+    [JsonPropertyName("computedUserset")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public ComputedUserset? ComputedUserset { get; set; }
+
+    [JsonPropertyName("tupleToUserset")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public TupleToUserset? TupleToUserset { get; set; }
+
+    [JsonPropertyName("union")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public Union? Union { get; set; }
+
+    [JsonPropertyName("intersection")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public Intersection? Intersection { get; set; }
+
+    [JsonPropertyName("difference")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public Difference? Difference { get; set; }
+}
+
+
+public class TypeDefinition
+{
+    [JsonPropertyName("type")]
+    public string Type { get; set; }
+
+    [JsonPropertyName("relations")]
+    public IDictionary<string, Relation> Relations { get; set; } = new Dictionary<string, Relation>();
+}
+
+public class AuthorizationModel
+{
+    [JsonPropertyName("id")]
+    public string Id { get; set; }
+
+    [JsonPropertyName("type_definitions")]
+    public List<TypeDefinition> TypeDefinitions { get; set; }
+}
+
+public class AuthorizationModelResponse
+{
+    [JsonPropertyName("authorization_model")]
+    public AuthorizationModel AuthorizationModel { get; set; }
+}
+
