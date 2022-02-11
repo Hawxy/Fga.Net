@@ -50,7 +50,7 @@ internal class SandcastleAuthorizationHandler : AuthorizationHandler<SandcastleR
             var endpoint = httpContext.GetEndpoint();
             if (endpoint is null)
                 return;
-            var attributes = endpoint.Metadata.GetOrderedMetadata<ComputedAuthorizationAttribute>();
+            var attributes = endpoint.Metadata.GetOrderedMetadata<TupleCheckAttribute>();
             // The user is enforcing the sandcastle policy but there's no attributes here, pass through.
             if (attributes.Count == 0)
                 return;
@@ -77,7 +77,7 @@ internal class SandcastleAuthorizationHandler : AuthorizationHandler<SandcastleR
                 results.Add(result.Allowed ?? false);
             }
 
-            if(results.All(x=> x))
+            if(results.All(x => x))
                 context.Succeed(requirement);
         }
     }

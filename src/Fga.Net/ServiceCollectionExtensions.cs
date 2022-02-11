@@ -48,6 +48,8 @@ public static class ServiceCollectionExtensions
     /// <returns>An <see cref="IHttpClientBuilder" /> that can be used to configure the <see cref="FgaClientConfiguration"/>.</returns>
     public static IHttpClientBuilder AddAuth0FgaAuthorizationClient(this IServiceCollection collection, Action<FgaClientConfiguration> configuration)
     {
+        ArgumentNullException.ThrowIfNull(configuration);
+
         collection.AddLazyCache();
         collection.AddScoped<IFgaTokenCache, FgaTokenCache>();
         collection.Configure(configuration);

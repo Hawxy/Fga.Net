@@ -26,5 +26,5 @@ public class FgaAuthorizationDefaults
     /// <summary>
     /// The default authorization policy key for FGA Authorization
     /// </summary>
-    public const string PolicyKey = "Sandcastle";
+    public const string PolicyKey = "Auth0FGA";
 }

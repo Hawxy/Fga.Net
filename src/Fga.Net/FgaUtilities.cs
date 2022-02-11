@@ -33,26 +33,4 @@ public static class FgaUtilities
     /// <returns></returns>
     public static Uri GetAuthorizationUri(string environment) => new(string.Format(FgaConstants.AuthorizationUrl, environment));
 
-    internal static string BuildQueryString(this string request, params (string parameter, string? value)[] queryStrings)
-    {
-        var validQueryStrings = queryStrings.Where(x => x.value is not null).ToList();
-
-        if (!validQueryStrings.Any())
-            return request;
-      
-        var builder = new StringBuilder(request);
-        builder.Append('?');
-        for (var i = 0; i < validQueryStrings.Count; i++)
-        {
-            var (parameter, value) = validQueryStrings[i];
-
-            if (i > 0)
-                builder.Append('&');
-
-            builder.Append($"{WebUtility.UrlEncode(parameter)}={WebUtility.UrlEncode(value)}");
-        }
-
-        return builder.ToString();
-    }
-
 }

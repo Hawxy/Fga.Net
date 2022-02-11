@@ -31,25 +31,43 @@ public class AccessTokenRequest
     /// </summary>
     public readonly string GrantType = "client_credentials";
     /// <summary>
-    /// The ClientId used to authenticate with the FGA API
+    /// The Client Id used to authenticate with the FGA API.
     /// </summary>
     public string ClientId { get; set; } = null!;
     /// <summary>
     /// The Client Secret used to authenticate with the FGA API.
     /// </summary>
     public string ClientSecret { get; set; } = null!;
+    /// <summary>
+    /// The environment this token is being requested for.
+    /// </summary>
     public string Environment { get; set; } = null!;
 
 }
 
+/// <summary>
+/// The access token response.
+/// </summary>
 public record AccessTokenResponse
 {
+    /// <summary>
+    /// The access token used for FGA API access.
+    /// </summary>
     [JsonPropertyName("access_token")]
     public string AccessToken { get; init; } = null!;
+    /// <summary>
+    /// The token's expiry in seconds.
+    /// </summary>
     [JsonPropertyName("expires_in")]
     public double ExpiresIn { get; init; }
+    /// <summary>
+    /// The returned scopes.
+    /// </summary>
     [JsonPropertyName("scope")]
     public string Scope { get; init; } = null!;
+    /// <summary>
+    /// The type of token returned.
+    /// </summary>
     [JsonPropertyName("token_type")]
     public string TokenType { get; init; } = null!;
 }

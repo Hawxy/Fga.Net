@@ -12,7 +12,7 @@ namespace Fga.Example.AspNetCore.Controllers
     {
 
         [HttpGet]
-        [StringComputedAuthorization("anne", "read", "doc:Z")]
+        [StringTupleCheck("anne", "read", "doc:Z")]
         public string GetHardcoded()
         {
             return string.Empty;

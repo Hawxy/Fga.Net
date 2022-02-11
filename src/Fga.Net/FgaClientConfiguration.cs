@@ -18,9 +18,18 @@
 
 namespace Fga.Net;
 
+/// <summary>
+/// FGA Authentication/Authorization configuration
+/// </summary>
 public class FgaClientConfiguration
 {
+    /// <summary>
+    /// The Client Id for your FGA instance
+    /// </summary>
     public string ClientId { get; set; } = null!;
+    /// <summary>
+    /// The Client Secret for your FGA instance
+    /// </summary>
     public string ClientSecret { get; set; } = null!;
 
     /// <summary>

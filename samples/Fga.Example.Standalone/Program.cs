@@ -3,13 +3,17 @@ using Fga.Net.Authentication;
 using Fga.Net.Authorization;
 
 
-var client = FgaAuthorizationClient.Create(FgaAuthenticationClient.Create(), new FgaClientConfiguration()
+var clientId = args[0];
+var clientSecret = args[1];
+var storeId = args[2];
+
+var client = FgaAuthorizationClient.Create(FgaAuthenticationClient.Create(), new FgaClientConfiguration
 {
-    ClientId = args[0],
-    ClientSecret = args[1]
+    ClientId = clientId,
+    ClientSecret = clientSecret
 });
 
-var response = await client.CheckAsync(args[2], new CheckRequestParams()
+var response = await client.CheckAsync(storeId, new CheckRequestParams
 {
     Tuple_key = new TupleKey()
     {
