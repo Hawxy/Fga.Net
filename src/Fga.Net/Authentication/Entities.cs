@@ -20,10 +20,23 @@ using System.Text.Json.Serialization;
 
 namespace Fga.Net.Authentication;
 
+/// <summary>
+/// A FGA access token request
+/// </summary>
 public class AccessTokenRequest
 {
+
+    /// <summary>
+    /// The grant type used to fetch a token. Hardcoded to client credentials.
+    /// </summary>
     public readonly string GrantType = "client_credentials";
+    /// <summary>
+    /// The ClientId used to authenticate with the FGA API
+    /// </summary>
     public string ClientId { get; set; } = null!;
+    /// <summary>
+    /// The Client Secret used to authenticate with the FGA API.
+    /// </summary>
     public string ClientSecret { get; set; } = null!;
     public string Environment { get; set; } = null!;
 
