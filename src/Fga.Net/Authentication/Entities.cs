@@ -39,9 +39,9 @@ public class AccessTokenRequest
     /// </summary>
     public string ClientSecret { get; set; } = null!;
     /// <summary>
-    /// The environment this token is being requested for.
+    /// The Audience this token is being requested for, usually in the format of a URL.
     /// </summary>
-    public string Environment { get; set; } = null!;
+    public string Audience { get; set; } = null!;
 
 }
 

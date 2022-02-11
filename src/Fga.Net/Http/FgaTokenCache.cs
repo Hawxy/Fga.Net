@@ -51,7 +51,7 @@ internal class FgaTokenCache : IFgaTokenCache
             {
                 ClientId = _config.ClientId,
                 ClientSecret = _config.ClientSecret,
-                Environment = _config.Environment
+                Audience = string.Format(FgaConstants.AudienceFormat, _config.Environment)
             });
 
             entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(res!.ExpiresIn).Subtract(TimeSpan.FromMinutes(15));

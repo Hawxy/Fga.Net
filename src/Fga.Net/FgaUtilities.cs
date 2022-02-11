@@ -31,6 +31,6 @@ public static class FgaUtilities
     /// </summary>
     /// <param name="environment">The environment, such as "us1"</param>
     /// <returns></returns>
-    public static Uri GetAuthorizationUri(string environment) => new(string.Format(FgaConstants.AuthorizationUrl, environment));
+    public static Uri GetAuthorizationUri(string environment) => new(string.Format(FgaConstants.AuthorizationUrlFormat, environment));
 
 }

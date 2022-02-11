@@ -63,7 +63,7 @@ public class FgaAuthenticationClient : IFgaAuthenticationClient
             { "grant_type", request.GrantType },
             { "client_id", request.ClientId },
             { "client_secret", request.ClientSecret },
-            { "audience", string.Format(FgaConstants.Audience, request.Environment) }
+            { "audience", request.Audience }
         };
         var content = new FormUrlEncodedContent(dict);
 
