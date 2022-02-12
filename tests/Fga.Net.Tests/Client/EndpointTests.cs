@@ -1,8 +1,5 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Alba;
-using Fga.Net.Authorization;
-using Fga.Net.Tests.Middleware;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
@@ -18,7 +15,6 @@ namespace Fga.Net.Tests.Client
         {
             _host = fixture.AlbaHost;
         }
-
 
         [Fact]
         private async Task GetEndpoints_Return_200()
@@ -57,7 +53,6 @@ namespace Fga.Net.Tests.Client
 
             Assert.NotNull(graph);
             Assert.NotNull(graph.Tree!.Root!.Name);
-            Assert.NotNull(graph.Tree!.Root!.Union!.Nodes1);
 
         }
 
