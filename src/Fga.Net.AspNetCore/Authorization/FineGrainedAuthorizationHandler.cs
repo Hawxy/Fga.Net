@@ -23,7 +23,6 @@ using Microsoft.AspNetCore.Http;
 
 namespace Fga.Net.AspNetCore.Authorization;
 
-// Think about if this should be a 1:1 handler, A IAuthorizationHandler or a requirement that implements its own handler.
 internal class FineGrainedAuthorizationHandler : AuthorizationHandler<FineGrainedAuthorizationRequirement>
 {
     private readonly IFgaAuthorizationClient _client;
