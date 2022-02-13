@@ -57,7 +57,7 @@ public static class ServiceCollectionExtensions
         return collection.AddHttpClient<IFgaAuthorizationClient, FgaAuthorizationClient>((services, client) =>
         {
             var config = services.GetRequiredService<IOptions<FgaClientConfiguration>>();
-            client.BaseAddress = FgaUtilities.GetAuthorizationUri(config.Value.Environment);
+            client.BaseAddress = new Uri(FgaUtilities.GetAuthorizationUrl(config.Value.Environment));
         }).AddHttpMessageHandler<FgaTokenHandler>();
     }
 }

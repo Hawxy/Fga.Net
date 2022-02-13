@@ -16,9 +16,6 @@
  */
 #endregion
 
-using System.Net;
-using System.Text;
-
 namespace Fga.Net;
 
 /// <summary>
@@ -27,10 +24,16 @@ namespace Fga.Net;
 public static class FgaUtilities
 {
     /// <summary>
-    /// Creates a new FGA Authorization <see cref="Uri"/> based on the provided environment
+    /// Creates a FGA authorization URL for the specified environment
     /// </summary>
-    /// <param name="environment">The environment, such as "us1"</param>
-    /// <returns></returns>
-    public static Uri GetAuthorizationUri(string environment) => new(string.Format(FgaConstants.AuthorizationUrlFormat, environment));
+    /// <param name="environment">The environment, such as us1</param>
+    /// <returns>A URL</returns>
+    public static string GetAuthorizationUrl(string environment) => $"https://api.{environment}.fga.dev/";
+    /// <summary>
+    /// Creates a FGA audience URL for the specified environment.
+    /// </summary>
+    /// <param name="environment">The environment, such as us1</param>
+    /// <returns>A URL</returns>
+    public static string GetAudienceUrl(string environment) => $"https://api.{environment}.fga.dev/";
 
 }

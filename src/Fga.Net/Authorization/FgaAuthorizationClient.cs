@@ -39,7 +39,7 @@ public partial class FgaAuthorizationClient
 
         var httpClient = new HttpClient(new FgaTokenHandler(tokenCache))
         {
-            BaseAddress = FgaUtilities.GetAuthorizationUri(configuration.Environment)
+            BaseAddress = new Uri(FgaUtilities.GetAuthorizationUrl(configuration.Environment))
         };
 
         return new FgaAuthorizationClient(httpClient);
