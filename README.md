@@ -3,9 +3,16 @@
 [![Nuget (with prereleases)](https://img.shields.io/nuget/vpre/Fga.Net?label=Fga.Net&style=flat-square)](https://www.nuget.org/packages/Fga.Net)
 [![Nuget (with prereleases)](https://img.shields.io/nuget/vpre/Fga.Net?label=Fga.Net.AspNetCore&style=flat-square)](https://www.nuget.org/packages/Fga.Net.AspNetCore)
 
-Please ensure you have a basic understanding of how FGA works before continuing: https://docs.fga.dev/
+### Packages
+- **Fga.Net**: Provides an auto-generated NSwag client for accessing the FGA API, alongside an authentication client, token caching middleware, and dependency injection extensions.
+
+- **Fga.Net.AspNetCore**: Additionally includes Authorization middleware to support FGA checks as part of a request's lifecycle.
+
+## Getting Started
 
 #### Note: This project is in its early stages and will have breaking changes as FGA matures.
+
+Please ensure you have a basic understanding of how FGA works before continuing: https://docs.fga.dev/
 
 ## ASP.NET Core Setup
 
@@ -84,7 +91,7 @@ If you need to manually perform checks, inject the `IFgaAuthorizationClient` as 
 
 An additional pre-made attribute that allows all tuple values to be hardcoded strings ships with the package (`StringTupleCheckAttribute`). This attrbute is useful for testing and debug purposes, but should not be used in a real application.
 
-## Worker Service / Generic Host setup
+## Worker Service / Generic Host Setup
 
 `Fga.Net` ships with the `AddAuth0FgaAuthenticationClient` and `AddAuth0FgaAuthorizationClient` service collection extensions that handle all required wire-up.
 
