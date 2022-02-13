@@ -11,7 +11,7 @@ var host = Host.CreateDefaultBuilder(args)
             config.ClientSecret = context.Configuration["Auth0Fga:ClientSecret"];
         });
 
-        services.AddTransient<MyService>();
+        services.AddHostedService<MyBackgroundWorker>();
     })
     .Build();
 
