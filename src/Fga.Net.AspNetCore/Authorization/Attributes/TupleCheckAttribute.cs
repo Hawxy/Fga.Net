@@ -21,10 +21,10 @@ using Microsoft.AspNetCore.Http;
 namespace Fga.Net.AspNetCore.Authorization.Attributes;
 
 /// <summary>
-/// An authorization attribute that provides metadata from the current HTTP request.
+/// The base implementation of a FGA authorization attribute that allows authorization decisions to be made from the current HTTP request.
 /// </summary>
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = true)]
-public abstract class ComputedAuthorizationAttribute : Attribute
+public abstract class TupleCheckAttribute : Attribute
 {
     /// <summary>
     /// An entity in the system that can be related to an object.

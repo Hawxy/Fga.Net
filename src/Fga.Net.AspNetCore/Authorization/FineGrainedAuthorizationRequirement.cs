@@ -16,24 +16,15 @@
  */
 #endregion
 
-namespace Fga.Net;
+using Microsoft.AspNetCore.Authorization;
 
-/// <summary>
-/// FGA Authentication/Authorization configuration
-/// </summary>
-public class FgaClientConfiguration
+namespace Fga.Net.AspNetCore.Authorization;
+
+internal class FineGrainedAuthorizationRequirement : IAuthorizationRequirement
 {
-    /// <summary>
-    /// The Client Id for your FGA instance
-    /// </summary>
-    public string ClientId { get; set; } = null!;
-    /// <summary>
-    /// The Client Secret for your FGA instance
-    /// </summary>
-    public string ClientSecret { get; set; } = null!;
-
-    /// <summary>
-    /// Defaults to us1 if not set
-    /// </summary>
-    public string Environment { get; set; } = "us1";
+    public string StoreId { get; }
+    public FineGrainedAuthorizationRequirement(string storeId)
+    {
+        StoreId = storeId;
+    }
 }

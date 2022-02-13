@@ -45,7 +45,7 @@ namespace Fga.Net.Tests.Unit
 
             var col = provider.GetServices<IAuthorizationHandler>();
 
-            Assert.Contains(col, handler => handler.GetType() == typeof(SandcastleAuthorizationHandler));
+            Assert.Contains(col, handler => handler.GetType() == typeof(FineGrainedAuthorizationHandler));
 
             var authClient = provider.GetService<IFgaAuthenticationClient>();
             Assert.NotNull(authClient);
@@ -66,7 +66,7 @@ namespace Fga.Net.Tests.Unit
         {
             var policy = new AuthorizationPolicyBuilder().AddFgaRequirement(string.Empty).Build();
 
-            Assert.Contains(policy.Requirements, requirement => requirement.GetType() == typeof(SandcastleRequirement));
+            Assert.Contains(policy.Requirements, requirement => requirement.GetType() == typeof(FineGrainedAuthorizationRequirement));
         }
 
     }

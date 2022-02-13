@@ -21,3 +21,7 @@ jobs:
     - name: Run build & test
       run: ./build.sh Test
       shell: bash
+      env: 
+        AUTH0FGA__STOREID: ${{ secrets.FGA_STOREID }}
+        AUTH0FGA__CLIENTID: ${{ secrets.FGA_CLIENTID }}
+        AUTH0FGA__CLIENTSECRET: ${{ secrets.FGA_CLIENTSECRET }}

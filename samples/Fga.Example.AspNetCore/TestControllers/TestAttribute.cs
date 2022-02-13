@@ -2,7 +2,7 @@
 
 namespace Fga.Example.AspNetCore.TestControllers
 {
-    public class TestAuthorizationAttribute : ComputedAuthorizationAttribute
+    public class TestAuthorizationAttribute : TupleCheckAttribute
     {
 
         public override ValueTask<string> GetUser(HttpContext context)

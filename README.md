@@ -3,9 +3,16 @@
 [![Nuget (with prereleases)](https://img.shields.io/nuget/vpre/Fga.Net?label=Fga.Net&style=flat-square)](https://www.nuget.org/packages/Fga.Net)
 [![Nuget (with prereleases)](https://img.shields.io/nuget/vpre/Fga.Net?label=Fga.Net.AspNetCore&style=flat-square)](https://www.nuget.org/packages/Fga.Net.AspNetCore)
 
-Please ensure you have a basic understanding of how FGA works before continuing: https://docs.fga.dev/
+### Packages
+- **Fga.Net**: Provides an auto-generated NSwag client for accessing the FGA API, alongside an authentication client, token caching middleware, and dependency injection extensions.
 
-#### Note: This project is an early alpha and is subject to breaking changes without notice.
+- **Fga.Net.AspNetCore**: Additionally includes Authorization middleware to support FGA checks as part of a request's lifecycle.
+
+## Getting Started
+
+#### Note: This project is in its early stages and will have breaking changes as FGA matures.
+
+Please ensure you have a basic understanding of how FGA works before continuing: https://docs.fga.dev/
 
 ## ASP.NET Core Setup
 
@@ -18,25 +25,27 @@ I'm also assuming you have authentication setup within your project, such as [JW
 2. Add your `StoreId`, `ClientId` and `ClientSecret` to your application configuration, ideally via the [dotnet secrets manager](https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-6.0&tabs=windows#enable-secret-storage).
 3. Add the following code to your ASP.NET Core configuration:
 ```cs
-// Registers FgaAuthenticationClient & FgaAuthorizationClient, and the authorization handler
+// Registers FgaAuthenticationClient, FgaAuthorizationClient, and the authorization handler
 builder.Services.AddAuth0Fga(x =>
 {
     x.ClientId = builder.Configuration["Auth0Fga:ClientId"];
     x.ClientSecret = builder.Configuration["Auth0Fga:ClientSecret"];
-    x.StoreId = builder.Configuration["Auth0Fga:StoreId"];
 });
 
 // Register the authorization policy
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy(FgaAuthorizationDefaults.PolicyKey, p => p.RequireAuthenticatedUser().AddFgaRequirement());
+    options.AddPolicy(FgaAuthorizationDefaults.PolicyKey, 
+        p => p
+            .RequireAuthenticatedUser()
+            .AddFgaRequirement(builder.Configuration["Auth0Fga:StoreId"]));
 });
 ```
 
-4. Create an authorization attribute that inherits from `ComputedAuthorizationAttribute`. From here, you can pull metadata you require to perform your tuple checks out of the HTTP request.
+4. Create an attribute that inherits from `TupleCheckAttribute`. From here, you can pull the metadata you require to perform your tuple checks out of the HTTP request.
 For example, an equivalent to the [How To Integrate Within A Framework](https://docs.fga.dev/integration/framework) example would be:
 ```cs
-public class EntityAuthorizationAttribute : ComputedAuthorizationAttribute
+public class EntityAuthorizationAttribute : TupleCheckAttribute
 {
     private readonly string _prefix;
     private readonly string _routeValue;
@@ -46,25 +55,19 @@ public class EntityAuthorizationAttribute : ComputedAuthorizationAttribute
         _routeValue = routeValue;
     }
 
-    public override ValueTask<string> GetUser(HttpContext context)
-    {
-        return ValueTask.FromResult(context.User.Identity!.Name!);
-    }
+    public override ValueTask<string> GetUser(HttpContext context) 
+        => ValueTask.FromResult(context.User.Identity!.Name!);
 
-    public override ValueTask<string> GetRelation(HttpContext context)
-    {
-        return ValueTask.FromResult(context.Request.Method switch
+    public override ValueTask<string> GetRelation(HttpContext context) 
+        => ValueTask.FromResult(context.Request.Method switch 
         {
             "GET" => "viewer",
             "POST" => "writer",
             _ => "owner"
         });
-    }
 
-    public override ValueTask<string> GetObject(HttpContext context)
-    {
-        return ValueTask.FromResult($"{_prefix}:{context.GetRouteValue(_routeValue)}");
-    }
+    public override ValueTask<string> GetObject(HttpContext context) 
+        => ValueTask.FromResult($"{_prefix}:{context.GetRouteValue(_routeValue)}");
 }
 ```
 
@@ -86,30 +89,77 @@ public class EntityAuthorizationAttribute : ComputedAuthorizationAttribute
 
 If you need to manually perform checks, inject the `IFgaAuthorizationClient` as required.
 
-An additional pre-made attribute that allows all tuple values to be hardcoded strings ships with the package (`StringComputedAuthorizationAttribute`). This attrbute is useful for testing and debug purposes, but should not be used in a real application.
+An additional pre-made attribute that allows all tuple values to be hardcoded strings ships with the package (`StringTupleCheckAttribute`). This attrbute is useful for testing and debug purposes, but should not be used in a real application.
 
-## Worker Service / Generic Host setup
-Full docs coming soon.
+## Worker Service / Generic Host Setup
 
-`Fga.Net` ships with the `AddAuth0FgaAuthenticationClient` and `AddAuth0FgaAuthorizationClient` service collection extensions that should be self-explanatory. To use the authorization client, both clients must be registered.
+`Fga.Net` ships with the `AddAuth0FgaAuthenticationClient` and `AddAuth0FgaAuthorizationClient` service collection extensions that handle all required wire-up.
+
+To get started:
+
+1. Install `Fga.Net`
+2. Add your `StoreId`, `ClientId` and `ClientSecret` to your application configuration, ideally via the [dotnet secrets manager](https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-6.0&tabs=windows#enable-secret-storage).
+3. Register the authentication & authorization clients:
+
+```cs
+var host = Host.CreateDefaultBuilder(args)
+    .ConfigureServices((context, services) =>
+    {
+        services.AddAuth0FgaAuthenticationClient();
+        services.AddAuth0FgaAuthorizationClient(config =>
+        {
+            config.ClientId = context.Configuration["Auth0Fga:ClientId"];
+            config.ClientSecret = context.Configuration["Auth0Fga:ClientSecret"];
+        });
+
+        services.AddHostedService<MyBackgroundWorker>();
+    })
+    .Build();
+
+await host.RunAsync();
+```
+
+4. Request the client in your services:
+
+```cs
+public class MyBackgroundWorker : BackgroundService
+{
+    private readonly IFgaAuthorizationClient _authorizationClient;
+
+    public MyBackgroundWorker(IFgaAuthorizationClient authorizationClient)
+    {
+        _authorizationClient = authorizationClient;
+    }
+
+    protected override Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        // Do work with the client
+    }
+}
+```
 
 ## Standalone client setup
 
-Seriously consider if you need to run a standalone client before picking this option.
+Useful for testing. 
+
+I would not recommend a standalone client setup outside of transient lambda scenarios as the `HttpClient` lifetime is not automatically maintained.
 
 1. Install `Fga.Net`
 2. Create the authorization client as below:
 ```cs
-var client = FgaAuthorizationClient.Create(FgaAuthenticationClient.Create(), new FgaClientConfiguration()
+var clientId = args[0];
+var clientSecret = args[1];
+var storeId = args[2];
+
+var client = FgaAuthorizationClient.Create(FgaAuthenticationClient.Create(), new FgaClientConfiguration
 {
-    ClientId = args[0],
-    ClientSecret = args[1],
-    StoreId = args[2]
+    ClientId = clientId,
+    ClientSecret = clientSecret
 });
 
-var response = await client.CheckAsync(new CheckTupleRequest()
+var response = await client.CheckAsync(storeId, new CheckRequestParams
 {
-    TupleKey = new TupleKey()
+    Tuple_key = new TupleKey()
     {
         User = "",
         Relation = "",

@@ -24,7 +24,7 @@
     "application/json"
   ],
   "paths": {
-    "/{store_id}/assertions/{authorization_model_id}": {
+    "/stores/{store_id}/assertions/{authorization_model_id}": {
       "get": {
         "summary": "Read assertions for an authorization model ID",
         "description": "The GET assertions API will return, for a given authorization model id, all the assertions stored for it. An assertion is an object that contains a tuple key, and the expectation of whether a call to the Check API of that tuple key will return true or false. ",
@@ -180,7 +180,7 @@
         ]
       }
     },
-    "/{store_id}/authorization-models": {
+    "/stores/{store_id}/authorization-models": {
       "get": {
         "summary": "Return all the authorization model IDs for a particular store",
         "description": "The GET authorization-models API will return all the IDs of the authorization models for a certain store.\nPath parameter `store_id` is required.\nAuth0 FGA's response will contain an array of all authorization model IDs, sorted in descending order of creation.\n\n## [Limits](https://docs.fga.dev/intro/dashboard#limitations)\n- Each store has a limit of **30** read authorization-models requests per minute (RPM).\n- Each response can contain up to **50** authorization model IDs.\n## Example\nAssume that the store's authorization model has been configured twice.  To get all the IDs of the authorization models that had been created in this store, call GET authorization-models.  The API will return a response that looks like:\n```json\n{\n  \"authorization_model_ids\": [\n      \"1yunpF9DkzXMzm0dHrsCuWsooEV\",\n      \"1yundoHpJHlodgn4EOVar2DhmKp\"\n  ]\n}\n```\nIf there are more authorization model IDs available, the response will contain an extra field `continuation_token`:\n```json\n{\n  \"authorization_model_ids\": [\n      \"1yunpF9DkzXMzm0dHrsCuWsooEV\",\n      \"1yundoHpJHlodgn4EOVar2DhmKp\"\n  ],\n  \"continuation_token\": \"eyJwayI6IkxBVEVTVF9OU0NPTkZJR19hdXRoMHN0b3JlIiwic2siOiIxem1qbXF3MWZLZExTcUoyN01MdTdqTjh0cWgifQ==\"\n}\n```\n",
@@ -337,7 +337,7 @@
         ]
       }
     },
-    "/{store_id}/authorization-models/{id}": {
+    "/stores/{store_id}/authorization-models/{id}": {
       "get": {
         "summary": "Return a particular version of an authorization model",
         "description": "The GET authorization-models by ID API will return a particular version of authorization model that had been configured for a certain store.  \nPath parameter `store_id` and `id` are required.\nThe response will return the authorization model for the particular version.\n\n## [Limits](https://docs.fga.dev/intro/dashboard#limitations)\n- Each store has a limit of **30** read authorization-models requests per minute (RPM).\n## Example\nTo retrieve the authorization model with ID `1yunpF9DkzXMzm0dHrsCuWsooEV` for the store, call the GET authorization-models by ID API with `1yunpF9DkzXMzm0dHrsCuWsooEV` as the `id` path parameter.  The API will return:\n```json\n{\n  \"authorization_model\":{\n    \"id\":\"1yunpF9DkzXMzm0dHrsCuWsooEV\",\n    \"type_definitions\":[\n      {\n        \"type\":\"document\",\n        \"relations\":{\n          \"reader\":{\n            \"union\":{\n              \"child\":[\n                {\n                  \"this\":{}\n                },\n                {\n                  \"computedUserset\":{\n                    \"object\":\"\",\n                    \"relation\":\"writer\"\n                  }\n                }\n              ]\n            }\n          },\n          \"writer\":{\n            \"this\":{}\n          }\n        }\n      }\n    ]\n  }\n}\n```\nIn the above example, there is only 1 type (`document`) with 2 relations (`writer` and `reader`).",
@@ -412,7 +412,7 @@
         ]
       }
     },
-    "/{store_id}/check": {
+    "/stores/{store_id}/check": {
       "post": {
         "summary": "Check whether a user is authorized to access an object",
         "description": "The check API will return whether the user has a certain relationship with an object in a certain store.\nPath parameter `store_id` as well as body parameter `object`, `relation` and `user` are all required.\nThe response will return whether the relationship exists in the field `allowed`.\n\n## [Limits](https://docs.fga.dev/intro/dashboard#limitations)\n- Each store has a limit of **25** check requests per second (RPS).\n## Example\nIn order to check if user `anne@auth0.com` has an owner relationship with object document:2021-budget, a check API call should be fired with the following body\n```json\n{\n  \"tuple_key\": {\n    \"user\": \"anne@auth0.com\"\n    \"relation\": \"owner\"\n    \"object\": \"document:2021-budget\",\n  }\n}\n```\nAuth0 FGA's response will include `{ \"allowed\": true }` if there is a relationship and `{ \"allowed\": false }` if there isn't.",
@@ -489,10 +489,10 @@
         ]
       }
     },
-    "/{store_id}/expand": {
+    "/stores/{store_id}/expand": {
       "post": {
         "summary": "Expand all relationships in userset tree format, and following userset rewrite rules.  Useful to reason about and debug a certain relationship",
-        "description": "The expand API will return all users (including user and userset) that have certain relationship with an object in a certain store.\nThis is different from the `/{store_id}/read` API in that both users and computed references are returned.\nPath parameter `store_id` as well as body parameter `object`, `relation` are all required.\nThe response will return a userset tree whose leaves are the user id and usersets.  Union, intersection and difference operator are located in the intermediate nodes.\n\n## [Limits](https://docs.fga.dev/intro/dashboard#limitations)\n- Each store has a limit of **30** expand requests per minute (RPM).\n## Example\nAssume the following type definition for document:\n```yaml\n  type document\n    relations\n      define reader as self or writer\n      define writer as self\n```\nIn order to expand all users that have `reader` relationship with object `document:2021-budget`, an expand API call should be fired with the following body\n```json\n{\n  \"tuple_key\": {\n    \"object\": \"document:2021-budget\",\n    \"relation\": \"reader\"\n  }\n}\n```\nAuth0 FGA's response will be a userset tree of the users and computed usersets that have read access to the document.\n```json\n{\n  \"tree\":{\n    \"root\":{\n      \"type\":\"document:2021-budget#reader\",\n      \"union\":{\n        \"nodes\":[\n          {\n            \"type\":\"document:2021-budget#reader\",\n            \"leaf\":{\n              \"users\":{\n                \"users\":[\n                  \"bob@auth0.com\"\n                ]\n              }\n            }\n          },\n          {\n            \"type\":\"document:2021-budget#reader\",\n            \"leaf\":{\n              \"computed\":{\n                \"userset\":\"document:2021-budget#writer\"\n              }\n            }\n          }\n        ]\n      }\n    }\n  }\n}\n```\nThe caller can then call expand API for the `writer` relationship for the `document:2021-budget`.",
+        "description": "The expand API will return all users (including user and userset) that have certain relationship with an object in a certain store.\nThis is different from the `/stores/{store_id}/read` API in that both users and computed references are returned.\nPath parameter `store_id` as well as body parameter `object`, `relation` are all required.\nThe response will return a userset tree whose leaves are the user id and usersets.  Union, intersection and difference operator are located in the intermediate nodes.\n\n## [Limits](https://docs.fga.dev/intro/dashboard#limitations)\n- Each store has a limit of **30** expand requests per minute (RPM).\n## Example\nAssume the following type definition for document:\n```yaml\n  type document\n    relations\n      define reader as self or writer\n      define writer as self\n```\nIn order to expand all users that have `reader` relationship with object `document:2021-budget`, an expand API call should be fired with the following body\n```json\n{\n  \"tuple_key\": {\n    \"object\": \"document:2021-budget\",\n    \"relation\": \"reader\"\n  }\n}\n```\nAuth0 FGA's response will be a userset tree of the users and computed usersets that have read access to the document.\n```json\n{\n  \"tree\":{\n    \"root\":{\n      \"type\":\"document:2021-budget#reader\",\n      \"union\":{\n        \"nodes\":[\n          {\n            \"type\":\"document:2021-budget#reader\",\n            \"leaf\":{\n              \"users\":{\n                \"users\":[\n                  \"bob@auth0.com\"\n                ]\n              }\n            }\n          },\n          {\n            \"type\":\"document:2021-budget#reader\",\n            \"leaf\":{\n              \"computed\":{\n                \"userset\":\"document:2021-budget#writer\"\n              }\n            }\n          }\n        ]\n      }\n    }\n  }\n}\n```\nThe caller can then call expand API for the `writer` relationship for the `document:2021-budget`.",
         "operationId": "auth0_fga_Expand",
         "responses": {
           "200": {
@@ -566,10 +566,10 @@
         ]
       }
     },
-    "/{store_id}/read": {
+    "/stores/{store_id}/read": {
       "post": {
         "summary": "Get tuples from the store that matches a query, without following userset rewrite rules",
-        "description": "The POST read API will return the tuples for a certain store that matches a query filter specified in the body. Tuples and type definitions allow Auth0 FGA to determine whether a relationship exists between an object and an user.\nIt is different from the `/{store_id}/expand` API in that only read returns relationship tuples that are stored in the system and satisfy the query.\nIt does not expand or traverse the graph by taking the authorization model into account.Path parameter `store_id` is required.  In the body:\n1. Object is mandatory. An object can be a full object (e.g., `type:object_id`) or type only (e.g., `type:`).\n2. User is mandatory in the case the object is type only.\n## [Limits](https://docs.fga.dev/intro/dashboard#limitations)\n- Each store has a limit of **5** read requests per second (RPS).\n## Examples\n### Query for all objects in a type definition\nTo query for all objects that `bob@auth0.com` has `reader` relationship in the document type definition, call read API with body of \n```json\n{\n \"tuple_key\": {\n     \"user\": \"bob@auth0.com\"\n     \"relation\": \"reader\",\n     \"object\": \"document:\",\n  }\n}\n```\nThe API will return something like \n```json\n{\n  \"tuples\": [\n    {\n      \"key\": {\n        \"user\": \"bob@auth0.com\"\n        \"relation\": \"reader\",\n        \"object\": \"document:2021-budget\",\n      },\n      \"timestamp\": \"2021-10-06T15:32:11.128Z\"\n    }\n  ]\n}\n```\nThis means that `bob@auth0.com` has a `reader` relationship with 1 document `document:2021-budget`.\n### Query for all users with particular relationships for a particular document\nTo query for all users that have `reader` relationship with `document:2021-budget`, call read API with body of \n```json\n{\n  \"tuple_key\": {\n     \"object\": \"document:2021-budget\",\n     \"relation\": \"reader\"\n   }\n}\n```\nThe API will return something like \n```json\n{\n  \"tuples\": [\n    {\n      \"key\": {\n        \"user\": \"bob@auth0.com\"\n        \"relation\": \"reader\",\n        \"object\": \"document:2021-budget\",\n      },\n      \"timestamp\": \"2021-10-06T15:32:11.128Z\"\n    }\n  ]\n}\n```\nThis means that `document:2021-budget` has 1 `reader` (`bob@auth0.com`).  Note that the API will not return writers such as `anne@auth0.com` even when all writers are readers.  This is because only direct relationship are returned for the READ API.\n### Query for all users with all relationships for a particular document\nTo query for all users that have any relationship with `document:2021-budget`, call read API with body of \n```json\n{\n  \"tuple_key\": {\n      \"object\": \"document:2021-budget\"\n   }\n}\n```\nThe API will return something like \n```json\n{\n  \"tuples\": [\n    {\n      \"key\": {\n        \"user\": \"anne@auth0.com\"\n        \"relation\": \"writer\",\n        \"object\": \"document:2021-budget\",\n      },\n      \"timestamp\": \"2021-10-05T13:42:12.356Z\"\n    },\n    {\n      \"key\": {\n        \"user\": \"bob@auth0.com\"\n        \"relation\": \"reader\",\n        \"object\": \"document:2021-budget\",\n      },\n      \"timestamp\": \"2021-10-06T15:32:11.128Z\"\n    }\n  ]\n}\n```\nThis means that `document:2021-budget` has 1 `reader` (`bob@auth0.com`) and 1 `writer` (`anne@auth0.com`).\n",
+        "description": "The POST read API will return the tuples for a certain store that matches a query filter specified in the body. Tuples and type definitions allow Auth0 FGA to determine whether a relationship exists between an object and an user.\nIt is different from the `/stores/{store_id}/expand` API in that only read returns relationship tuples that are stored in the system and satisfy the query.\nIt does not expand or traverse the graph by taking the authorization model into account.Path parameter `store_id` is required.  In the body:\n1. Object is mandatory. An object can be a full object (e.g., `type:object_id`) or type only (e.g., `type:`).\n2. User is mandatory in the case the object is type only.\n## [Limits](https://docs.fga.dev/intro/dashboard#limitations)\n- Each store has a limit of **5** read requests per second (RPS).\n## Examples\n### Query for all objects in a type definition\nTo query for all objects that `bob@auth0.com` has `reader` relationship in the document type definition, call read API with body of\n```json\n{\n \"tuple_key\": {\n     \"user\": \"bob@auth0.com\"\n     \"relation\": \"reader\",\n     \"object\": \"document:\",\n  }\n}\n```\nThe API will return tuples and an optional continuation token, something like\n```json\n{\n  \"tuples\": [\n    {\n      \"key\": {\n        \"user\": \"bob@auth0.com\",\n        \"relation\": \"reader\",\n        \"object\": \"document:2021-budget\"\n      },\n      \"timestamp\": \"2021-10-06T15:32:11.128Z\"\n    }\n  ]\n}\n```\nThis means that `bob@auth0.com` has a `reader` relationship with 1 document `document:2021-budget`.\n### Query for all users with particular relationships for a particular document\nTo query for all users that have `reader` relationship with `document:2021-budget`, call read API with body of \n```json\n{\n  \"tuple_key\": {\n     \"object\": \"document:2021-budget\",\n     \"relation\": \"reader\"\n   }\n}\n```\nThe API will return something like \n```json\n{\n  \"tuples\": [\n    {\n      \"key\": {\n        \"user\": \"bob@auth0.com\"\n        \"relation\": \"reader\",\n        \"object\": \"document:2021-budget\",\n      },\n      \"timestamp\": \"2021-10-06T15:32:11.128Z\"\n    }\n  ]\n}\n```\nThis means that `document:2021-budget` has 1 `reader` (`bob@auth0.com`).  Note that the API will not return writers such as `anne@auth0.com` even when all writers are readers.  This is because only direct relationship are returned for the READ API.\n### Query for all users with all relationships for a particular document\nTo query for all users that have any relationship with `document:2021-budget`, call read API with body of \n```json\n{\n  \"tuple_key\": {\n      \"object\": \"document:2021-budget\"\n   }\n}\n```\nThe API will return something like \n```json\n{\n  \"tuples\": [\n    {\n      \"key\": {\n        \"user\": \"anne@auth0.com\"\n        \"relation\": \"writer\",\n        \"object\": \"document:2021-budget\",\n      },\n      \"timestamp\": \"2021-10-05T13:42:12.356Z\"\n    },\n    {\n      \"key\": {\n        \"user\": \"bob@auth0.com\"\n        \"relation\": \"reader\",\n        \"object\": \"document:2021-budget\",\n      },\n      \"timestamp\": \"2021-10-06T15:32:11.128Z\"\n    }\n  ]\n}\n```\nThis means that `document:2021-budget` has 1 `reader` (`bob@auth0.com`) and 1 `writer` (`anne@auth0.com`).\n",
         "operationId": "auth0_fga_Read",
         "responses": {
           "200": {
@@ -643,7 +643,7 @@
         ]
       }
     },
-    "/{store_id}/read-tuples": {
+    "/stores/{store_id}/read-tuples": {
       "post": {
         "summary": "ReadTuples should only be used for the playground. do not enable it for prod deployments",
         "operationId": "auth0_fga_ReadTuples",
@@ -719,7 +719,7 @@
         ]
       }
     },
-    "/{store_id}/settings": {
+    "/stores/{store_id}/settings": {
       "get": {
         "summary": "Return store settings, including the environment tag",
         "description": "The GET settings API will return the store's settings, including environment tag and an array of Auth0 FGA's allowed 3rd party token issuers. The environment tag is used to differentiate between development, staging, and production environments.  \nPath parameter `store_id` is required.\n## Example\nGET settings API's response looks like:\n```json\n{\n  \"environment\":\"STAGING\",\n  \"token_issuers\":[\n    {\n      \"id\":\"0ujsszwN8NRY24YaXiTIE2VWDTS\",\n      \"issuer_url\":\"https://example.issuer.com\"\n    }\n  ]\n}\n```\nIn the above response, the store is configured as STAGING and there is one allowed 3rd party token issuer `https://example.issuer.com`.",
@@ -863,7 +863,7 @@
         ]
       }
     },
-    "/{store_id}/settings/token-issuers": {
+    "/stores/{store_id}/settings/token-issuers": {
       "post": {
         "summary": "Add 3rd party token issuer for Auth0 FGA read and write operations",
         "description": "The POST token-issuers API will configure system so that tokens issued by the specified 3rd party token issuer will be allowed for Auth0 FGA's read and write operations.  Otherwise, only tokens issued by Auth0 FGA's issuer (such as `sandcastle.us.auth0.com` and `sandcastle-dev.us.auth0.com`) are accepted by Auth0 FGA stores API.  Other tokens issued by providers external to Auth0 FGA will be rejected.\nAn example use case is to have browsers directly calling Auth0 FGA API.\nPath parameter `store_id` as well as body parameter `issuer_url` are all required.\n## Example\nTo allow tokens issued by the 3rd party token issuer `https://example.issuer.com` for Auth0 FGA's read and write operations:\n1. In the 3rd party issuer, configure Auth0 FGA API with the following audience in its issuer configuration: `https://api.us1.fga.dev`.\n2. Call POST token-issuers API with the body: `{\"issuer_url\": \"https://example.issuer.com\"}`\n\nAuth0 FGA's response will be the id that is associated with the token issuer as in:\n```json\n{\n  \"id\":\"0ujsszwN8NRY24YaXiTIE2VWDTS\"\n}\n```\n",
@@ -940,7 +940,7 @@
         ]
       }
     },
-    "/{store_id}/settings/token-issuers/{id}": {
+    "/stores/{store_id}/settings/token-issuers/{id}": {
       "delete": {
         "summary": "Remove 3rd party token issuer for Auth0 FGA read and write operation",
         "description": "The DELETE token-issuers API will remove the 3rd party token issuer as a token issuer that is allowed by Auth0 FGA. The specified id is the id associated with the issuer url that is to be removed.\nPath parameter `store_id` and `id` are all required.\n## Example\nTo remove the 3rd party token issuer `https://example.issuer.com` (which has the id `0ujsszwN8NRY24YaXiTIE2VWDTS`), call DELETE token-issuers API with the path parameter id `0ujsszwN8NRY24YaXiTIE2VWDTS`.",
@@ -1016,7 +1016,7 @@
         ]
       }
     },
-    "/{store_id}/write": {
+    "/stores/{store_id}/write": {
       "post": {
         "summary": "Add or delete tuples from the store",
         "description": "The POST write API will update the tuples for a certain store.  Tuples and type definitions allow Auth0 FGA to determine whether a relationship exists between an object and an user.\nPath parameter `store_id` is required.  In the body, `writes` adds new tuples while `deletes` remove existing tuples.  `lock_tuple` is reserved for future use. \n## [Limits](https://docs.fga.dev/intro/dashboard#limitations)\n- Each write API call allows at most **25** tuples.\n- Each store has a limit of **50000** tuples.\n- Each store has a limit of **1** write requests per second (RPS).\n## Example\n### Adding relationships\nTo add `anne@auth0.com` as a `writer` for `document:2021-budget`, call write API with the following \n```json\n{\n  \"writes\": {\n    \"tuple_keys\": [\n      {\n        \"user\": \"anne@auth0.com\"\n        \"relation\": \"writer\",\n        \"object\": \"document:2021-budget\",\n      }\n    ]\n  }\n}\n```\n### Removing relationships\nTo remove `bob@auth0.com` as a `reader` for `document:2021-budget`, call write API with the following \n```json\n{\n  \"deletes\": {\n    \"tuple_keys\": [\n      {\n        \"user\": \"bob@auth0.com\"\n        \"relation\": \"reader\",\n        \"object\": \"document:2021-budget\",\n      }\n    ]\n  }\n}\n```\n",
@@ -1321,13 +1321,22 @@
           "relation": "reader",
           "object": "document:2021-budget"
         },
-        "authorization_model_id": "1yunpF9DkzXMzm0dHrsCuWsooEV"
+        "authorization_model_id": "1yunpF9DkzXMzm0dHrsCuWsooEV",
+        "page_size": 50,
+        "continuation_token": "eyJwayI6IkxBVEVTVF9OU0NPTkZJR19hdXRoMHN0b3JlIiwic2siOiIxem1qbXF3MWZLZExTcUoyN01MdTdqTjh0cWgifQ=="
       },
       "properties": {
         "tuple_key": {
           "$ref": "#/definitions/TupleKey"
         },
         "authorization_model_id": {
+          "type": "string"
+        },
+        "page_size": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "continuation_token": {
           "type": "string"
         }
       }
@@ -1352,6 +1361,9 @@
           "items": {
             "$ref": "#/definitions/Tuple"
           }
+        },
+        "continuation_token": {
+          "type": "string"
         }
       }
     },
@@ -1476,7 +1488,7 @@
         },
         "relation": {
           "type": "string",
-          "maxLength": 256
+          "maxLength": 50
         },
         "user": {
           "type": "string",

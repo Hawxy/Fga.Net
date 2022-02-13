@@ -20,23 +20,54 @@ using System.Text.Json.Serialization;
 
 namespace Fga.Net.Authentication;
 
+/// <summary>
+/// A FGA access token request
+/// </summary>
 public class AccessTokenRequest
 {
+
+    /// <summary>
+    /// The grant type used to fetch a token. Hardcoded to client credentials.
+    /// </summary>
     public readonly string GrantType = "client_credentials";
+    /// <summary>
+    /// The Client Id used to authenticate with the FGA API.
+    /// </summary>
     public string ClientId { get; set; } = null!;
+    /// <summary>
+    /// The Client Secret used to authenticate with the FGA API.
+    /// </summary>
     public string ClientSecret { get; set; } = null!;
-    public string Environment { get; set; } = null!;
+    /// <summary>
+    /// The Audience this token is being requested for, usually in the format of a URL.
+    /// </summary>
+    public string Audience { get; set; } = null!;
 
 }
 
+/// <summary>
+/// The access token response.
+/// </summary>
 public record AccessTokenResponse
 {
+    /// <summary>
+    /// The access token used for FGA API access.
+    /// </summary>
     [JsonPropertyName("access_token")]
     public string AccessToken { get; init; } = null!;
+    /// <summary>
+    /// The token's expiry in seconds.
+    /// </summary>
     [JsonPropertyName("expires_in")]
     public double ExpiresIn { get; init; }
+    /// <summary>
+    /// The returned scopes.
+    /// </summary>
     [JsonPropertyName("scope")]
     public string Scope { get; init; } = null!;
+    /// <summary>
+    /// The type of token returned.
+    /// </summary>
     [JsonPropertyName("token_type")]
     public string TokenType { get; init; } = null!;
 }

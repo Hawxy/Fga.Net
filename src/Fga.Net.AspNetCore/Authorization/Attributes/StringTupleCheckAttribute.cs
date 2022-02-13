@@ -21,21 +21,21 @@ using Microsoft.AspNetCore.Http;
 namespace Fga.Net.AspNetCore.Authorization.Attributes;
 
 /// <summary>
-/// A simple implementation of <see cref="ComputedAuthorizationAttribute"/> that only accepts strings.
+/// A simple implementation of <see cref="TupleCheckAttribute"/> that only accepts strings.
 /// Useful for debugging and testing purposes. Do not use in a real application
 /// </summary>
-public class StringComputedAuthorizationAttribute : ComputedAuthorizationAttribute
+public class StringTupleCheckAttribute : TupleCheckAttribute
 {
     private readonly string _user;
     private readonly string _relation;
     private readonly string _object;
     /// <summary>
-    /// Constructs a new <see cref="StringComputedAuthorizationAttribute"/>
+    /// Constructs a new <see cref="StringTupleCheckAttribute"/>
     /// </summary>
     /// <param name="user"></param>
     /// <param name="relation"></param>
     /// <param name="object"></param>
-    public StringComputedAuthorizationAttribute(string user, string relation, string @object)
+    public StringTupleCheckAttribute(string user, string relation, string @object)
     {
         _user = user;
         _relation = relation;

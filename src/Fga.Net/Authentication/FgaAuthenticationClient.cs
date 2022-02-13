@@ -27,6 +27,11 @@ public class FgaAuthenticationClient : IFgaAuthenticationClient
     private readonly bool _isInternalHttpClient;
 
 
+    /// <summary>
+    /// Primary constructor used internally for <see cref="IHttpClientFactory"/> integration.
+    /// See <see cref="Create"/> if you want a standalone client.
+    /// </summary>
+    /// <param name="client"></param>
     public FgaAuthenticationClient(HttpClient client)
     {
         _httpClient = client;
@@ -38,6 +43,12 @@ public class FgaAuthenticationClient : IFgaAuthenticationClient
         _isInternalHttpClient = isInternalHttp;
     }
 
+    /// <summary>
+    /// Creates a new FGA authentication client. Sets the authentication URL automatically.
+    /// Optionally provide a HttpClient if you wish to maintain the lifetime yourself.
+    /// </summary>
+    /// <param name="client">A optional HttpClient, if none is provided one will be created.</param>
+    /// <returns><see cref="FgaAuthenticationClient"/></returns>
     public static FgaAuthenticationClient Create(HttpClient? client = null)
     {
         var httpClient = client ?? new HttpClient();
@@ -52,7 +63,7 @@ public class FgaAuthenticationClient : IFgaAuthenticationClient
             { "grant_type", request.GrantType },
             { "client_id", request.ClientId },
             { "client_secret", request.ClientSecret },
-            { "audience", string.Format(FgaConstants.Audience, request.Environment) }
+            { "audience", request.Audience }
         };
         var content = new FormUrlEncodedContent(dict);
 
