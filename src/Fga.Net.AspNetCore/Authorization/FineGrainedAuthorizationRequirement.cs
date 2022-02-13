@@ -16,9 +16,15 @@
  */
 #endregion
 
-namespace Fga.Net;
+using Microsoft.AspNetCore.Authorization;
 
-internal static class FgaConstants
+namespace Fga.Net.AspNetCore.Authorization;
+
+internal class FineGrainedAuthorizationRequirement : IAuthorizationRequirement
 {
-    public static readonly string AuthenticationUrl = "https://fga.us.auth0.com/";
+    public string StoreId { get; }
+    public FineGrainedAuthorizationRequirement(string storeId)
+    {
+        StoreId = storeId;
+    }
 }

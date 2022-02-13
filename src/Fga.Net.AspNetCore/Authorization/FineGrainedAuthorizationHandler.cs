@@ -23,27 +23,18 @@ using Microsoft.AspNetCore.Http;
 
 namespace Fga.Net.AspNetCore.Authorization;
 
-
-internal class SandcastleRequirement : IAuthorizationRequirement
-{
-    public string StoreId { get; }
-    public SandcastleRequirement(string storeId)
-    {
-        StoreId = storeId;
-    }
-}
 // Think about if this should be a 1:1 handler, A IAuthorizationHandler or a requirement that implements its own handler.
-internal class SandcastleAuthorizationHandler : AuthorizationHandler<SandcastleRequirement>
+internal class FineGrainedAuthorizationHandler : AuthorizationHandler<FineGrainedAuthorizationRequirement>
 {
     private readonly IFgaAuthorizationClient _client;
 
-    public SandcastleAuthorizationHandler(IFgaAuthorizationClient client)
+    public FineGrainedAuthorizationHandler(IFgaAuthorizationClient client)
     {
         _client = client;
     }
 
 
-    protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, SandcastleRequirement requirement)
+    protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, FineGrainedAuthorizationRequirement requirement)
     {
         if (context.Resource is HttpContext httpContext)
         {
@@ -72,7 +63,7 @@ internal class SandcastleAuthorizationHandler : AuthorizationHandler<SandcastleR
                         Relation = relation,
                         Object = @object
                     }
-                });
+                }, httpContext.RequestAborted);
 
                 results.Add(result.Allowed ?? false);
             }

@@ -30,7 +30,7 @@ namespace Fga.Net.AspNetCore;
 public static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Adds and configures an <see cref="SandcastleAuthorizationHandler"/> along with a <see cref="FgaAuthenticationClient"/> and <see cref="FgaAuthorizationClient"/>
+    /// Adds and configures an <see cref="FineGrainedAuthorizationHandler"/> along with a <see cref="FgaAuthenticationClient"/> and <see cref="FgaAuthorizationClient"/>
     /// </summary>
     /// <param name="collection">The service collection</param>
     /// <param name="config">The delegate for the <see cref="FgaClientConfiguration"/> that will be used to configure the <see cref="FgaAuthorizationClient"/></param>
@@ -41,20 +41,20 @@ public static class ServiceCollectionExtensions
 
         collection.AddAuth0FgaAuthenticationClient();
         collection.AddAuth0FgaAuthorizationClient(config);
-        collection.AddScoped<IAuthorizationHandler, SandcastleAuthorizationHandler>();
+        collection.AddScoped<IAuthorizationHandler, FineGrainedAuthorizationHandler>();
         return collection;
     }
 
     /// <summary>
-    /// Adds an FGA Authorization requirement to the given policy.
+    /// Adds a <see cref="FineGrainedAuthorizationRequirement"/> to the given policy.
     /// </summary>
     /// <param name="builder">The Authorization Policy Builder to configure</param>
-    /// <param name="storeId"></param>
+    /// <param name="storeId">The store ID this requirement should check against</param>
     /// <returns>The authorization policy builder that is being configured</returns>
     public static AuthorizationPolicyBuilder AddFgaRequirement(this AuthorizationPolicyBuilder builder, string storeId)
     {
         ArgumentNullException.ThrowIfNull(storeId);
 
-        return builder.AddRequirements(new SandcastleRequirement(storeId));
+        return builder.AddRequirements(new FineGrainedAuthorizationRequirement(storeId));
     }
 }
