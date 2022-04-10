@@ -7,26 +7,14 @@
 
   <PropertyGroup>
     <PackageId>Fga.Net</PackageId>
-    <Description>Auth0 Fine Grained Authorization for .NET. This package includes the Authentication + Authorization client and DI collection extensions.</Description>
+    <Description>Auth0 Fine Grained Authorization for .NET. This package includes DI collection extensions for the FGA Client.</Description>
     <PackageTags>fga,auth0,sandcastle</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="LazyCache.AspNetCore" Version="2.4.0" />
+    <PackageReference Include="Auth0.Fga" Version="0.2.4" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
     <PackageReference Include="DotNet.ReproducibleBuilds" Version="1.1.1" PrivateAssets="All" />
-    <PackageReference Include="NSwag.ApiDescription.Client" Version="13.15.9">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <OpenApiReference Include="service.swagger.json">
-      <Namespace>Fga.Net.Authorization</Namespace>
-      <ClassName>FgaAuthorizationClient</ClassName>
-      <Options>/GenerateNullableReferenceTypes:true /JsonLibrary:SystemTextJson /GenerateClientInterfaces:true /UseBaseUrl:false /generateOptionalParameters:true</Options>
-    </OpenApiReference>
   </ItemGroup>
 
   <Import Project="../../Package.Build.props" />

@@ -22,9 +22,4 @@ namespace Fga.Net.AspNetCore.Authorization;
 
 internal class FineGrainedAuthorizationRequirement : IAuthorizationRequirement
 {
-    public string StoreId { get; }
-    public FineGrainedAuthorizationRequirement(string storeId)
-    {
-        StoreId = storeId;
-    }
 }

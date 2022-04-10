@@ -16,8 +16,9 @@
  */
 #endregion
 
+using Auth0.Fga.Api;
+using Auth0.Fga.Model;
 using Fga.Net.AspNetCore.Authorization.Attributes;
-using Fga.Net.Authorization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 
@@ -25,9 +26,9 @@ namespace Fga.Net.AspNetCore.Authorization;
 
 internal class FineGrainedAuthorizationHandler : AuthorizationHandler<FineGrainedAuthorizationRequirement>
 {
-    private readonly IFgaAuthorizationClient _client;
+    private readonly Auth0FgaApi _client;
 
-    public FineGrainedAuthorizationHandler(IFgaAuthorizationClient client)
+    public FineGrainedAuthorizationHandler(Auth0FgaApi client)
     {
         _client = client;
     }
@@ -54,9 +55,9 @@ internal class FineGrainedAuthorizationHandler : AuthorizationHandler<FineGraine
                 if (string.IsNullOrEmpty(user) || string.IsNullOrEmpty(relation) || string.IsNullOrEmpty(@object))
                     return;
                 
-                var result = await _client.CheckAsync(requirement.StoreId, new CheckRequestParams()
+                var result = await _client.Check(new CheckRequestParams()
                 {
-                    Tuple_key = new TupleKey
+                    TupleKey = new TupleKey
                     {
                         User = user,
                         Relation = relation,
@@ -64,7 +65,7 @@ internal class FineGrainedAuthorizationHandler : AuthorizationHandler<FineGraine
                     }
                 }, httpContext.RequestAborted);
 
-                results.Add(result.Allowed ?? false);
+                results.Add(result.Allowed);
             }
 
             if(results.All(x => x))
