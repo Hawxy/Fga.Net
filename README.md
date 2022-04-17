@@ -1,10 +1,10 @@
 # Auth0 FGA for .NET & ASP.NET Core
 
-[![Nuget (with prereleases)](https://img.shields.io/nuget/vpre/Fga.Net?label=Fga.Net&style=flat-square)](https://www.nuget.org/packages/Fga.Net)
+[![Nuget (with prereleases)](https://img.shields.io/nuget/vpre/Fga.Net.DependencyInjection?label=Fga.Net.DependencyInjection&style=flat-square)](https://www.nuget.org/packages/Fga.Net.DependencyInjection)
 [![Nuget (with prereleases)](https://img.shields.io/nuget/vpre/Fga.Net?label=Fga.Net.AspNetCore&style=flat-square)](https://www.nuget.org/packages/Fga.Net.AspNetCore)
 
 ### Packages
-- **Fga.Net**: Provides dependency injection extensions over Auth0.Fga
+- **Fga.Net.DependencyInjection**: Provides dependency injection extensions for Auth0.Fga
 
 - **Fga.Net.AspNetCore**: Additionally includes Authorization middleware to support FGA checks as part of a request's lifecycle.
 
@@ -97,7 +97,7 @@ public class EntityAuthorizationAttribute : TupleCheckAttribute
 
 If you need to manually perform checks, inject the `Auth0FgaApi` as required.
 
-An additional pre-made attribute that allows all tuple values to be hardcoded strings ships with the package (`StringTupleCheckAttribute`). This attrbute is useful for testing and debug purposes, but should not be used in a real application.
+An additional pre-made attribute that allows all tuple values to be hardcoded strings ships with the package (`StringTupleCheckAttribute`). This attribute is useful for testing and debug purposes, but should not be used in a real application.
 
 ## Worker Service / Generic Host Setup
 
