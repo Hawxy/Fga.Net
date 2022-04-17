@@ -12,6 +12,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Fga.Net\Fga.Net.csproj" />
+    <ProjectReference Include="..\..\src\Fga.Net\Fga.Net.DependencyInjection.csproj" />
   </ItemGroup>
 </Project>

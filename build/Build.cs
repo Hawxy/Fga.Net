@@ -69,7 +69,7 @@ class Build : NukeBuild
         .Executes(() =>
         {
             DotNetPack(_ => _
-                .SetProject(Solution.Fga_Net)
+                .SetProject(Solution.Fga_Net_DependencyInjection)
                 .SetConfiguration("Release")
                 .EnableContinuousIntegrationBuild()
                 .SetOutputDirectory(ArtifactsDirectory));

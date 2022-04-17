@@ -2,6 +2,7 @@
 
 namespace Fga.Example.AspNetCore;
 
+//Checks against a value in the route.
 public class EntityAuthorizationAttribute : TupleCheckAttribute
 {
     private readonly string _prefix;
@@ -27,6 +28,7 @@ public class EntityAuthorizationAttribute : TupleCheckAttribute
         => ValueTask.FromResult($"{_prefix}:{context.GetRouteValue(_routeValue)}");
 }
 
+// Checks against a single entity sharing a common interface.
 public class InterfaceAuthorizationAttribute : TupleCheckAttribute
 {
     private readonly string _prefix;

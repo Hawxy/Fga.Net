@@ -19,7 +19,7 @@
 using Auth0.Fga.Api;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Fga.Net;
+namespace Fga.Net.DependencyInjection;
 
 /// <summary>
 /// Extensions for registering Fga features to a .NET environment.

@@ -2,6 +2,7 @@
 using Auth0.Fga.Api;
 using Fga.Net.AspNetCore;
 using Fga.Net.AspNetCore.Authorization;
+using Fga.Net.DependencyInjection;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;

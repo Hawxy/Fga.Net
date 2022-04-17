@@ -18,7 +18,7 @@
 
 using Auth0.Fga.Configuration;
 
-namespace Fga.Net;
+namespace Fga.Net.DependencyInjection;
 
 /// <summary>
 /// FGA Authentication/Authorization configuration

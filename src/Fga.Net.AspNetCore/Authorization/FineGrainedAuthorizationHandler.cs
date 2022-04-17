@@ -42,7 +42,7 @@ internal class FineGrainedAuthorizationHandler : AuthorizationHandler<FineGraine
             if (endpoint is null)
                 return;
             var attributes = endpoint.Metadata.GetOrderedMetadata<TupleCheckAttribute>();
-            // The user is enforcing the sandcastle policy but there's no attributes here, pass through.
+            // The user is enforcing the fga policy but there's no attributes here.
             if (attributes.Count == 0)
                 return;
             var results = new List<bool>();

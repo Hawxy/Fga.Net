@@ -1,8 +1,7 @@
 ﻿using Auth0.Fga.Api;
-using Auth0.Fga.Configuration;
 using Microsoft.Extensions.Options;
 
-namespace Fga.Net
+namespace Fga.Net.DependencyInjection
 {
     internal class InjectableAuth0FgaApi : Auth0FgaApi
     {
