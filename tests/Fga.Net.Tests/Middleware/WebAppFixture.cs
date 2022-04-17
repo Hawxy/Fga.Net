@@ -39,7 +39,8 @@ public class WebAppFixture : IAsyncLifetime
 
     public async Task DisposeAsync()
     {
-        await AlbaHost.DisposeAsync();
+        if (AlbaHost is not null)
+            await AlbaHost.DisposeAsync();
     }
 }
 
