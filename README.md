@@ -1,10 +1,10 @@
 # Auth0 FGA for .NET & ASP.NET Core
 
-[![Nuget (with prereleases)](https://img.shields.io/nuget/vpre/Fga.Net?label=Fga.Net&style=flat-square)](https://www.nuget.org/packages/Fga.Net)
+[![Nuget (with prereleases)](https://img.shields.io/nuget/vpre/Fga.Net.DependencyInjection?label=Fga.Net.DependencyInjection&style=flat-square)](https://www.nuget.org/packages/Fga.Net.DependencyInjection)
 [![Nuget (with prereleases)](https://img.shields.io/nuget/vpre/Fga.Net?label=Fga.Net.AspNetCore&style=flat-square)](https://www.nuget.org/packages/Fga.Net.AspNetCore)
 
 ### Packages
-- **Fga.Net**: Provides an auto-generated NSwag client for accessing the FGA API, alongside an authentication client, token caching middleware, and dependency injection extensions.
+- **Fga.Net.DependencyInjection**: Provides dependency injection extensions for Auth0.Fga
 
 - **Fga.Net.AspNetCore**: Additionally includes Authorization middleware to support FGA checks as part of a request's lifecycle.
 
@@ -25,11 +25,12 @@ I'm also assuming you have authentication setup within your project, such as [JW
 2. Add your `StoreId`, `ClientId` and `ClientSecret` to your application configuration, ideally via the [dotnet secrets manager](https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-6.0&tabs=windows#enable-secret-storage).
 3. Add the following code to your ASP.NET Core configuration:
 ```cs
-// Registers FgaAuthenticationClient, FgaAuthorizationClient, and the authorization handler
+// Registers the Auth0FgaApi client
 builder.Services.AddAuth0Fga(x =>
 {
     x.ClientId = builder.Configuration["Auth0Fga:ClientId"];
     x.ClientSecret = builder.Configuration["Auth0Fga:ClientSecret"];
+    x.StoreId = builder.Configuration["Auth0Fga:StoreId"];
 });
 
 // Register the authorization policy
@@ -38,7 +39,7 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy(FgaAuthorizationDefaults.PolicyKey, 
         p => p
             .RequireAuthenticatedUser()
-            .AddFgaRequirement(builder.Configuration["Auth0Fga:StoreId"]));
+            .AddFgaRequirement());
 });
 ```
 
@@ -73,6 +74,7 @@ public class EntityAuthorizationAttribute : TupleCheckAttribute
 
 5. Apply the `Authorize` and `EntityAuthorization` attributes to your controller(s):
 ```cs
+    // Traditional Controllers
     [ApiController]
     [Route("[controller]")]
     [Authorize(FgaAuthorizationDefaults.PolicyKey)]
@@ -85,31 +87,37 @@ public class EntityAuthorizationAttribute : TupleCheckAttribute
             return documentId;
         }
     }
+
+    // Minimal APIs
+    app.MapGet("/viewminimal/{documentId}",
+    [Authorize(FgaAuthorizationDefaults.PolicyKey)] 
+    [EntityAuthorization("doc", "documentId")]
+    (documentId) => Task.FromResult(documentId));
 ```
 
-If you need to manually perform checks, inject the `IFgaAuthorizationClient` as required.
+If you need to manually perform checks, inject the `Auth0FgaApi` as required.
 
-An additional pre-made attribute that allows all tuple values to be hardcoded strings ships with the package (`StringTupleCheckAttribute`). This attrbute is useful for testing and debug purposes, but should not be used in a real application.
+An additional pre-made attribute that allows all tuple values to be hardcoded strings ships with the package (`StringTupleCheckAttribute`). This attribute is useful for testing and debug purposes, but should not be used in a real application.
 
 ## Worker Service / Generic Host Setup
 
-`Fga.Net` ships with the `AddAuth0FgaAuthenticationClient` and `AddAuth0FgaAuthorizationClient` service collection extensions that handle all required wire-up.
+`Fga.Net` ships with the `AddAuth0Fga` service collection extension that handles all required wire-up.
 
 To get started:
 
 1. Install `Fga.Net`
 2. Add your `StoreId`, `ClientId` and `ClientSecret` to your application configuration, ideally via the [dotnet secrets manager](https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-6.0&tabs=windows#enable-secret-storage).
-3. Register the authentication & authorization clients:
+3. Register the authorization client:
 
 ```cs
 var host = Host.CreateDefaultBuilder(args)
     .ConfigureServices((context, services) =>
     {
-        services.AddAuth0FgaAuthenticationClient();
-        services.AddAuth0FgaAuthorizationClient(config =>
+        services.AddAuth0Fga(config =>
         {
             config.ClientId = context.Configuration["Auth0Fga:ClientId"];
             config.ClientSecret = context.Configuration["Auth0Fga:ClientSecret"];
+            config.StoreId = context.Configuration["Auth0Fga:StoreId"];
         });
 
         services.AddHostedService<MyBackgroundWorker>();
@@ -124,9 +132,9 @@ await host.RunAsync();
 ```cs
 public class MyBackgroundWorker : BackgroundService
 {
-    private readonly IFgaAuthorizationClient _authorizationClient;
+    private readonly Auth0FgaApi _authorizationClient;
 
-    public MyBackgroundWorker(IFgaAuthorizationClient authorizationClient)
+    public MyBackgroundWorker(Auth0FgaApi authorizationClient)
     {
         _authorizationClient = authorizationClient;
     }
@@ -140,39 +148,7 @@ public class MyBackgroundWorker : BackgroundService
 
 ## Standalone client setup
 
-Useful for testing. 
-
-I would not recommend a standalone client setup outside of transient lambda scenarios as the `HttpClient` lifetime is not automatically maintained.
-
-1. Install `Fga.Net`
-2. Create the authorization client as below:
-```cs
-var clientId = args[0];
-var clientSecret = args[1];
-var storeId = args[2];
-
-var client = FgaAuthorizationClient.Create(FgaAuthenticationClient.Create(), new FgaClientConfiguration
-{
-    ClientId = clientId,
-    ClientSecret = clientSecret
-});
-
-var response = await client.CheckAsync(storeId, new CheckRequestParams
-{
-    Tuple_key = new TupleKey()
-    {
-        User = "",
-        Relation = "",
-        Object = ""
-    }
-});
-```
-
-## Internal Cache
-
-The `FgaTokenCache` will cache the FGA authorization token until 15 minutes before expiry. This is not currently customizable.
-
-This cache is automatically enabled if you use any of the DI extensions, as well as `FgaAuthorizationClient.Create`.
+See the [Auth0.Fga docs](https://github.com/auth0-lab/fga-dotnet-sdk)
 
 ## Disclaimer
 

@@ -16,7 +16,8 @@
  */
 #endregion
 
-using Fga.Net.Authorization;
+using Auth0.Fga.Api;
+using Auth0.Fga.Model;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Fga.Net.AspNetCore.Controllers;
@@ -26,12 +27,12 @@ namespace Fga.Net.AspNetCore.Controllers;
 /// </summary>
 public class FgaControllerBase : ControllerBase
 {
-    private readonly IFgaAuthorizationClient _client;
+    private readonly Auth0FgaApi _client;
     /// <summary>
     /// 
     /// </summary>
     /// <param name="client"></param>
-    public FgaControllerBase(IFgaAuthorizationClient client)
+    public FgaControllerBase(Auth0FgaApi client)
     {
         _client = client;
     }
@@ -39,22 +40,22 @@ public class FgaControllerBase : ControllerBase
     /// <summary>
     /// 
     /// </summary>
-    /// <param name="storeId"></param>
     /// <param name="user"></param>
     /// <param name="relation"></param>
     /// <param name="object"></param>
+    /// <param name="ct"></param>
     /// <returns></returns>
-    public async Task<bool> Check(string storeId, string user, string relation, string @object)
+    public async Task<bool> Check(string user, string relation, string @object, CancellationToken ct)
     {
-        var checkRes = await _client.CheckAsync(storeId, new CheckRequestParams()
+        var checkRes = await _client.Check(new CheckRequestParams()
         {
-            Tuple_key = new TupleKey
+            TupleKey = new TupleKey
             {
                 User = user,
                 Relation = relation,
                 Object = @object
             }
-        });
-        return checkRes.Allowed ?? false;
+        }, ct);
+        return checkRes.Allowed;
     }
 }

@@ -1,8 +1,8 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Alba;
-using Fga.Net.Authorization;
-using Microsoft.Extensions.Configuration;
+using Auth0.Fga.Api;
+using Auth0.Fga.Model;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
@@ -18,43 +18,40 @@ namespace Fga.Net.Tests.Client
             _host = fixture.AlbaHost;
         }
 
-        [Fact]
+        [Fact()]
         private async Task GetEndpoints_Return_200()
         {
             using var scope = _host.Services.CreateScope();
-            var client = scope.ServiceProvider.GetRequiredService<IFgaAuthorizationClient>();
-            var storeId = scope.ServiceProvider.GetRequiredService<IConfiguration>()["Auth0Fga:StoreId"];
-            var modelIds = await client.ReadAuthorizationModelsAsync(storeId);
+            var client = scope.ServiceProvider.GetRequiredService<Auth0FgaApi>();
+            var modelIds = await client.ReadAuthorizationModels();
 
             Assert.NotNull(modelIds);
-            Assert.NotNull(modelIds.Authorization_model_ids);
-            Assert.True(modelIds.Authorization_model_ids?.Count > 0);
+            Assert.NotNull(modelIds.AuthorizationModelIds);
+            Assert.True(modelIds.AuthorizationModelIds?.Count > 0);
 
-            var modelId = modelIds.Authorization_model_ids?.First()!;
-            var assertions = await client.ReadAssertionsAsync(storeId, modelId);
+            var modelId = modelIds.AuthorizationModelIds?.First()!;
+            var assertions = await client.ReadAssertions(modelId);
 
             Assert.NotNull(assertions);
             Assert.True(assertions.Assertions?.Count > 0);
-            var assertion = assertions.Assertions!.First().Tuple_key;
+            var assertion = assertions.Assertions!.First().TupleKey;
 
             Assert.NotEmpty(assertion.Object!);
             Assert.NotEmpty(assertion.Relation!);
             Assert.NotEmpty(assertion.User!);
-
-            /* Disabled due to this endpoint returning 400 when no settings
-            var settings = await client.ReadSettingsAsync(storeId);
-            Assert.NotNull(settings);
-            Assert.True(settings.Environment == Environment.DEVELOPMENT);*/
-
-
-            var graph = await client.ExpandAsync(storeId, new ExpandRequestParams()
+            
+            var graph = await client.Expand(new ExpandRequestParams()
             {
-                Authorization_model_id = modelId,
-                Tuple_key = assertion
+                AuthorizationModelId = modelId,
+                TupleKey = assertion
             });
 
-            Assert.NotNull(graph);
+            Assert.NotNull(graph.Tree);
             Assert.NotNull(graph.Tree!.Root!.Name);
+
+            var watch = await client.ReadChanges();
+            Assert.NotNull(watch);
+            
 
         }
 

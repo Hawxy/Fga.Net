@@ -1,8 +1,8 @@
-﻿using Fga.Net.AspNetCore;
+﻿using System;
+using Auth0.Fga.Api;
+using Fga.Net.AspNetCore;
 using Fga.Net.AspNetCore.Authorization;
-using Fga.Net.Authentication;
-using Fga.Net.Authorization;
-using Fga.Net.Http;
+using Fga.Net.DependencyInjection;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
@@ -16,22 +16,18 @@ namespace Fga.Net.Tests.Unit
         {
             var collection = new ServiceCollection();
 
-            collection.AddAuth0FgaAuthorizationClient(x => { });
-            collection.AddAuth0FgaAuthenticationClient();
+            collection.AddAuth0FgaClient(x =>
+            {
+                x.StoreId = Guid.NewGuid().ToString();
+                x.ClientId = Guid.NewGuid().ToString();
+                x.ClientSecret = Guid.NewGuid().ToString();
+            });
 
             var provider = collection.BuildServiceProvider();
 
-            var authClient = provider.GetService<IFgaAuthenticationClient>();
+            var authClient = provider.GetService<Auth0FgaApi>();
             Assert.NotNull(authClient);
-            Assert.IsType<FgaAuthenticationClient>(authClient);
-
-            var authorizationClient = provider.GetService<IFgaAuthorizationClient>();
-            Assert.NotNull(authorizationClient);
-            Assert.IsType<FgaAuthorizationClient>(authorizationClient);
-
-            var tokenHandler = provider.GetService<FgaTokenHandler>();
-
-            Assert.NotNull(tokenHandler);
+            Assert.IsType<InjectableAuth0FgaApi>(authClient);
         }
 
         [Fact]
@@ -39,7 +35,12 @@ namespace Fga.Net.Tests.Unit
         {
             var collection = new ServiceCollection();
 
-            collection.AddAuth0Fga(x => { });
+            collection.AddAuth0Fga(x =>
+            {
+                x.StoreId = Guid.NewGuid().ToString();
+                x.ClientId = Guid.NewGuid().ToString();
+                x.ClientSecret = Guid.NewGuid().ToString();
+            });
 
             var provider = collection.BuildServiceProvider();
 
@@ -47,24 +48,16 @@ namespace Fga.Net.Tests.Unit
 
             Assert.Contains(col, handler => handler.GetType() == typeof(FineGrainedAuthorizationHandler));
 
-            var authClient = provider.GetService<IFgaAuthenticationClient>();
+            var authClient = provider.GetService<Auth0FgaApi>();
             Assert.NotNull(authClient);
-            Assert.IsType<FgaAuthenticationClient>(authClient);
-
-            var authorizationClient = provider.GetService<IFgaAuthorizationClient>();
-            Assert.NotNull(authorizationClient);
-            Assert.IsType<FgaAuthorizationClient>(authorizationClient);
-
-            var tokenHandler = provider.GetService<FgaTokenHandler>();
-
-            Assert.NotNull(tokenHandler);
+            Assert.IsType<InjectableAuth0FgaApi>(authClient);
 
         }
 
         [Fact]
         public void AuthorizationPolicyExtension_RegisterCorrectly()
         {
-            var policy = new AuthorizationPolicyBuilder().AddFgaRequirement(string.Empty).Build();
+            var policy = new AuthorizationPolicyBuilder().AddFgaRequirement().Build();
 
             Assert.Contains(policy.Requirements, requirement => requirement.GetType() == typeof(FineGrainedAuthorizationRequirement));
         }

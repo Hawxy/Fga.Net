@@ -16,9 +16,9 @@
  */
 #endregion
 
+using Auth0.Fga.Api;
 using Fga.Net.AspNetCore.Authorization;
-using Fga.Net.Authentication;
-using Fga.Net.Authorization;
+using Fga.Net.DependencyInjection;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -30,17 +30,16 @@ namespace Fga.Net.AspNetCore;
 public static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Adds and configures an <see cref="FineGrainedAuthorizationHandler"/> along with a <see cref="FgaAuthenticationClient"/> and <see cref="FgaAuthorizationClient"/>
+    /// Adds and configures an <see cref="FineGrainedAuthorizationHandler"/> along with a <see cref="Auth0FgaApi"/>.
     /// </summary>
     /// <param name="collection">The service collection</param>
-    /// <param name="config">The delegate for the <see cref="FgaClientConfiguration"/> that will be used to configure the <see cref="FgaAuthorizationClient"/></param>
+    /// <param name="config">The delegate for the <see cref="FgaClientConfiguration"/> that will be used to configure the <see cref="Auth0FgaApi"/></param>
     /// <returns>The service collection</returns>
     public static IServiceCollection AddAuth0Fga(this IServiceCollection collection, Action<FgaClientConfiguration> config)
     {
         ArgumentNullException.ThrowIfNull(config);
 
-        collection.AddAuth0FgaAuthenticationClient();
-        collection.AddAuth0FgaAuthorizationClient(config);
+        collection.AddAuth0FgaClient(config);
         collection.AddScoped<IAuthorizationHandler, FineGrainedAuthorizationHandler>();
         return collection;
     }
@@ -49,12 +48,9 @@ public static class ServiceCollectionExtensions
     /// Adds a <see cref="FineGrainedAuthorizationRequirement"/> to the given policy.
     /// </summary>
     /// <param name="builder">The Authorization Policy Builder to configure</param>
-    /// <param name="storeId">The store ID this requirement should check against</param>
     /// <returns>The authorization policy builder that is being configured</returns>
-    public static AuthorizationPolicyBuilder AddFgaRequirement(this AuthorizationPolicyBuilder builder, string storeId)
+    public static AuthorizationPolicyBuilder AddFgaRequirement(this AuthorizationPolicyBuilder builder)
     {
-        ArgumentNullException.ThrowIfNull(storeId);
-
-        return builder.AddRequirements(new FineGrainedAuthorizationRequirement(storeId));
+        return builder.AddRequirements(new FineGrainedAuthorizationRequirement());
     }
 }

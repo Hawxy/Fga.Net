@@ -16,24 +16,13 @@
  */
 #endregion
 
-namespace Fga.Net;
+using Auth0.Fga.Configuration;
+
+namespace Fga.Net.DependencyInjection;
 
 /// <summary>
 /// FGA Authentication/Authorization configuration
 /// </summary>
-public class FgaClientConfiguration
+public class FgaClientConfiguration : Configuration
 {
-    /// <summary>
-    /// The Client Id for your FGA instance
-    /// </summary>
-    public string ClientId { get; set; } = null!;
-    /// <summary>
-    /// The Client Secret for your FGA instance
-    /// </summary>
-    public string ClientSecret { get; set; } = null!;
-
-    /// <summary>
-    /// Defaults to us1 if not set
-    /// </summary>
-    public string Environment { get; set; } = "us1";
 }

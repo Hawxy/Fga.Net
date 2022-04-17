@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageId>Fga.Net.DependencyInjection</PackageId>
+    <Description>Auth0 Fine Grained Authorization for .NET. This package includes DI collection extensions for the FGA Client.</Description>
+    <PackageTags>fga,auth0,sandcastle</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Auth0.Fga" Version="0.2.4" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
+    <PackageReference Include="DotNet.ReproducibleBuilds" Version="1.1.1" PrivateAssets="All" />
+  </ItemGroup>
+
+  <Import Project="../../Package.Build.props" />
+</Project>
