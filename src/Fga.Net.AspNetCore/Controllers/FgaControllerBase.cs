@@ -47,7 +47,7 @@ public class FgaControllerBase : ControllerBase
     /// <returns></returns>
     public async Task<bool> Check(string user, string relation, string @object, CancellationToken ct)
     {
-        var checkRes = await _client.Check(new CheckRequestParams()
+        var checkRes = await _client.Check(new CheckRequest()
         {
             TupleKey = new TupleKey
             {

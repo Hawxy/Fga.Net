@@ -19,9 +19,9 @@ public class WebAppFixture : IAsyncLifetime
         var authorizationClientMock = new Mock<Auth0FgaApi>();
 
         authorizationClientMock.Setup(c =>
-            c.Check(It.IsAny<CheckRequestParams>(),
+            c.Check(It.IsAny<CheckRequest>(),
                 It.IsAny<CancellationToken>()))
-            .ReturnsAsync((string _, CheckRequestParams res, CancellationToken _) => 
+            .ReturnsAsync((string _, CheckRequest res, CancellationToken _) => 
                 res.TupleKey!.User == MockJwtConfiguration.DefaultUser 
                     ? new CheckResponse() { Allowed = true } 
                     : new CheckResponse() { Allowed = false });

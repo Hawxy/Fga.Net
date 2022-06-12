@@ -22,4 +22,7 @@ namespace Fga.Net.AspNetCore.Authorization;
 
 internal class FineGrainedAuthorizationRequirement : IAuthorizationRequirement
 {
+    public override string ToString() =>
+        $"{nameof(FineGrainedAuthorizationRequirement)}: Requires FGA Authorization checks to pass.";
+
 }

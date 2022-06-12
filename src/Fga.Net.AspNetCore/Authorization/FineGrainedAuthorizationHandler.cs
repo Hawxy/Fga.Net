@@ -55,7 +55,7 @@ internal class FineGrainedAuthorizationHandler : AuthorizationHandler<FineGraine
                 if (string.IsNullOrEmpty(user) || string.IsNullOrEmpty(relation) || string.IsNullOrEmpty(@object))
                     return;
                 
-                var result = await _client.Check(new CheckRequestParams()
+                var result = await _client.Check(new CheckRequest()
                 {
                     TupleKey = new TupleKey
                     {
@@ -64,6 +64,7 @@ internal class FineGrainedAuthorizationHandler : AuthorizationHandler<FineGraine
                         Object = @object
                     }
                 }, httpContext.RequestAborted);
+
 
                 results.Add(result.Allowed);
             }

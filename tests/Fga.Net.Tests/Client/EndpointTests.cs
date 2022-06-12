@@ -23,13 +23,19 @@ namespace Fga.Net.Tests.Client
         {
             using var scope = _host.Services.CreateScope();
             var client = scope.ServiceProvider.GetRequiredService<Auth0FgaApi>();
-            var modelIds = await client.ReadAuthorizationModels();
+            var modelsResponse = await client.ReadAuthorizationModels();
 
-            Assert.NotNull(modelIds);
-            Assert.NotNull(modelIds.AuthorizationModelIds);
-            Assert.True(modelIds.AuthorizationModelIds?.Count > 0);
+            Assert.NotNull(modelsResponse);
+            Assert.NotNull(modelsResponse.AuthorizationModels);
+            Assert.True(modelsResponse.AuthorizationModels?.Count > 0);
 
-            var modelId = modelIds.AuthorizationModelIds?.First()!;
+            var modelId = modelsResponse.AuthorizationModels?.First().Id!;
+
+            var modelResponse = await client.ReadAuthorizationModel(modelId);
+
+            Assert.NotNull(modelResponse);
+            Assert.NotNull(modelResponse.AuthorizationModel.Id);
+
             var assertions = await client.ReadAssertions(modelId);
 
             Assert.NotNull(assertions);
@@ -40,7 +46,7 @@ namespace Fga.Net.Tests.Client
             Assert.NotEmpty(assertion.Relation!);
             Assert.NotEmpty(assertion.User!);
             
-            var graph = await client.Expand(new ExpandRequestParams()
+            var graph = await client.Expand(new ExpandRequest()
             {
                 AuthorizationModelId = modelId,
                 TupleKey = assertion
@@ -51,7 +57,6 @@ namespace Fga.Net.Tests.Client
 
             var watch = await client.ReadChanges();
             Assert.NotNull(watch);
-            
 
         }
 
