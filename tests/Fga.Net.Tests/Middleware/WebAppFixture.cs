@@ -1,8 +1,8 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Alba;
-using Auth0.Fga.Api;
 using Auth0.Fga.Model;
+using Fga.Net.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Moq;
@@ -16,12 +16,12 @@ public class WebAppFixture : IAsyncLifetime
 
     public async Task InitializeAsync()
     {
-        var authorizationClientMock = new Mock<Auth0FgaApi>();
+        var authorizationClientMock = new Mock<IFgaCheckDecorator>();
 
         authorizationClientMock.Setup(c =>
             c.Check(It.IsAny<CheckRequest>(),
                 It.IsAny<CancellationToken>()))
-            .ReturnsAsync((string _, CheckRequest res, CancellationToken _) => 
+            .ReturnsAsync((CheckRequest res, CancellationToken _) => 
                 res.TupleKey!.User == MockJwtConfiguration.DefaultUser 
                     ? new CheckResponse() { Allowed = true } 
                     : new CheckResponse() { Allowed = false });
@@ -31,7 +31,7 @@ public class WebAppFixture : IAsyncLifetime
         {
             builder.ConfigureServices(s =>
             {
-                s.Replace(ServiceDescriptor.Scoped<Auth0FgaApi>(_ => authorizationClientMock.Object));
+                s.Replace(ServiceDescriptor.Scoped<IFgaCheckDecorator>(_ => authorizationClientMock.Object));
             });
 
         }, MockJwtConfiguration.GetDefaultStubConfiguration());

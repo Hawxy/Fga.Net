@@ -16,24 +16,24 @@
  */
 #endregion
 
-using Auth0.Fga.Api;
 using Auth0.Fga.Model;
 using Fga.Net.AspNetCore.Authorization.Attributes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 
 namespace Fga.Net.AspNetCore.Authorization;
 
 internal class FineGrainedAuthorizationHandler : AuthorizationHandler<FineGrainedAuthorizationRequirement>
 {
-    private readonly Auth0FgaApi _client;
+    private readonly IFgaCheckDecorator _client;
+    private readonly ILogger<FineGrainedAuthorizationHandler> _logger;
 
-    public FineGrainedAuthorizationHandler(Auth0FgaApi client)
+    public FineGrainedAuthorizationHandler(IFgaCheckDecorator client, ILogger<FineGrainedAuthorizationHandler> logger)
     {
         _client = client;
+        _logger = logger;
     }
-
-
     protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, FineGrainedAuthorizationRequirement requirement)
     {
         if (context.Resource is HttpContext httpContext)
@@ -45,7 +45,6 @@ internal class FineGrainedAuthorizationHandler : AuthorizationHandler<FineGraine
             // The user is enforcing the fga policy but there's no attributes here.
             if (attributes.Count == 0)
                 return;
-            var results = new List<bool>();
             foreach (var attribute in attributes)
             {
                 var user = await attribute.GetUser(httpContext);
@@ -65,14 +64,13 @@ internal class FineGrainedAuthorizationHandler : AuthorizationHandler<FineGraine
                     }
                 }, httpContext.RequestAborted);
 
-
-                results.Add(result.Allowed);
+                if (!result.Allowed)
+                {
+                    _logger.CheckFailureDebug(user, relation, @object);
+                    return;
+                }
             }
-
-            if(results.All(x => x))
-                context.Succeed(requirement);
+            context.Succeed(requirement);
         }
     }
 }
-
-
