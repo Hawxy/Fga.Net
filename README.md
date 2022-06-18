@@ -101,11 +101,11 @@ An additional pre-made attribute that allows all tuple values to be hardcoded st
 
 ## Worker Service / Generic Host Setup
 
-`Fga.Net` ships with the `AddAuth0Fga` service collection extension that handles all required wire-up.
+`Fga.Net.DependencyInjection` ships with the `AddAuth0FgaClient` service collection extension that handles all required wire-up.
 
 To get started:
 
-1. Install `Fga.Net`
+1. Install `Fga.Net.DependencyInjection`
 2. Add your `StoreId`, `ClientId` and `ClientSecret` to your application configuration, ideally via the [dotnet secrets manager](https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-6.0&tabs=windows#enable-secret-storage).
 3. Register the authorization client:
 
@@ -113,7 +113,7 @@ To get started:
 var host = Host.CreateDefaultBuilder(args)
     .ConfigureServices((context, services) =>
     {
-        services.AddAuth0Fga(config =>
+        services.AddAuth0FgaClient(config =>
         {
             config.ClientId = context.Configuration["Auth0Fga:ClientId"];
             config.ClientSecret = context.Configuration["Auth0Fga:ClientSecret"];
