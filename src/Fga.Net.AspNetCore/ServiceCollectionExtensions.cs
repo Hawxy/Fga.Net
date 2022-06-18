@@ -40,6 +40,7 @@ public static class ServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(config);
 
         collection.AddAuth0FgaClient(config);
+        collection.AddScoped<IFgaCheckDecorator, FgaCheckDecorator>();
         collection.AddScoped<IAuthorizationHandler, FineGrainedAuthorizationHandler>();
         return collection;
     }

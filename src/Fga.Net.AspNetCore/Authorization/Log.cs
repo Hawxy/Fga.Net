@@ -16,13 +16,12 @@
  */
 #endregion
 
-using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Logging;
 
 namespace Fga.Net.AspNetCore.Authorization;
 
-internal class FineGrainedAuthorizationRequirement : IAuthorizationRequirement
+internal static partial class Log
 {
-    public override string ToString() =>
-        $"{nameof(FineGrainedAuthorizationRequirement)}: Requires FGA Authorization checks to pass.";
-
+    [LoggerMessage(0, LogLevel.Debug, "FGA Check failed for User: {user}, Relation: {relation}, Object: {object}")]
+    public static partial void CheckFailureDebug(this ILogger logger, string user, string relation, string @object);
 }
