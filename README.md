@@ -1,4 +1,4 @@
-# OpenFGA & Auth0 FGA for ASP.NET Core/Worker Services
+# OpenFGA/Auth0 FGA for ASP.NET Core & Workers
 
 #### Note: This project is in its early stages and will have breaking changes as FGA matures.
 
