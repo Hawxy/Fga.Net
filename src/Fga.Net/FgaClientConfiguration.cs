@@ -16,7 +16,8 @@
  */
 #endregion
 
-using Auth0.Fga.Configuration;
+
+using OpenFga.Sdk.Configuration;
 
 namespace Fga.Net.DependencyInjection;
 
@@ -25,4 +26,5 @@ namespace Fga.Net.DependencyInjection;
 /// </summary>
 public class FgaClientConfiguration : Configuration
 {
+    
 }

@@ -1,38 +1,65 @@
-# Auth0 FGA for Worker Services & ASP.NET Core
+## OpenFGA & Auth0 FGA for ASP.NET Core + Worker Services
 
 [![Nuget (with prereleases)](https://img.shields.io/nuget/vpre/Fga.Net.DependencyInjection?label=Fga.Net.DependencyInjection&style=flat-square)](https://www.nuget.org/packages/Fga.Net.DependencyInjection)
 [![Nuget (with prereleases)](https://img.shields.io/nuget/vpre/Fga.Net.AspNetCore?label=Fga.Net.AspNetCore&style=flat-square)](https://www.nuget.org/packages/Fga.Net.AspNetCore)
 
-### Packages
-- **Fga.Net.DependencyInjection**: Provides dependency injection extensions for Auth0.Fga
+#### Note: This project is in its early stages and will have breaking changes as FGA matures.
 
-- **Fga.Net.AspNetCore**: Additionally includes Authorization middleware to support FGA checks as part of a request's lifecycle.
+### Packages
+**`Fga.Net.DependencyInjection`**: Provides dependency injection/configuration extensions for [OpenFga.Sdk](https://github.com/openfga/dotnet-sdk)
+
+**`Fga.Net.AspNetCore`**: Additionally includes Authorization middleware to support FGA checks as part of a request's lifecycle.
 
 ## Getting Started
 
-#### Note: This project is in its early stages and will have breaking changes as FGA matures.
+This package is compatible with the OSS OpenFGA as well as the managed Auth0 FGA service.
 
-Please ensure you have a basic understanding of how FGA works before continuing: https://docs.fga.dev/
+Please ensure you have a basic understanding of how FGA works before continuing: [OpenFGA Docs](https://openfga.dev/) or [Auth0 FGA Docs](https://docs.fga.dev/)
 
 ## ASP.NET Core Setup
 
-Before getting started, ensure you have a Store ID, Client ID, and Client Secret ready from [How to get your API keys](https://docs.fga.dev/integration/getting-your-api-keys).
+This tutorial assumes you have authentication setup within your project, such as [JWT bearer authentication via Auth0](https://auth0.com/docs/quickstart/backend/aspnet-core-webapi/01-authorization).
 
-I'm also assuming you have authentication setup within your project, such as [JWT bearer authentication via Auth0](https://auth0.com/docs/quickstart/backend/aspnet-core-webapi/01-authorization).
+Install `Fga.Net.AspNetCore` from Nuget before continuing.
+
+### Auth0 FGA
+
+Ensure you have a Store ID, Client ID, and Client Secret ready from [How to get your API keys](https://docs.fga.dev/integration/getting-your-api-keys).
 
 
-1. Install `Fga.Net.AspNetCore` from Nuget.
-2. Add your `StoreId`, `ClientId` and `ClientSecret` to your application configuration, ideally via the [dotnet secrets manager](https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-6.0&tabs=windows#enable-secret-storage).
-3. Add the following code to your ASP.NET Core configuration:
+1. Add your `StoreId`, `ClientId` and `ClientSecret` to your application configuration, ideally via the [dotnet secrets manager](https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-6.0&tabs=windows#enable-secret-storage).
+2. Add the following code to your ASP.NET Core services configuration:
 ```cs
-// Registers the Auth0FgaApi client
-builder.Services.AddAuth0Fga(x =>
+builder.Services.AddOpenFga(x =>
 {
-    x.ClientId = builder.Configuration["Auth0Fga:ClientId"];
-    x.ClientSecret = builder.Configuration["Auth0Fga:ClientSecret"];
+    x.WithAuth0FgaDefaults(builder.Configuration["Auth0Fga:ClientId"], builder.Configuration["Auth0Fga:ClientSecret"]);
+
     x.StoreId = builder.Configuration["Auth0Fga:StoreId"];
 });
+```
 
+The `WithAuth0FgaDefaults` extension will configure the relevant OpenFGA client settings to work with Auth0 FGA's US environment.
+
+### OpenFGA
+
+OpenFGA configuration is very similar to the [SDK Setup Guide](https://openfga.dev/docs/getting-started/setup-sdk-client)
+
+1. Add the FGA `ApiScheme`, `ApiHost` & `StoreId` to your application configuration.
+2. Add the following code to your ASP.NET Core configuration:
+```cs
+builder.Services.AddOpenFga(x =>
+{
+    x.ApiScheme = builder.Configuration["Fga:ApiScheme"];
+    x.ApiHost = builder.Configuration["Fga:ApiHost"];
+    x.StoreId = builder.Configuration["Fga:StoreId"];
+});
+```
+
+### Authorization Policy Setup
+
+Now we'll need to setup our authorization middleware like so:
+
+```cs
 // Register the authorization policy
 builder.Services.AddAuthorization(options =>
 {
@@ -43,7 +70,7 @@ builder.Services.AddAuthorization(options =>
 });
 ```
 
-4. Create an attribute that inherits from `TupleCheckAttribute`. From here, you can pull the metadata you require to perform your tuple checks out of the HTTP request.
+Next, create an attribute that inherits from `TupleCheckAttribute`. From here, you can pull the metadata you require to perform your tuple checks out of the HTTP request.
 For example, an equivalent to the [How To Integrate Within A Framework](https://docs.fga.dev/integration/framework) example would be:
 ```cs
 public class EntityAuthorizationAttribute : TupleCheckAttribute
@@ -72,7 +99,7 @@ public class EntityAuthorizationAttribute : TupleCheckAttribute
 }
 ```
 
-5. Apply the `Authorize` and `EntityAuthorization` attributes to your controller(s):
+Now apply the `Authorize` and `EntityAuthorization` attributes to your controller(s):
 ```cs
     // Traditional Controllers
     [ApiController]
@@ -89,10 +116,9 @@ public class EntityAuthorizationAttribute : TupleCheckAttribute
     }
 
     // Minimal APIs
-    app.MapGet("/viewminimal/{documentId}",
-    [Authorize(FgaAuthorizationDefaults.PolicyKey)] 
-    [EntityAuthorization("doc", "documentId")]
-    (documentId) => Task.FromResult(documentId));
+    app.MapGet("/viewminimal/{documentId}", (string documentId) => Task.FromResult(documentId))
+        .RequireAuthorization(FgaAuthorizationDefaults.PolicyKey)
+        .WithMetadata(new EntityAuthorizationAttribute("doc", "documentId"));
 ```
 
 If you need to manually perform checks, inject the `Auth0FgaApi` as required.
@@ -101,23 +127,28 @@ An additional pre-made attribute that allows all tuple values to be hardcoded st
 
 ## Worker Service / Generic Host Setup
 
-`Fga.Net.DependencyInjection` ships with the `AddAuth0FgaClient` service collection extension that handles all required wire-up.
+`Fga.Net.DependencyInjection` ships with the `AddOpenFgaClient` service collection extension that handles all required wire-up.
 
 To get started:
 
 1. Install `Fga.Net.DependencyInjection`
-2. Add your `StoreId`, `ClientId` and `ClientSecret` to your application configuration, ideally via the [dotnet secrets manager](https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-6.0&tabs=windows#enable-secret-storage).
+2. Add your `StoreId`, `ClientId` and `ClientSecret` Auth0 FGA configuration **OR** `ApiScheme`, `ApiHost` & `StoreId` OpenFGA configuration to your application configuration, ideally via the [dotnet secrets manager](https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-6.0&tabs=windows#enable-secret-storage).
 3. Register the authorization client:
 
 ```cs
 var host = Host.CreateDefaultBuilder(args)
     .ConfigureServices((context, services) =>
     {
-        services.AddAuth0FgaClient(config =>
+        services.AddOpenFgaClient(config =>
         {
-            config.ClientId = context.Configuration["Auth0Fga:ClientId"];
-            config.ClientSecret = context.Configuration["Auth0Fga:ClientSecret"];
+            // Auth0 FGA
+            config.WithAuth0FgaDefaults(context.Configuration["Auth0Fga:ClientId"], context.Configuration["Auth0Fga:ClientSecret"]);
             config.StoreId = context.Configuration["Auth0Fga:StoreId"];
+
+            // OpenFGA
+            config.ApiScheme = context.Configuration["Fga:ApiScheme"];
+            config.ApiHost = context.Configuration["Fga:ApiHost"];
+            config.StoreId = context.Configuration["Fga:StoreId"];
         });
 
         services.AddHostedService<MyBackgroundWorker>();
@@ -148,8 +179,8 @@ public class MyBackgroundWorker : BackgroundService
 
 ## Standalone client setup
 
-See the [Auth0.Fga docs](https://github.com/auth0-lab/fga-dotnet-sdk)
+See the [OpenFGA.Sdk docs](https://openfga.dev/docs/getting-started/setup-sdk-client)
 
 ## Disclaimer
 
-I am not affiliated with nor represent Auth0. All support queries regarding the underlying service should go to the [Auth0 Labs Discord](https://discord.gg/8naAwJfWN6).
+I am not affiliated with nor represent Auth0 or OpenFGA. All support queries regarding the underlying service should go to the [Auth0 Labs Discord](https://discord.gg/8naAwJfWN6).

@@ -16,8 +16,8 @@
  */
 #endregion
 
-using Auth0.Fga.Api;
 using Microsoft.Extensions.DependencyInjection;
+using OpenFga.Sdk.Api;
 
 namespace Fga.Net.DependencyInjection;
 
@@ -27,17 +27,17 @@ namespace Fga.Net.DependencyInjection;
 public static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Registers and configures an <see cref="Auth0FgaApi"/> for the provided service collection.
+    /// Registers and configures an <see cref="OpenFgaApi"/> for the provided service collection.
     /// </summary>
     /// <param name="collection"></param>
     /// <param name="configuration"></param>
     /// <returns>An <see cref="IHttpClientBuilder" /> that can be used to configure the <see cref="FgaClientConfiguration"/>.</returns>
-    public static IHttpClientBuilder AddAuth0FgaClient(this IServiceCollection collection, Action<FgaClientConfiguration> configuration)
+    public static IHttpClientBuilder AddOpenFgaClient(this IServiceCollection collection, Action<FgaClientConfiguration> configuration)
     {
         ArgumentNullException.ThrowIfNull(configuration);
 
         collection.Configure(configuration);
-        return collection.AddHttpClient<Auth0FgaApi, InjectableAuth0FgaApi>();
+        return collection.AddHttpClient<OpenFgaApi, InjectableFgaApi>();
     }
 }
 

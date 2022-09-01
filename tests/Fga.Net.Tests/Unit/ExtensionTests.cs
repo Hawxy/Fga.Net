@@ -1,10 +1,10 @@
-﻿using System;
-using Auth0.Fga.Api;
+using System;
 using Fga.Net.AspNetCore;
 using Fga.Net.AspNetCore.Authorization;
 using Fga.Net.DependencyInjection;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
+using OpenFga.Sdk.Api;
 using Xunit;
 
 namespace Fga.Net.Tests.Unit
@@ -16,18 +16,18 @@ namespace Fga.Net.Tests.Unit
         {
             var collection = new ServiceCollection();
 
-            collection.AddAuth0FgaClient(x =>
+            collection.AddOpenFgaClient(x =>
             {
                 x.StoreId = Guid.NewGuid().ToString();
-                x.ClientId = Guid.NewGuid().ToString();
-                x.ClientSecret = Guid.NewGuid().ToString();
+                x.WithAuth0FgaDefaults(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
+
             });
 
             var provider = collection.BuildServiceProvider();
 
-            var authClient = provider.GetService<Auth0FgaApi>();
+            var authClient = provider.GetService<OpenFgaApi>();
             Assert.NotNull(authClient);
-            Assert.IsType<InjectableAuth0FgaApi>(authClient);
+            Assert.IsType<InjectableFgaApi>(authClient);
         }
 
         [Fact]
@@ -35,11 +35,10 @@ namespace Fga.Net.Tests.Unit
         {
             var collection = new ServiceCollection();
 
-            collection.AddAuth0Fga(x =>
+            collection.AddOpenFga(x =>
             {
                 x.StoreId = Guid.NewGuid().ToString();
-                x.ClientId = Guid.NewGuid().ToString();
-                x.ClientSecret = Guid.NewGuid().ToString();
+                x.WithAuth0FgaDefaults(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
             });
 
             var provider = collection.BuildServiceProvider();
@@ -48,9 +47,9 @@ namespace Fga.Net.Tests.Unit
 
             Assert.Contains(col, handler => handler.GetType() == typeof(FineGrainedAuthorizationHandler));
 
-            var authClient = provider.GetService<Auth0FgaApi>();
+            var authClient = provider.GetService<OpenFgaApi>();
             Assert.NotNull(authClient);
-            Assert.IsType<InjectableAuth0FgaApi>(authClient);
+            Assert.IsType<InjectableFgaApi>(authClient);
 
         }
 

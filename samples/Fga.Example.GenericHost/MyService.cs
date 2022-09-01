@@ -1,12 +1,12 @@
-﻿using Auth0.Fga.Api;
+﻿using OpenFga.Sdk.Api;
 
 namespace Fga.Example.GenericHost
 {
     public class MyBackgroundWorker : BackgroundService
     {
-        private readonly Auth0FgaApi _authorizationClient;
+        private readonly OpenFgaApi _authorizationClient;
 
-        public MyBackgroundWorker(Auth0FgaApi authorizationClient)
+        public MyBackgroundWorker(OpenFgaApi authorizationClient)
         {
             _authorizationClient = authorizationClient;
         }

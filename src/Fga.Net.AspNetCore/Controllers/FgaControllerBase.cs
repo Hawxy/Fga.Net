@@ -16,9 +16,9 @@
  */
 #endregion
 
-using Auth0.Fga.Api;
-using Auth0.Fga.Model;
 using Microsoft.AspNetCore.Mvc;
+using OpenFga.Sdk.Api;
+using OpenFga.Sdk.Model;
 
 namespace Fga.Net.AspNetCore.Controllers;
 
@@ -27,12 +27,12 @@ namespace Fga.Net.AspNetCore.Controllers;
 /// </summary>
 public class FgaControllerBase : ControllerBase
 {
-    private readonly Auth0FgaApi _client;
+    private readonly OpenFgaApi _client;
     /// <summary>
     /// 
     /// </summary>
     /// <param name="client"></param>
-    public FgaControllerBase(Auth0FgaApi client)
+    public FgaControllerBase(OpenFgaApi client)
     {
         _client = client;
     }

@@ -1,11 +1,11 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Alba;
-using Auth0.Fga.Model;
 using Fga.Net.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Moq;
+using OpenFga.Sdk.Model;
 using Xunit;
 
 namespace Fga.Net.Tests.Middleware;
