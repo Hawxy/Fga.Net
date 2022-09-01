@@ -2,17 +2,17 @@
 
 #### Note: This project is in its early stages and will have breaking changes as FGA matures.
 
-[![Nuget (with prereleases)](https://img.shields.io/nuget/vpre/Fga.Net.DependencyInjection?label=Fga.Net.DependencyInjection&style=flat-square)](https://www.nuget.org/packages/Fga.Net.DependencyInjection)
-[![Nuget (with prereleases)](https://img.shields.io/nuget/vpre/Fga.Net.AspNetCore?label=Fga.Net.AspNetCore&style=flat-square)](https://www.nuget.org/packages/Fga.Net.AspNetCore)
+
+
 
 ### Packages
-- **Fga.Net.DependencyInjection**: Provides dependency injection/configuration extensions for OpenFga.Sdk
+[![Nuget (with prereleases)](https://img.shields.io/nuget/vpre/Fga.Net.DependencyInjection?label=Fga.Net.DependencyInjection&style=flat-square)](https://www.nuget.org/packages/Fga.Net.DependencyInjection) Provides dependency injection/configuration extensions for [OpenFga.Sdk](https://github.com/openfga/dotnet-sdk)
 
-- **Fga.Net.AspNetCore**: Additionally includes Authorization middleware to support FGA checks as part of a request's lifecycle.
+[![Nuget (with prereleases)](https://img.shields.io/nuget/vpre/Fga.Net.AspNetCore?label=Fga.Net.AspNetCore&style=flat-square)](https://www.nuget.org/packages/Fga.Net.AspNetCore) Additionally includes Authorization middleware to support FGA checks as part of a request's lifecycle.
 
 ## Getting Started
 
-This package is compatible with the open source OpenFGA implementation as well as the managed Auth0 FGA service.
+This package is compatible with the OSS OpenFGA as well as the managed Auth0 FGA service.
 
 Please ensure you have a basic understanding of how FGA works before continuing: [OpenFGA Docs](https://openfga.dev/) or [Auth0 FGA Docs](https://docs.fga.dev/)
 
@@ -47,7 +47,6 @@ OpenFGA configuration is very similar to the [SDK Setup Guide](https://openfga.d
 1. Add the FGA `ApiScheme`, `ApiHost` & `StoreId` to your application configuration.
 2. Add the following code to your ASP.NET Core configuration:
 ```cs
-// Registers the OpenFgaApi client
 builder.Services.AddOpenFga(x =>
 {
     x.ApiScheme = builder.Configuration["Fga:ApiScheme"];
