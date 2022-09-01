@@ -129,23 +129,28 @@ An additional pre-made attribute that allows all tuple values to be hardcoded st
 
 ## Worker Service / Generic Host Setup
 
-`Fga.Net.DependencyInjection` ships with the `AddAuth0FgaClient` service collection extension that handles all required wire-up.
+`Fga.Net.DependencyInjection` ships with the `AddOpenFgaClient` service collection extension that handles all required wire-up.
 
 To get started:
 
 1. Install `Fga.Net.DependencyInjection`
-2. Add your `StoreId`, `ClientId` and `ClientSecret` to your application configuration, ideally via the [dotnet secrets manager](https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-6.0&tabs=windows#enable-secret-storage).
+2. Add your `StoreId`, `ClientId` and `ClientSecret` Auth0 FGA configuration **OR** `ApiScheme`, `ApiHost` & `StoreId` OpenFGA configuration to your application configuration, ideally via the [dotnet secrets manager](https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-6.0&tabs=windows#enable-secret-storage).
 3. Register the authorization client:
 
 ```cs
 var host = Host.CreateDefaultBuilder(args)
     .ConfigureServices((context, services) =>
     {
-        services.AddAuth0FgaClient(config =>
+        services.AddOpenFgaClient(config =>
         {
-            config.ClientId = context.Configuration["Auth0Fga:ClientId"];
-            config.ClientSecret = context.Configuration["Auth0Fga:ClientSecret"];
+            // Auth0 FGA
+            config.WithAuth0FgaDefaults(context.Configuration["Auth0Fga:ClientId"], context.Configuration["Auth0Fga:ClientSecret"]);
             config.StoreId = context.Configuration["Auth0Fga:StoreId"];
+
+            // OpenFGA
+            config.ApiScheme = context.Configuration["Fga:ApiScheme"];
+            config.ApiHost = context.Configuration["Fga:ApiHost"];
+            config.StoreId = context.Configuration["Fga:StoreId"];
         });
 
         services.AddHostedService<MyBackgroundWorker>();
@@ -176,8 +181,8 @@ public class MyBackgroundWorker : BackgroundService
 
 ## Standalone client setup
 
-See the [Auth0.Fga docs](https://github.com/auth0-lab/fga-dotnet-sdk)
+See the [OpenFGA.Sdk docs](https://openfga.dev/docs/getting-started/setup-sdk-client)
 
 ## Disclaimer
 
-I am not affiliated with nor represent Auth0. All support queries regarding the underlying service should go to the [Auth0 Labs Discord](https://discord.gg/8naAwJfWN6).
+I am not affiliated with nor represent Auth0 or OpenFGA. All support queries regarding the underlying service should go to the [Auth0 Labs Discord](https://discord.gg/8naAwJfWN6).
