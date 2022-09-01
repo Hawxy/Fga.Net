@@ -1,14 +1,14 @@
 # OpenFGA/Auth0 FGA for ASP.NET Core & Workers
 
+[![Nuget (with prereleases)](https://img.shields.io/nuget/vpre/Fga.Net.DependencyInjection?label=Fga.Net.DependencyInjection&style=flat-square)](https://www.nuget.org/packages/Fga.Net.DependencyInjection)
+[![Nuget (with prereleases)](https://img.shields.io/nuget/vpre/Fga.Net.AspNetCore?label=Fga.Net.AspNetCore&style=flat-square)](https://www.nuget.org/packages/Fga.Net.AspNetCore)
+
 #### Note: This project is in its early stages and will have breaking changes as FGA matures.
 
-
-
-
 ### Packages
-[![Nuget (with prereleases)](https://img.shields.io/nuget/vpre/Fga.Net.DependencyInjection?label=Fga.Net.DependencyInjection&style=flat-square)](https://www.nuget.org/packages/Fga.Net.DependencyInjection) Provides dependency injection/configuration extensions for [OpenFga.Sdk](https://github.com/openfga/dotnet-sdk)
+**`Fga.Net.DependencyInjection`**: Provides dependency injection/configuration extensions for [OpenFga.Sdk](https://github.com/openfga/dotnet-sdk)
 
-[![Nuget (with prereleases)](https://img.shields.io/nuget/vpre/Fga.Net.AspNetCore?label=Fga.Net.AspNetCore&style=flat-square)](https://www.nuget.org/packages/Fga.Net.AspNetCore) Additionally includes Authorization middleware to support FGA checks as part of a request's lifecycle.
+**`Fga.Net.AspNetCore`**: Additionally includes Authorization middleware to support FGA checks as part of a request's lifecycle.
 
 ## Getting Started
 
@@ -38,7 +38,7 @@ builder.Services.AddOpenFga(x =>
 });
 ```
 
-The `WithAuth0FgaDefaults` extension will configure the relevant OpenFGA client settings to work with Auth0 FGA's environment.
+The `WithAuth0FgaDefaults` extension will configure the relevant OpenFGA client settings to work with Auth0 FGA's US environment.
 
 ### OpenFGA
 
