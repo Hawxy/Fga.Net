@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Fga.Net.AspNetCore;
 using Fga.Net.AspNetCore.Authorization;
 using Fga.Net.DependencyInjection;

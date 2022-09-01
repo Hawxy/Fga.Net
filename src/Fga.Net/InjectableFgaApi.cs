@@ -3,7 +3,7 @@ using OpenFga.Sdk.Api;
 
 namespace Fga.Net.DependencyInjection;
 
-internal class InjectableFgaApi : OpenFgaApi
+internal sealed class InjectableFgaApi : OpenFgaApi
 {
     public InjectableFgaApi(IOptions<FgaClientConfiguration> configuration, HttpClient httpClient) : base(configuration.Value, httpClient)
     {

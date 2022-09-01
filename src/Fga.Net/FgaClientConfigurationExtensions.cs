@@ -3,17 +3,17 @@
 namespace Fga.Net.DependencyInjection;
 
 /// <summary>
-/// Extensions for the <see cref="FgaClientConfiguration"/>
+/// Extensions for <see cref="FgaClientConfiguration"/>
 /// </summary>
 public static class FgaClientConfigurationExtensions
 {
 
     /// <summary>
-    /// Configures the client with defaults when using Auth0 FGA
+    /// Configures the client with connection defaults when using Auth0 FGA
     /// </summary>
     /// <param name="config">An instance of the configuration</param>
-    /// <param name="clientId">The client ID</param>
-    /// <param name="clientSecret">The client secret</param>
+    /// <param name="clientId">The Auth0 FGA client ID</param>
+    /// <param name="clientSecret">The Auth0 FGA client secret</param>
     public static void WithAuth0FgaDefaults(this FgaClientConfiguration config, string clientId, string clientSecret)
     {
         //TODO make environment configurable

@@ -4,7 +4,6 @@ using Fga.Net.AspNetCore;
 using Fga.Net.AspNetCore.Authorization;
 using Fga.Net.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -28,12 +27,23 @@ builder.Services.AddAuthentication(options =>
         };
     });
 
+
+// Auth0 FGA
 builder.Services.AddOpenFga(x =>
 {
     x.WithAuth0FgaDefaults(builder.Configuration["Auth0Fga:ClientId"], builder.Configuration["Auth0Fga:ClientSecret"]);
 
     x.StoreId = builder.Configuration["Auth0Fga:StoreId"];
 });
+
+
+// OpenFGA
+/*builder.Services.AddOpenFga(x =>
+{
+    x.ApiScheme = builder.Configuration["Fga:ApiScheme"];
+    x.ApiHost = builder.Configuration["Fga:ApiHost"];
+    x.StoreId = builder.Configuration["Fga:StoreId"];
+});*/
 
 builder.Services.AddAuthorization(options =>
 {
