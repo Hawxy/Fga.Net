@@ -116,10 +116,9 @@ Now apply the `Authorize` and `EntityAuthorization` attributes to your controlle
     }
 
     // Minimal APIs
-    app.MapGet("/viewminimal/{documentId}",
-    [Authorize(FgaAuthorizationDefaults.PolicyKey)] 
-    [EntityAuthorization("doc", "documentId")]
-    (documentId) => Task.FromResult(documentId));
+    app.MapGet("/viewminimal/{documentId}", (string documentId) => Task.FromResult(documentId))
+        .RequireAuthorization(FgaAuthorizationDefaults.PolicyKey)
+        .WithMetadata(new EntityAuthorizationAttribute("doc", "documentId"));
 ```
 
 If you need to manually perform checks, inject the `Auth0FgaApi` as required.

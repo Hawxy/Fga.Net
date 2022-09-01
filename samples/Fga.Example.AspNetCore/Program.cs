@@ -67,9 +67,8 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.MapGet("/viewminimal/{documentId}",
-        [EntityAuthorization("doc", "documentId")]
-    (documentId) => Task.FromResult(documentId))
-    .RequireAuthorization(FgaAuthorizationDefaults.PolicyKey);
+app.MapGet("/viewminimal/{documentId}", (string documentId) => Task.FromResult(documentId))
+    .RequireAuthorization(FgaAuthorizationDefaults.PolicyKey)
+    .WithMetadata(new EntityAuthorizationAttribute("doc", "documentId"));
 
 app.Run();
