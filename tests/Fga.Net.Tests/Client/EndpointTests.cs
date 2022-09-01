@@ -1,9 +1,9 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Alba;
-using Auth0.Fga.Api;
-using Auth0.Fga.Model;
 using Microsoft.Extensions.DependencyInjection;
+using OpenFga.Sdk.Api;
+using OpenFga.Sdk.Model;
 using Xunit;
 
 namespace Fga.Net.Tests.Client
@@ -22,7 +22,7 @@ namespace Fga.Net.Tests.Client
         private async Task GetEndpoints_Return_200()
         {
             using var scope = _host.Services.CreateScope();
-            var client = scope.ServiceProvider.GetRequiredService<Auth0FgaApi>();
+            var client = scope.ServiceProvider.GetRequiredService<OpenFgaApi>();
             var modelsResponse = await client.ReadAuthorizationModels();
 
             Assert.NotNull(modelsResponse);

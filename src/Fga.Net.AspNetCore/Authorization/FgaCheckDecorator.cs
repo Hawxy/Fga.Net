@@ -1,5 +1,5 @@
-﻿using Auth0.Fga.Api;
-using Auth0.Fga.Model;
+﻿using OpenFga.Sdk.Api;
+using OpenFga.Sdk.Model;
 
 namespace Fga.Net.AspNetCore.Authorization;
 
@@ -8,13 +8,13 @@ namespace Fga.Net.AspNetCore.Authorization;
 /// </summary>
 public class FgaCheckDecorator : IFgaCheckDecorator
 {
-    private readonly Auth0FgaApi _auth0FgaApi;
+    private readonly OpenFgaApi _auth0FgaApi;
 
     /// <summary>
     /// 
     /// </summary>
     /// <param name="auth0FgaApi"></param>
-    public FgaCheckDecorator(Auth0FgaApi auth0FgaApi)
+    public FgaCheckDecorator(OpenFgaApi auth0FgaApi)
     {
         _auth0FgaApi = auth0FgaApi;
     }

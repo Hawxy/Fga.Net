@@ -16,11 +16,11 @@
  */
 #endregion
 
-using Auth0.Fga.Api;
 using Fga.Net.AspNetCore.Authorization;
 using Fga.Net.DependencyInjection;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
+using OpenFga.Sdk.Api;
 
 namespace Fga.Net.AspNetCore;
 
@@ -30,16 +30,16 @@ namespace Fga.Net.AspNetCore;
 public static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Adds and configures an <see cref="FineGrainedAuthorizationHandler"/> along with a <see cref="Auth0FgaApi"/>.
+    /// Adds and configures an <see cref="FineGrainedAuthorizationHandler"/> along with a <see cref="OpenFgaApi"/>.
     /// </summary>
     /// <param name="collection">The service collection</param>
-    /// <param name="config">The delegate for the <see cref="FgaClientConfiguration"/> that will be used to configure the <see cref="Auth0FgaApi"/></param>
+    /// <param name="config">The delegate for the <see cref="FgaClientConfiguration"/> that will be used to configure the <see cref="OpenFgaApi"/></param>
     /// <returns>The service collection</returns>
-    public static IServiceCollection AddAuth0Fga(this IServiceCollection collection, Action<FgaClientConfiguration> config)
+    public static IServiceCollection AddOpenFga(this IServiceCollection collection, Action<FgaClientConfiguration> config)
     {
         ArgumentNullException.ThrowIfNull(config);
 
-        collection.AddAuth0FgaClient(config);
+        collection.AddOpenFgaClient(config);
         collection.AddScoped<IFgaCheckDecorator, FgaCheckDecorator>();
         collection.AddScoped<IAuthorizationHandler, FineGrainedAuthorizationHandler>();
         return collection;

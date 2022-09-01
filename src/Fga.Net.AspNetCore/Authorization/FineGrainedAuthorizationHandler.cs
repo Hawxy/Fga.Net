@@ -16,11 +16,11 @@
  */
 #endregion
 
-using Auth0.Fga.Model;
 using Fga.Net.AspNetCore.Authorization.Attributes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using OpenFga.Sdk.Model;
 
 namespace Fga.Net.AspNetCore.Authorization;
 

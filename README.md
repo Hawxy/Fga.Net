@@ -1,10 +1,10 @@
-# Auth0 FGA for Worker Services & ASP.NET Core
+# OpenFGA/Auth0 FGA for Worker Services & ASP.NET Core
 
 [![Nuget (with prereleases)](https://img.shields.io/nuget/vpre/Fga.Net.DependencyInjection?label=Fga.Net.DependencyInjection&style=flat-square)](https://www.nuget.org/packages/Fga.Net.DependencyInjection)
 [![Nuget (with prereleases)](https://img.shields.io/nuget/vpre/Fga.Net.AspNetCore?label=Fga.Net.AspNetCore&style=flat-square)](https://www.nuget.org/packages/Fga.Net.AspNetCore)
 
 ### Packages
-- **Fga.Net.DependencyInjection**: Provides dependency injection extensions for Auth0.Fga
+- **Fga.Net.DependencyInjection**: Provides dependency injection extensions for OpenFga.Sdk
 
 - **Fga.Net.AspNetCore**: Additionally includes Authorization middleware to support FGA checks as part of a request's lifecycle.
 
@@ -12,9 +12,9 @@
 
 #### Note: This project is in its early stages and will have breaking changes as FGA matures.
 
-Please ensure you have a basic understanding of how FGA works before continuing: https://docs.fga.dev/
+Please ensure you have a basic understanding of how FGA works before continuing: [OpenFGA Docs](https://openfga.dev/) or [Auth0 FGA Docs](https://docs.fga.dev/)
 
-## ASP.NET Core Setup
+## ASP.NET Core Setup (Auth0 FGA)
 
 Before getting started, ensure you have a Store ID, Client ID, and Client Secret ready from [How to get your API keys](https://docs.fga.dev/integration/getting-your-api-keys).
 
