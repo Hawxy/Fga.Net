@@ -57,10 +57,9 @@ builder.Services.AddOpenFga(x =>
 
 ### Authorization Policy Setup
 
-Now we'll need to setup our authorization middleware like so:
+We'll need to setup our authorization middleware like so:
 
 ```cs
-// Register the authorization policy
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy(FgaAuthorizationDefaults.PolicyKey, 
@@ -70,10 +69,59 @@ builder.Services.AddAuthorization(options =>
 });
 ```
 
-Next, create an attribute that inherits from `TupleCheckAttribute`. From here, you can pull the metadata you require to perform your tuple checks out of the HTTP request.
-For example, an equivalent to the [How To Integrate Within A Framework](https://docs.fga.dev/integration/framework) example would be:
+### Built-in Attributes
+
+`Fga.Net.AspNetCore` ships with a number of attributes that should cover the most common authorization sources for FGA checks:
+
+- `FgaHeaderObjectAttribute` - Computes the Object via a value in the requests header
+- `FgaPropertyObjectAttribute` - Computes the Object via a root-level property on the requests JSON body
+- `FgaQueryObjectAttribute` - Computes the Object via a value in the query string
+- `FgaRouteObjectAttribute` - Computes the Object via a value in the routes path
+
+These attributes can be used in both minimal APIs & in your controller(s):
 ```cs
-public class EntityAuthorizationAttribute : TupleCheckAttribute
+    // Traditional Controllers
+    [ApiController]
+    [Route("[controller]")]
+    [Authorize(FgaAuthorizationDefaults.PolicyKey)]
+    public class DocumentController : ControllerBase
+    {  
+        [HttpGet("view/{documentId}")]
+        [FgaRouteObject("viewer", "doc", "documentId")]
+        public string GetByConvention(string documentId)
+        {
+            return documentId;
+        }
+    }
+
+    // Minimal APIs
+    app.MapGet("/viewminimal/{documentId}", (string documentId) => Task.FromResult(documentId))
+        .RequireAuthorization(FgaAuthorizationDefaults.PolicyKey)
+        .WithMetadata(new FgaRouteObjectAttribute("viewer", "doc", "documentId"));
+```
+
+
+If you want to use the built-in attributes, you need to configure how the user's identity is resolved from the `ClaimsPrincipal`.
+The example below uses the Name, which should be suitable for most people (given the claim is mapped correctly).
+
+```cs
+builder.Services.AddOpenFga(x =>
+{
+  //...
+}, config =>
+{
+    config.UserIdentityResolver = principal => principal.Identity!.Name!;
+});
+```
+
+### Custom Attributes
+
+If your requirements are more bespoke than can be covered by the built-in attributes, then you may want to implement your own.
+To do this, inherit from either `FgaBaseObjectAttribute`, which uses the configuration's user resolver, or from `FgaAttribute` which is the root attribute and permits you to implement a custom user source.
+
+For example, an equivalent to the [How To Integrate Within A Framework](https://docs.fga.dev/integration/framework) tutorial would be:
+```cs
+public class ComputedRelationshipAttribute : FgaAttribute
 {
     private readonly string _prefix;
     private readonly string _routeValue;
@@ -95,35 +143,13 @@ public class EntityAuthorizationAttribute : TupleCheckAttribute
         });
 
     public override ValueTask<string> GetObject(HttpContext context) 
-        => ValueTask.FromResult($"{_prefix}:{context.GetRouteValue(_routeValue)}");
+        => ValueTask.FromResult(FormatObject(_type, context.GetRouteValue(_routeValue)!.ToString()!));
 }
-```
-
-Now apply the `Authorize` and `EntityAuthorization` attributes to your controller(s):
-```cs
-    // Traditional Controllers
-    [ApiController]
-    [Route("[controller]")]
-    [Authorize(FgaAuthorizationDefaults.PolicyKey)]
-    public class DocumentController : ControllerBase
-    {  
-        [HttpGet("view/{documentId}")]
-        [EntityAuthorization("doc", "documentId")]
-        public string GetByConvention(string documentId)
-        {
-            return documentId;
-        }
-    }
-
-    // Minimal APIs
-    app.MapGet("/viewminimal/{documentId}", (string documentId) => Task.FromResult(documentId))
-        .RequireAuthorization(FgaAuthorizationDefaults.PolicyKey)
-        .WithMetadata(new EntityAuthorizationAttribute("doc", "documentId"));
 ```
 
 If you need to manually perform checks, inject the `Auth0FgaApi` as required.
 
-An additional pre-made attribute that allows all tuple values to be hardcoded strings ships with the package (`StringTupleCheckAttribute`). This attribute is useful for testing and debug purposes, but should not be used in a real application.
+An additional pre-made attribute that allows all tuple values to be hardcoded strings ships with the package (`FgaStringAttribute`). This attribute is useful for testing and debug purposes, but should not be used in a real application.
 
 ## Worker Service / Generic Host Setup
 
