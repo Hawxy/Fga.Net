@@ -16,6 +16,7 @@
  */
 #endregion
 
+using Fga.Net.AspNetCore.Exceptions;
 using Microsoft.Extensions.Logging;
 
 namespace Fga.Net.AspNetCore.Authorization;
@@ -24,4 +25,10 @@ internal static partial class Log
 {
     [LoggerMessage(0, LogLevel.Debug, "FGA Check failed for User: {user}, Relation: {relation}, Object: {object}")]
     public static partial void CheckFailureDebug(this ILogger logger, string user, string relation, string @object);
+
+    [LoggerMessage(1, LogLevel.Debug, "FGA Attribute returned null value(s), User: {user}, Relation: {relation}, Object: {object}")]
+    public static partial void NullValuesReturned(this ILogger logger, string? user, string? relation, string? @object);
+
+    [LoggerMessage(2, LogLevel.Information, "Unable to compute FGA Object.")]
+    public static partial void MiddlewareException(this ILogger logger, FgaMiddlewareException ex);
 }

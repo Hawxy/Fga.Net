@@ -2,6 +2,7 @@ using System.Security.Claims;
 using Fga.Example.AspNetCore;
 using Fga.Net.AspNetCore;
 using Fga.Net.AspNetCore.Authorization;
+using Fga.Net.AspNetCore.Authorization.Attributes;
 using Fga.Net.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -29,11 +30,14 @@ builder.Services.AddAuthentication(options =>
 
 
 // Auth0 FGA
-builder.Services.AddOpenFga(x =>
+builder.Services.AddOpenFga(clientConfig =>
 {
-    x.WithAuth0FgaDefaults(builder.Configuration["Auth0Fga:ClientId"], builder.Configuration["Auth0Fga:ClientSecret"]);
-
-    x.StoreId = builder.Configuration["Auth0Fga:StoreId"];
+    clientConfig.WithAuth0FgaDefaults(builder.Configuration["Auth0Fga:ClientId"], builder.Configuration["Auth0Fga:ClientSecret"]);
+    clientConfig.StoreId = builder.Configuration["Auth0Fga:StoreId"];
+  
+}, middlewareConfig =>
+{
+    middlewareConfig.UserIdentityResolver = principal => principal.Identity!.Name!;
 });
 
 
@@ -69,6 +73,6 @@ app.MapControllers();
 
 app.MapGet("/viewminimal/{documentId}", (string documentId) => Task.FromResult(documentId))
     .RequireAuthorization(FgaAuthorizationDefaults.PolicyKey)
-    .WithMetadata(new EntityAuthorizationAttribute("doc", "documentId"));
+    .WithMetadata(new FgaRouteObjectAttribute("viewer", "doc", "documentId"));
 
 app.Run();

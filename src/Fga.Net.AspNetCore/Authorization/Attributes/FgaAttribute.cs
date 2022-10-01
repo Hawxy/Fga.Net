@@ -24,7 +24,7 @@ namespace Fga.Net.AspNetCore.Authorization.Attributes;
 /// The base implementation of a FGA authorization attribute that allows authorization decisions to be made from the current HTTP request.
 /// </summary>
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = true)]
-public abstract class TupleCheckAttribute : Attribute
+public abstract class FgaAttribute : Attribute
 {
     /// <summary>
     /// An entity in the system that can be related to an object.
@@ -44,5 +44,13 @@ public abstract class TupleCheckAttribute : Attribute
     /// <param name="context">The context of the current request</param>
     /// <returns>Usually a string in an entity-identifier format: <value>document:id</value></returns>
     public abstract ValueTask<string> GetObject(HttpContext context);
+
+    /// <summary>
+    /// Concats the type and identifier into the object format
+    /// </summary>
+    /// <param name="type">The objects type, such as workspace, repository, organization or document</param>
+    /// <param name="identifier">The objects identifier</param>
+    /// <returns>The object in the entity:identifier format</returns>
+    public static string FormatObject(string type, string identifier) => $"{type}:{identifier}";
 }
 

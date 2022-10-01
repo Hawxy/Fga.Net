@@ -17,6 +17,7 @@
 #endregion
 
 using Fga.Net.AspNetCore.Authorization.Attributes;
+using Fga.Net.AspNetCore.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -41,18 +42,34 @@ internal class FineGrainedAuthorizationHandler : AuthorizationHandler<FineGraine
             var endpoint = httpContext.GetEndpoint();
             if (endpoint is null)
                 return;
-            var attributes = endpoint.Metadata.GetOrderedMetadata<TupleCheckAttribute>();
+            var attributes = endpoint.Metadata.GetOrderedMetadata<FgaAttribute>();
             // The user is enforcing the fga policy but there's no attributes here.
             if (attributes.Count == 0)
                 return;
             foreach (var attribute in attributes)
             {
-                var user = await attribute.GetUser(httpContext);
-                var relation = await attribute.GetRelation(httpContext);
-                var @object = await attribute.GetObject(httpContext);
+                string? user;
+                string? relation;
+                string? @object;
+                try
+                {
+                    user = await attribute.GetUser(httpContext);
+                    relation = await attribute.GetRelation(httpContext);
+                    @object = await attribute.GetObject(httpContext);
+                }
+                catch (FgaMiddlewareException ex)
+                {
+                    _logger.MiddlewareException(ex);
+                    return;
+                }
+
                 // If we get back nulls from anything we cannot perform a check.
                 if (string.IsNullOrEmpty(user) || string.IsNullOrEmpty(relation) || string.IsNullOrEmpty(@object))
+                {
+                    _logger.NullValuesReturned(user, relation, @object);
                     return;
+                }
+               
                 
                 var result = await _client.Check(new CheckRequest()
                 {
