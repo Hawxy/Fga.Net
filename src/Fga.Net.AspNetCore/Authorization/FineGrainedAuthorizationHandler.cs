@@ -42,7 +42,7 @@ internal class FineGrainedAuthorizationHandler : AuthorizationHandler<FineGraine
             var endpoint = httpContext.GetEndpoint();
             if (endpoint is null)
                 return;
-            var attributes = endpoint.Metadata.GetOrderedMetadata<FgaBaseAttribute>();
+            var attributes = endpoint.Metadata.GetOrderedMetadata<FgaAttribute>();
             // The user is enforcing the fga policy but there's no attributes here.
             if (attributes.Count == 0)
                 return;

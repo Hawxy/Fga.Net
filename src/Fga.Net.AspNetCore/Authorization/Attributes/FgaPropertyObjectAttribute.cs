@@ -12,9 +12,7 @@ public class FgaPropertyObjectAttribute : FgaBaseObjectAttribute
 {
     private readonly string _relation;
     private readonly string _type;
-
     private readonly string _property;
-
 
     /// <summary>
     /// Computes a FGA Authorization check based on a root-level property within the object.

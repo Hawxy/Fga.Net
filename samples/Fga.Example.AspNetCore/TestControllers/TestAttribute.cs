@@ -2,7 +2,7 @@
 
 namespace Fga.Example.AspNetCore.TestControllers;
 
-public class TestAuthorizationAttribute : FgaBaseAttribute
+public class TestAuthorizationAttribute : FgaAttribute
 {
 
     public override ValueTask<string> GetUser(HttpContext context)

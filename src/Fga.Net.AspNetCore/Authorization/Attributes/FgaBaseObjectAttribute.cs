@@ -7,7 +7,7 @@ namespace Fga.Net.AspNetCore.Authorization.Attributes;
 /// <summary>
 /// Base type for implementing attributes that use a configuration-driven user source.
 /// </summary>
-public abstract class FgaBaseObjectAttribute : FgaBaseAttribute
+public abstract class FgaBaseObjectAttribute : FgaAttribute
 {
     /// <inheritdoc />
     public override ValueTask<string> GetUser(HttpContext context)

@@ -18,7 +18,7 @@ public class DocumentController : ControllerBase
     }
 
     [HttpGet]
-    [StringTupleCheck("anne", "read", "doc:Z")]
+    [FgaString("anne", "read", "doc:Z")]
     public string GetHardcoded()
     {
         return string.Empty;
