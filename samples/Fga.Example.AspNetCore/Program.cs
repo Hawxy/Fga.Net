@@ -73,6 +73,6 @@ app.MapControllers();
 
 app.MapGet("/viewminimal/{documentId}", (string documentId) => Task.FromResult(documentId))
     .RequireAuthorization(FgaAuthorizationDefaults.PolicyKey)
-    .WithMetadata(new FgaRouteObjectAttribute("viewer", "doc", "sdfsdfsdf"));
+    .WithMetadata(new FgaRouteObjectAttribute("viewer", "doc", "documentId"));
 
 app.Run();
