@@ -39,6 +39,9 @@ namespace Fga.Net.Tests.Unit
             {
                 x.StoreId = Guid.NewGuid().ToString();
                 x.WithAuth0FgaDefaults(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
+            }, x =>
+            {
+                x.UserIdentityResolver = principal => principal.Identity!.Name!;
             });
 
             var provider = collection.BuildServiceProvider();

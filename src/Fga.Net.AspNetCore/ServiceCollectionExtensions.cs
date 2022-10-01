@@ -33,13 +33,15 @@ public static class ServiceCollectionExtensions
     /// Adds and configures an <see cref="FineGrainedAuthorizationHandler"/> along with a <see cref="OpenFgaApi"/>.
     /// </summary>
     /// <param name="collection">The service collection</param>
-    /// <param name="config">The delegate for the <see cref="FgaClientConfiguration"/> that will be used to configure the <see cref="OpenFgaApi"/></param>
+    /// <param name="clientConfig">The delegate for the <see cref="FgaClientConfiguration"/> that will be used to configure the <see cref="OpenFgaApi"/></param>
+    /// <param name="middlewareConfig">The delegate for the <see cref="FgaAspNetCoreConfiguration"/> that will be used to configure the underlying middleware</param>
     /// <returns>The service collection</returns>
-    public static IServiceCollection AddOpenFga(this IServiceCollection collection, Action<FgaClientConfiguration> config)
+    public static IServiceCollection AddOpenFga(this IServiceCollection collection, Action<FgaClientConfiguration> clientConfig, Action<FgaAspNetCoreConfiguration>? middlewareConfig = null)
     {
-        ArgumentNullException.ThrowIfNull(config);
-
-        collection.AddOpenFgaClient(config);
+        ArgumentNullException.ThrowIfNull(clientConfig);
+        collection.AddOpenFgaClient(clientConfig);
+        if(middlewareConfig != null)
+            collection.Configure(middlewareConfig);
         collection.AddScoped<IFgaCheckDecorator, FgaCheckDecorator>();
         collection.AddScoped<IAuthorizationHandler, FineGrainedAuthorizationHandler>();
         return collection;

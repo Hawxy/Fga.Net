@@ -21,10 +21,10 @@ namespace Fga.Net.AspNetCore.Authorization;
 /// <summary>
 /// FGA Authorization default values.
 /// </summary>
-public class FgaAuthorizationDefaults
+public sealed class FgaAuthorizationDefaults
 {
     /// <summary>
     /// The default authorization policy key for FGA Authorization
     /// </summary>
-    public const string PolicyKey = "Auth0FGA";
+    public const string PolicyKey = "FgaAuthorizationPolicy";
 }

@@ -3,13 +3,13 @@
 namespace Fga.Example.AspNetCore;
 
 //Checks against a value in the route.
-public class EntityAuthorizationAttribute : TupleCheckAttribute
+public class EntityAuthorizationAttribute : FgaBaseAttribute
 {
-    private readonly string _prefix;
+    private readonly string _type;
     private readonly string _routeValue;
-    public EntityAuthorizationAttribute(string prefix, string routeValue)
+    public EntityAuthorizationAttribute(string type, string routeValue)
     {
-        _prefix = prefix;
+        _type = type;
         _routeValue = routeValue;
     }
 
@@ -25,11 +25,11 @@ public class EntityAuthorizationAttribute : TupleCheckAttribute
         });
 
     public override ValueTask<string> GetObject(HttpContext context) 
-        => ValueTask.FromResult($"{_prefix}:{context.GetRouteValue(_routeValue)}");
+        => ValueTask.FromResult(FormatObject(_type, context.GetRouteValue(_routeValue)!.ToString()!));
 }
 
 // Checks against a single entity sharing a common interface.
-public class InterfaceAuthorizationAttribute : TupleCheckAttribute
+public class InterfaceAuthorizationAttribute : FgaBaseAttribute
 {
     private readonly string _prefix;
     public InterfaceAuthorizationAttribute(string prefix)
