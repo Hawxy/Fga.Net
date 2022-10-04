@@ -12,14 +12,14 @@ public class DocumentController : ControllerBase
 {
 
     [HttpGet("view/{documentId}")]
-    [FgaRouteObject(Fga.Document.Viewer, Fga.Document.Type, "documentId")]
+    [FgaRouteObject(Fga.Document.Read, Fga.Document.Type, "documentId")]
     public string GetByConvention(string documentId)
     {
         return documentId;
     }
 
     [HttpGet]
-    [FgaString("anne", "viewer", "document:12345")]
+    [FgaString("anne", "read", "document:12345")]
     public string GetHardcoded()
     {
         return string.Empty;
@@ -33,9 +33,9 @@ public static class Fga
     {
         public const string Type = "document";
 
-        public const string Viewer = "viewer";
-        public const string Editor = "editor";
         public const string Owner = "owner";
+        public const string Read = "read";
+        public const string Write = "write";
 
     }
 }

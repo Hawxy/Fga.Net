@@ -87,7 +87,7 @@ These attributes can be used in both minimal APIs & in your controller(s):
     public class DocumentController : ControllerBase
     {  
         [HttpGet("view/{documentId}")]
-        [FgaRouteObject("viewer", "doc", "documentId")]
+        [FgaRouteObject("read", "document", "documentId")]
         public string GetByConvention(string documentId)
         {
             return documentId;
@@ -97,7 +97,7 @@ These attributes can be used in both minimal APIs & in your controller(s):
     // Minimal APIs
     app.MapGet("/viewminimal/{documentId}", (string documentId) => Task.FromResult(documentId))
         .RequireAuthorization(FgaAuthorizationDefaults.PolicyKey)
-        .WithMetadata(new FgaRouteObjectAttribute("viewer", "doc", "documentId"));
+        .WithMetadata(new FgaRouteObjectAttribute("read", "document", "documentId"));
 ```
 
 
