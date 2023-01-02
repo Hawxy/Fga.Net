@@ -69,8 +69,8 @@ internal class FineGrainedAuthorizationHandler : AuthorizationHandler<FineGraine
                     _logger.NullValuesReturned(user, relation, @object);
                     return;
                 }
-               
-                
+
+
                 var result = await _client.Check(new CheckRequest()
                 {
                     TupleKey = new TupleKey
@@ -81,7 +81,7 @@ internal class FineGrainedAuthorizationHandler : AuthorizationHandler<FineGraine
                     }
                 }, httpContext.RequestAborted);
 
-                if (!result.Allowed)
+                if (!result.Allowed.HasValue || ! result.Allowed.Value)
                 {
                     _logger.CheckFailureDebug(user, relation, @object);
                     return;

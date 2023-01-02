@@ -29,7 +29,7 @@ public class FgaControllerBase : ControllerBase
 {
     private readonly OpenFgaApi _client;
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="client"></param>
     public FgaControllerBase(OpenFgaApi client)
@@ -38,7 +38,7 @@ public class FgaControllerBase : ControllerBase
     }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="user"></param>
     /// <param name="relation"></param>
@@ -56,6 +56,6 @@ public class FgaControllerBase : ControllerBase
                 Object = @object
             }
         }, ct);
-        return checkRes.Allowed;
+        return checkRes.Allowed.HasValue && checkRes.Allowed.Value;
     }
 }
