@@ -30,12 +30,14 @@ Ensure you have a Store ID, Client ID, and Client Secret ready from [How to get 
 1. Add your `StoreId`, `ClientId` and `ClientSecret` to your application configuration, ideally via the [dotnet secrets manager](https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-6.0&tabs=windows#enable-secret-storage).
 2. Add the following code to your ASP.NET Core services configuration:
 ```cs
-builder.Services.AddOpenFga(x =>
+builder.Services.AddOpenFgaClient(x =>
 {
     x.WithAuth0FgaDefaults(builder.Configuration["Auth0Fga:ClientId"], builder.Configuration["Auth0Fga:ClientSecret"]);
 
     x.StoreId = builder.Configuration["Auth0Fga:StoreId"];
 });
+
+builder.Services.AddOpenFgaMiddleware();
 ```
 
 The `WithAuth0FgaDefaults` extension will configure the relevant OpenFGA client settings to work with Auth0 FGA's US environment.
@@ -47,17 +49,19 @@ OpenFGA configuration is very similar to the [SDK Setup Guide](https://openfga.d
 1. Add the FGA `ApiScheme`, `ApiHost` & `StoreId` to your application configuration.
 2. Add the following code to your ASP.NET Core configuration:
 ```cs
-builder.Services.AddOpenFga(x =>
+builder.Services.AddOpenFgaClient(x =>
 {
     x.ApiScheme = builder.Configuration["Fga:ApiScheme"];
     x.ApiHost = builder.Configuration["Fga:ApiHost"];
     x.StoreId = builder.Configuration["Fga:StoreId"];
 });
+
+builder.Services.AddOpenFgaMiddleware();
 ```
 
 ### Authorization Policy Setup
 
-We'll need to setup our authorization middleware like so:
+We'll need to setup our authorization policy like so:
 
 ```cs
 builder.Services.AddAuthorization(options =>
@@ -105,12 +109,11 @@ If you want to use the built-in attributes, you need to configure how the user's
 The example below uses the Name, which should be suitable for most people (given the claim is mapped correctly).
 
 ```cs
-builder.Services.AddOpenFga(x =>
-{
-  //...
-}, config =>
+builder.Services.AddOpenFgaMiddleware(config =>
 {
     config.UserIdentityResolver = principal => principal.Identity!.Name!;
+    //If you're using DSL v1.1 it requires the user type to be included
+    //config.UserIdentityResolver = principal => $"user:{principal.Identity!.Name!}";
 });
 ```
 

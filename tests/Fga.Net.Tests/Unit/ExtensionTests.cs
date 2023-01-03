@@ -35,11 +35,13 @@ namespace Fga.Net.Tests.Unit
         {
             var collection = new ServiceCollection();
 
-            collection.AddOpenFga(x =>
+            collection.AddOpenFgaClient(x =>
             {
                 x.StoreId = Guid.NewGuid().ToString();
                 x.WithAuth0FgaDefaults(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
-            }, x =>
+            });
+
+            collection.AddOpenFgaMiddleware(x =>
             {
                 x.UserIdentityResolver = principal => principal.Identity!.Name!;
             });
