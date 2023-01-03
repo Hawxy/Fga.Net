@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Alba;
 using Microsoft.Extensions.DependencyInjection;
@@ -34,7 +35,7 @@ namespace Fga.Net.Tests.Client
             var modelResponse = await client.ReadAuthorizationModel(modelId);
 
             Assert.NotNull(modelResponse);
-            Assert.NotNull(modelResponse.AuthorizationModel.Id);
+            Assert.NotNull(modelResponse.AuthorizationModel?.Id);
 
             var assertions = await client.ReadAssertions(modelId);
 
@@ -42,7 +43,7 @@ namespace Fga.Net.Tests.Client
             Assert.True(assertions.Assertions?.Count > 0);
             var assertion = assertions.Assertions!.First().TupleKey;
 
-            Assert.NotEmpty(assertion.Object!);
+            Assert.NotEmpty(assertion!.Object!);
             Assert.NotEmpty(assertion.Relation!);
             Assert.NotEmpty(assertion.User!);
             
@@ -57,6 +58,7 @@ namespace Fga.Net.Tests.Client
 
             var watch = await client.ReadChanges();
             Assert.NotNull(watch);
+
 
         }
 

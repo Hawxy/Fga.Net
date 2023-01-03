@@ -30,24 +30,26 @@ builder.Services.AddAuthentication(options =>
 
 
 // Auth0 FGA
-builder.Services.AddOpenFga(clientConfig =>
+builder.Services.AddOpenFgaClient(clientConfig =>
 {
-    clientConfig.WithAuth0FgaDefaults(builder.Configuration["Auth0Fga:ClientId"], builder.Configuration["Auth0Fga:ClientSecret"]);
+    clientConfig.WithAuth0FgaDefaults(builder.Configuration["Auth0Fga:ClientId"],
+        builder.Configuration["Auth0Fga:ClientSecret"]);
     clientConfig.StoreId = builder.Configuration["Auth0Fga:StoreId"];
-  
-}, middlewareConfig =>
-{
-    middlewareConfig.UserIdentityResolver = principal => principal.Identity!.Name!;
+
 });
 
-
 // OpenFGA
-/*builder.Services.AddOpenFga(x =>
+/*builder.Services.AddOpenFgaClient(x =>
 {
     x.ApiScheme = builder.Configuration["Fga:ApiScheme"];
     x.ApiHost = builder.Configuration["Fga:ApiHost"];
     x.StoreId = builder.Configuration["Fga:StoreId"];
 });*/
+
+builder.Services.AddOpenFgaMiddleware(middlewareConfig =>
+{
+    middlewareConfig.UserIdentityResolver = principal => principal.Identity!.Name!;
+});
 
 builder.Services.AddAuthorization(options =>
 {

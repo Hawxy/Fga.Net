@@ -35,14 +35,14 @@ public class FgaPropertyObjectAttribute : FgaBaseObjectAttribute
     }
 
     /// <inheritdoc />
-    public override ValueTask<string> GetObject(HttpContext context)
+    public override async ValueTask<string> GetObject(HttpContext context)
     {
        context.Request.EnableBuffering();
-       using var document = JsonDocument.Parse(context.Request.Body);
+       using var document = await JsonDocument.ParseAsync(context.Request.Body, cancellationToken: context.RequestAborted);
        if (document.RootElement.TryGetProperty(_property, out var element))
        {
            context.Request.Body.Position = 0;
-           return ValueTask.FromResult(FormatObject(_type,element.GetString()!));
+           return FormatObject(_type,element.GetString()!);
        }
 
        throw new FgaMiddlewareException($"Unable to resolve JSON property {_property}");
