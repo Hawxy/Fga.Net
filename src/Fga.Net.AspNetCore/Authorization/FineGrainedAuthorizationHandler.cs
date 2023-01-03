@@ -81,7 +81,7 @@ internal class FineGrainedAuthorizationHandler : AuthorizationHandler<FineGraine
                     }
                 }, httpContext.RequestAborted);
 
-                if (result.Allowed.HasValue && result.Allowed.Value)
+                if (result.Allowed is false)
                 {
                     _logger.CheckFailureDebug(user, relation, @object);
                     return;

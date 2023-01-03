@@ -56,6 +56,6 @@ public class FgaControllerBase : ControllerBase
                 Object = @object
             }
         }, ct);
-        return checkRes.Allowed;
+        return checkRes.Allowed.HasValue && checkRes.Allowed.Value;
     }
 }
