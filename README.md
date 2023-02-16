@@ -111,9 +111,8 @@ The example below uses the Name, which should be suitable for most people (given
 ```cs
 builder.Services.AddOpenFgaMiddleware(config =>
 {
-    config.UserIdentityResolver = principal => principal.Identity!.Name!;
-    //If you're using DSL v1.1 it requires the user type to be included
-    //config.UserIdentityResolver = principal => $"user:{principal.Identity!.Name!}";
+    //DSL v1.1 requires the user type to be included
+    config.UserIdentityResolver = principal => $"user:{principal.Identity!.Name!}";
 });
 ```
 
