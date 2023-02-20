@@ -191,9 +191,9 @@ await host.RunAsync();
 ```cs
 public class MyBackgroundWorker : BackgroundService
 {
-    private readonly Auth0FgaApi _authorizationClient;
+    private readonly OpenFgaApi _authorizationClient;
 
-    public MyBackgroundWorker(Auth0FgaApi authorizationClient)
+    public MyBackgroundWorker(OpenFgaApi authorizationClient)
     {
         _authorizationClient = authorizationClient;
     }
