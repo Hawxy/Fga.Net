@@ -37,7 +37,7 @@ public class FgaQueryObjectAttribute : FgaBaseObjectAttribute
     {
         if (context.Request.Query.TryGetValue(_queryKey, out var queryValue))
         {
-            return ValueTask.FromResult(FormatObject(_type, queryValue));
+            return ValueTask.FromResult(FormatObject(_type, queryValue!));
         }
 
         throw new FgaMiddlewareException($"Query key {_queryKey} was not present in the request");

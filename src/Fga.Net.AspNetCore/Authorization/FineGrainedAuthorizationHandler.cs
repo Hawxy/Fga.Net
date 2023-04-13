@@ -1,6 +1,6 @@
 ﻿#region License
 /*
-   Copyright 2021-2022 Hawxy
+   Copyright 2021-2023 Hawxy
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -21,11 +21,11 @@ using Fga.Net.AspNetCore.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using OpenFga.Sdk.Model;
+using OpenFga.Sdk.Client.Model;
 
 namespace Fga.Net.AspNetCore.Authorization;
 
-internal class FineGrainedAuthorizationHandler : AuthorizationHandler<FineGrainedAuthorizationRequirement>
+internal sealed class FineGrainedAuthorizationHandler : AuthorizationHandler<FineGrainedAuthorizationRequirement>
 {
     private readonly IFgaCheckDecorator _client;
     private readonly ILogger<FineGrainedAuthorizationHandler> _logger;
@@ -71,14 +71,11 @@ internal class FineGrainedAuthorizationHandler : AuthorizationHandler<FineGraine
                 }
                
                 
-                var result = await _client.Check(new CheckRequest()
+                var result = await _client.Check(new ClientCheckRequest()
                 {
-                    TupleKey = new TupleKey
-                    {
-                        User = user,
-                        Relation = relation,
-                        Object = @object
-                    }
+                    User = user,
+                    Relation = relation,
+                    Object = @object
                 }, httpContext.RequestAborted);
 
                 if (result.Allowed is false)

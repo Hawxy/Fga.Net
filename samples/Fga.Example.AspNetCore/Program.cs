@@ -32,8 +32,8 @@ builder.Services.AddAuthentication(options =>
 // Auth0 FGA
 builder.Services.AddOpenFgaClient(clientConfig =>
 {
-    clientConfig.WithAuth0FgaDefaults(builder.Configuration["Auth0Fga:ClientId"],
-        builder.Configuration["Auth0Fga:ClientSecret"]);
+    clientConfig.WithAuth0FgaDefaults(builder.Configuration["Auth0Fga:ClientId"]!,
+        builder.Configuration["Auth0Fga:ClientSecret"]!);
     clientConfig.StoreId = builder.Configuration["Auth0Fga:StoreId"];
 
 });

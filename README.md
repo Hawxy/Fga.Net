@@ -8,7 +8,7 @@
 ### Packages
 **`Fga.Net.DependencyInjection`**: Provides dependency injection/configuration extensions for [OpenFga.Sdk](https://github.com/openfga/dotnet-sdk)
 
-**`Fga.Net.AspNetCore`**: Additionally includes Authorization middleware to support FGA checks as part of a request's lifecycle.
+**`Fga.Net.AspNetCore`**: Includes Authorization middleware to support FGA checks as part of a request's lifecycle.
 
 ## Getting Started
 
@@ -91,7 +91,7 @@ These attributes can be used in both minimal APIs & in your controller(s):
     public class DocumentController : ControllerBase
     {  
         [HttpGet("view/{documentId}")]
-        [FgaRouteObject("read", "document", "documentId")]
+        [FgaRouteObject("read", "document", nameof(documentId))]
         public string GetByConvention(string documentId)
         {
             return documentId;
@@ -149,9 +149,11 @@ public class ComputedRelationshipAttribute : FgaAttribute
 }
 ```
 
-If you need to manually perform checks, inject the `Auth0FgaApi` as required.
-
 An additional pre-made attribute that allows all tuple values to be hardcoded strings ships with the package (`FgaStringAttribute`). This attribute is useful for testing and debug purposes, but should not be used in a real application.
+
+## Client Injection
+
+This package registers both the `OpenFgaApi` and `OpenFgaClient` types in the DI container. `OpenFgaClient` is a higher level abstraction and preferred over `OpenFgaApi` for general use.
 
 ## Worker Service / Generic Host Setup
 
@@ -191,11 +193,11 @@ await host.RunAsync();
 ```cs
 public class MyBackgroundWorker : BackgroundService
 {
-    private readonly OpenFgaApi _authorizationClient;
+    private readonly OpenFgaClient _fgaClient;
 
-    public MyBackgroundWorker(OpenFgaApi authorizationClient)
+    public MyBackgroundWorker(OpenFgaClient fgaClient)
     {
-        _authorizationClient = authorizationClient;
+        _fgaClient = fgaClient;
     }
 
     protected override Task ExecuteAsync(CancellationToken stoppingToken)

@@ -5,6 +5,7 @@ using Fga.Net.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Moq;
+using OpenFga.Sdk.Client.Model;
 using OpenFga.Sdk.Model;
 using Xunit;
 
@@ -19,10 +20,10 @@ public class WebAppFixture : IAsyncLifetime
         var authorizationClientMock = new Mock<IFgaCheckDecorator>();
 
         authorizationClientMock.Setup(c =>
-            c.Check(It.IsAny<CheckRequest>(),
+            c.Check(It.IsAny<ClientCheckRequest>(),
                 It.IsAny<CancellationToken>()))
-            .ReturnsAsync((CheckRequest res, CancellationToken _) => 
-                res.TupleKey!.User == MockJwtConfiguration.DefaultUser 
+            .ReturnsAsync((ClientCheckRequest res, CancellationToken _) => 
+                res.User == MockJwtConfiguration.DefaultUser 
                     ? new CheckResponse() { Allowed = true } 
                     : new CheckResponse() { Allowed = false });
 
