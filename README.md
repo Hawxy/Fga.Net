@@ -91,7 +91,7 @@ These attributes can be used in both minimal APIs & in your controller(s):
     public class DocumentController : ControllerBase
     {  
         [HttpGet("view/{documentId}")]
-        [FgaRouteObject("read", "document", "documentId")]
+        [FgaRouteObject("read", "document", nameof(documentId))]
         public string GetByConvention(string documentId)
         {
             return documentId;

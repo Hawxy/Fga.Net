@@ -1,4 +1,6 @@
 ﻿using OpenFga.Sdk.Api;
+using OpenFga.Sdk.Client;
+using OpenFga.Sdk.Client.Model;
 using OpenFga.Sdk.Model;
 
 namespace Fga.Net.AspNetCore.Authorization;
@@ -8,13 +10,13 @@ namespace Fga.Net.AspNetCore.Authorization;
 /// </summary>
 public class FgaCheckDecorator : IFgaCheckDecorator
 {
-    private readonly OpenFgaApi _auth0FgaApi;
+    private readonly OpenFgaClient _auth0FgaApi;
 
     /// <summary>
     /// 
     /// </summary>
     /// <param name="auth0FgaApi"></param>
-    public FgaCheckDecorator(OpenFgaApi auth0FgaApi)
+    public FgaCheckDecorator(OpenFgaClient auth0FgaApi)
     {
         _auth0FgaApi = auth0FgaApi;
     }
@@ -25,7 +27,7 @@ public class FgaCheckDecorator : IFgaCheckDecorator
     /// <param name="request"></param>
     /// <param name="ct"></param>
     /// <returns></returns>
-    public virtual Task<CheckResponse> Check(CheckRequest request, CancellationToken ct) => _auth0FgaApi.Check(request, ct);
+    public virtual Task<CheckResponse> Check(ClientCheckRequest request, CancellationToken ct) => _auth0FgaApi.Check(request, cancellationToken: ct);
 }
 
 /// <summary>
@@ -39,5 +41,5 @@ public interface IFgaCheckDecorator
     /// <param name="request"></param>
     /// <param name="ct"></param>
     /// <returns></returns>
-    Task<CheckResponse> Check(CheckRequest request, CancellationToken ct);
+    Task<CheckResponse> Check(ClientCheckRequest request, CancellationToken ct);
 }

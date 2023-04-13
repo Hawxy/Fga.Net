@@ -1,6 +1,6 @@
 ﻿#region License
 /*
-   Copyright 2021-2022 Hawxy
+   Copyright 2021-2023 Hawxy
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -17,10 +17,8 @@
 #endregion
 
 using Fga.Net.AspNetCore.Authorization;
-using Fga.Net.DependencyInjection;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
-using OpenFga.Sdk.Api;
 
 namespace Fga.Net.AspNetCore;
 
@@ -29,24 +27,6 @@ namespace Fga.Net.AspNetCore;
 /// </summary>
 public static class ServiceCollectionExtensions
 {
-    /// <summary>
-    /// Adds and configures an <see cref="FineGrainedAuthorizationHandler"/> along with a <see cref="OpenFgaApi"/>.
-    /// </summary>
-    /// <param name="collection">The service collection</param>
-    /// <param name="clientConfig">The delegate for the <see cref="FgaClientConfiguration"/> that will be used to configure the <see cref="OpenFgaApi"/></param>
-    /// <param name="middlewareConfig">The delegate for the <see cref="FgaAspNetCoreConfiguration"/> that will be used to configure the underlying middleware</param>
-    /// <returns>The service collection</returns>
-    [Obsolete("Replace with AddOpenFgaClient & AddOpenFgaMiddleware")]
-    public static IServiceCollection AddOpenFga(this IServiceCollection collection, Action<FgaClientConfiguration> clientConfig, Action<FgaAspNetCoreConfiguration>? middlewareConfig = null)
-    {
-        ArgumentNullException.ThrowIfNull(clientConfig);
-        collection.AddOpenFgaClient(clientConfig);
-        if(middlewareConfig != null)
-            collection.Configure(middlewareConfig);
-        collection.AddScoped<IFgaCheckDecorator, FgaCheckDecorator>();
-        collection.AddScoped<IAuthorizationHandler, FineGrainedAuthorizationHandler>();
-        return collection;
-    }
 
     /// <summary>
     /// Adds and configures an <see cref="FineGrainedAuthorizationHandler"/>

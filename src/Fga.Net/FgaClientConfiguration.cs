@@ -1,6 +1,6 @@
 ﻿#region License
 /*
-   Copyright 2021-2022 Hawxy
+   Copyright 2021-2023 Hawxy
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -17,14 +17,14 @@
 #endregion
 
 
-using OpenFga.Sdk.Configuration;
+using OpenFga.Sdk.Client;
 
 namespace Fga.Net.DependencyInjection;
 
 /// <summary>
 /// FGA Authentication/Authorization configuration
 /// </summary>
-public class FgaClientConfiguration : Configuration
+public sealed class FgaClientConfiguration : ClientConfiguration
 {
     
 }

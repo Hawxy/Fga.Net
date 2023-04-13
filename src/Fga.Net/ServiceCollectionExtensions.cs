@@ -1,6 +1,6 @@
 ﻿#region License
 /*
-   Copyright 2021-2022 Hawxy
+   Copyright 2021-2023 Hawxy
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using OpenFga.Sdk.Api;
+using OpenFga.Sdk.Client;
 
 namespace Fga.Net.DependencyInjection;
 
@@ -27,17 +28,18 @@ namespace Fga.Net.DependencyInjection;
 public static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Registers and configures an <see cref="OpenFgaApi"/> for the provided service collection.
+    /// Registers and configures an <see cref="OpenFgaClient"/> and <see cref="OpenFgaApi"/> for the provided service collection.
     /// </summary>
     /// <param name="collection"></param>
     /// <param name="configuration"></param>
-    /// <returns>An <see cref="IHttpClientBuilder" /> that can be used to configure the <see cref="FgaClientConfiguration"/>.</returns>
+    /// <returns>An <see cref="IHttpClientBuilder" /> that can be used to configure the <see cref="OpenFgaClient"/>.</returns>
     public static IHttpClientBuilder AddOpenFgaClient(this IServiceCollection collection, Action<FgaClientConfiguration> configuration)
     {
         ArgumentNullException.ThrowIfNull(configuration);
 
         collection.Configure(configuration);
-        return collection.AddHttpClient<OpenFgaApi, InjectableFgaApi>();
+        collection.AddHttpClient<OpenFgaApi, InjectableFgaApi>();
+        return collection.AddHttpClient<OpenFgaClient, InjectableFgaClient>();
     }
 }
 

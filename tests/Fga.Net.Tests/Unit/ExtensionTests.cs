@@ -5,6 +5,7 @@ using Fga.Net.DependencyInjection;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using OpenFga.Sdk.Api;
+using OpenFga.Sdk.Client;
 using Xunit;
 
 namespace Fga.Net.Tests.Unit
@@ -25,9 +26,13 @@ namespace Fga.Net.Tests.Unit
 
             var provider = collection.BuildServiceProvider();
 
-            var authClient = provider.GetService<OpenFgaApi>();
-            Assert.NotNull(authClient);
-            Assert.IsType<InjectableFgaApi>(authClient);
+            var apiClient = provider.GetService<OpenFgaApi>();
+            Assert.NotNull(apiClient);
+            Assert.IsType<InjectableFgaApi>(apiClient);
+
+            var fgaClient = provider.GetService<OpenFgaClient>();
+            Assert.NotNull(fgaClient);
+            Assert.IsType<InjectableFgaClient>(fgaClient);
         }
 
         [Fact]
@@ -50,12 +55,7 @@ namespace Fga.Net.Tests.Unit
 
             var col = provider.GetServices<IAuthorizationHandler>();
 
-            Assert.Contains(col, handler => handler.GetType() == typeof(FineGrainedAuthorizationHandler));
-
-            var authClient = provider.GetService<OpenFgaApi>();
-            Assert.NotNull(authClient);
-            Assert.IsType<InjectableFgaApi>(authClient);
-
+            Assert.Contains(col, handler => handler is FineGrainedAuthorizationHandler);
         }
 
         [Fact]
@@ -63,7 +63,7 @@ namespace Fga.Net.Tests.Unit
         {
             var policy = new AuthorizationPolicyBuilder().AddFgaRequirement().Build();
 
-            Assert.Contains(policy.Requirements, requirement => requirement.GetType() == typeof(FineGrainedAuthorizationRequirement));
+            Assert.Contains(policy.Requirements, requirement => requirement is FineGrainedAuthorizationRequirement);
         }
 
     }
