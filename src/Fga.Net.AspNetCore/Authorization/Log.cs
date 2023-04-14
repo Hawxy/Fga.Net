@@ -23,12 +23,16 @@ namespace Fga.Net.AspNetCore.Authorization;
 
 internal static partial class Log
 {
-    [LoggerMessage(0, LogLevel.Debug, "FGA Check failed for User: {user}, Relation: {relation}, Object: {object}")]
-    public static partial void CheckFailureDebug(this ILogger logger, string user, string relation, string @object);
+    [LoggerMessage(3001, LogLevel.Debug, "FGA Check failed for User: {user}, Relation: {relation}, Object: {object}")]
+    public static partial void CheckFailure(this ILogger logger, string user, string relation, string @object);
 
-    [LoggerMessage(1, LogLevel.Debug, "FGA Attribute returned null value(s), User: {user}, Relation: {relation}, Object: {object}")]
+    [LoggerMessage(3002, LogLevel.Debug, "FGA Attribute returned null value(s), User: {user}, Relation: {relation}, Object: {object}")]
     public static partial void NullValuesReturned(this ILogger logger, string? user, string? relation, string? @object);
 
-    [LoggerMessage(2, LogLevel.Information, "Unable to compute FGA Object.")]
+    [LoggerMessage(3003, LogLevel.Information, "Unable to compute FGA Object.")]
     public static partial void MiddlewareException(this ILogger logger, FgaMiddlewareException ex);
+    
+    [LoggerMessage(3004, LogLevel.Warning, "Error occurred whilst attempting to perform middleware check for User: {user}, Relation: {relation}, Object: {object}")]
+    public static partial void CheckException(this ILogger logger, string user, string relation, string @object, Exception ex);
+    
 }

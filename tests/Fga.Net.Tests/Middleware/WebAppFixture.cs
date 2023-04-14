@@ -1,4 +1,6 @@
-﻿using System.Threading;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Alba;
 using Fga.Net.AspNetCore.Authorization;
@@ -20,12 +22,16 @@ public class WebAppFixture : IAsyncLifetime
         var authorizationClientMock = new Mock<IFgaCheckDecorator>();
 
         authorizationClientMock.Setup(c =>
-            c.Check(It.IsAny<ClientCheckRequest>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync((ClientCheckRequest res, CancellationToken _) => 
-                res.User == MockJwtConfiguration.DefaultUser 
-                    ? new CheckResponse() { Allowed = true } 
-                    : new CheckResponse() { Allowed = false });
+                c.BatchCheck(It.IsAny<List<ClientCheckRequest>>(),
+                    It.IsAny<CancellationToken>()))
+            .ReturnsAsync((List<ClientCheckRequest> res, CancellationToken _) =>
+            {
+                var entry = res.First();
+                return entry.User == MockJwtConfiguration.DefaultUser
+                    ? new BatchCheckResponse() { Responses = new List<BatchCheckSingleResponse>() { new(true, entry) } }
+                    : new BatchCheckResponse() { Responses = new List<BatchCheckSingleResponse>() { new(false, entry) } };
+            });
+
 
 
         AlbaHost = await Alba.AlbaHost.For<Program>(builder =>

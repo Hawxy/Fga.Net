@@ -18,7 +18,7 @@ public class FgaRouteObjectAttribute : FgaBaseObjectAttribute
     /// </summary>
     /// <param name="relation">The relationship to check, such as writer or viewer</param>
     /// <param name="type">The relation between the user and object</param>
-    /// <param name="routeKey">The query key to get the value from. Will throw an exception if not present.</param>
+    /// <param name="routeKey">The route key to get the value from. Will throw an exception if not present.</param>
     public FgaRouteObjectAttribute(string relation, string type, string routeKey)
     {
         _relation = relation;

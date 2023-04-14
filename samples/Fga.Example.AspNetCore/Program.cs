@@ -48,7 +48,7 @@ builder.Services.AddOpenFgaClient(clientConfig =>
 
 builder.Services.AddOpenFgaMiddleware(middlewareConfig =>
 {
-    middlewareConfig.UserIdentityResolver = principal => principal.Identity!.Name!;
+    middlewareConfig.UserIdentityResolver = principal => $"user:{principal.Identity!.Name!}";
 });
 
 builder.Services.AddAuthorization(options =>
@@ -75,6 +75,6 @@ app.MapControllers();
 
 app.MapGet("/viewminimal/{documentId}", (string documentId) => Task.FromResult(documentId))
     .RequireAuthorization(FgaAuthorizationDefaults.PolicyKey)
-    .WithMetadata(new FgaRouteObjectAttribute("viewer", "doc", "documentId"));
+    .WithFgaRouteCheck("reader", "document", "documentId");
 
 app.Run();

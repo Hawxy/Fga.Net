@@ -46,6 +46,9 @@ internal sealed class FineGrainedAuthorizationHandler : AuthorizationHandler<Fin
             // The user is enforcing the fga policy but there's no attributes here.
             if (attributes.Count == 0)
                 return;
+
+            var checks = new List<ClientCheckRequest>();
+            
             foreach (var attribute in attributes)
             {
                 string? user;
@@ -69,22 +72,38 @@ internal sealed class FineGrainedAuthorizationHandler : AuthorizationHandler<Fin
                     _logger.NullValuesReturned(user, relation, @object);
                     return;
                 }
-               
                 
-                var result = await _client.Check(new ClientCheckRequest()
+                checks.Add(new ClientCheckRequest
                 {
                     User = user,
                     Relation = relation,
                     Object = @object
-                }, httpContext.RequestAborted);
+                });
+            }
+          
+            var results = await _client.BatchCheck(checks, httpContext.RequestAborted);
 
-                if (result.Allowed is false)
+            var failedChecks = results.Responses.Where(x=> x.Allowed is false).ToArray();
+            
+            // log all of reasons for the failed checks
+            if (failedChecks.Length > 0)
+            {
+                foreach (var response in failedChecks)
                 {
-                    _logger.CheckFailureDebug(user, relation, @object);
-                    return;
+                    if (response.Error is not null)
+                    {
+                        _logger.CheckException(response.Request.User, response.Request.Relation, response.Request.Object, response.Error);
+                    }
+                    else if (response.Allowed is false)
+                    {
+                        _logger.CheckFailure(response.Request.User, response.Request.Relation, response.Request.Object);
+                    }
                 }
             }
-            context.Succeed(requirement);
+            else
+            {
+                context.Succeed(requirement);
+            }
         }
     }
 }
