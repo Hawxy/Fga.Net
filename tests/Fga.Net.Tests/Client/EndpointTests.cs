@@ -74,7 +74,7 @@ namespace Fga.Net.Tests.Client
             Assert.NotNull(modelsResponse);
             Assert.NotNull(modelsResponse.AuthorizationModels);
             Assert.True(modelsResponse.AuthorizationModels?.Count > 0);
-
+            
             var modelId = modelsResponse.AuthorizationModels?.First().Id!;
 
             var modelResponse = await client.ReadAuthorizationModel(new ClientReadAuthorizationModelOptions() {AuthorizationModelId = modelId});
@@ -103,12 +103,7 @@ namespace Fga.Net.Tests.Client
 
             var watch = await client.ReadChanges(new ClientReadChangesRequest() {Type = "document"});
             Assert.NotNull(watch);
-
-
         }
-
-
-
 
     }
 }

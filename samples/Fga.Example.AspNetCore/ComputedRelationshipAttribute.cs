@@ -3,7 +3,7 @@
 namespace Fga.Example.AspNetCore;
 
 //Computes the relationship based on the requests HTTP method.
-public class ComputedRelationshipAttribute : FgaAttribute
+public class ComputedRelationshipAttribute : FgaBaseObjectAttribute
 {
     private readonly string _type;
     private readonly string _routeValue;
@@ -12,9 +12,6 @@ public class ComputedRelationshipAttribute : FgaAttribute
         _type = type;
         _routeValue = routeValue;
     }
-
-    public override ValueTask<string> GetUser(HttpContext context) 
-        => ValueTask.FromResult(context.User.Identity!.Name!);
 
     public override ValueTask<string> GetRelation(HttpContext context) 
         => ValueTask.FromResult(context.Request.Method switch 

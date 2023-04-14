@@ -40,7 +40,8 @@
         },
         "NugetApiKey": {
           "type": "string",
-          "description": "Nuget Api Key"
+          "description": "Nuget Api Key",
+          "default": "Secrets must be entered via 'nuke :secrets [profile]'"
         },
         "Partition": {
           "type": "string",
@@ -71,7 +72,8 @@
               "Compile",
               "NugetPack",
               "NugetPush",
-              "Restore"
+              "Restore",
+              "Test"
             ]
           }
         },
@@ -89,7 +91,8 @@
               "Compile",
               "NugetPack",
               "NugetPush",
-              "Restore"
+              "Restore",
+              "Test"
             ]
           }
         },

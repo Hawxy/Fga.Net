@@ -73,7 +73,7 @@ builder.Services.AddAuthorization(options =>
 });
 ```
 
-### Built-in Attributes
+### Built-in Check Attributes
 
 `Fga.Net.AspNetCore` ships with a number of attributes that should cover the most common authorization sources for FGA checks:
 
@@ -82,7 +82,18 @@ builder.Services.AddAuthorization(options =>
 - `FgaQueryObjectAttribute` - Computes the Object via a value in the query string
 - `FgaRouteObjectAttribute` - Computes the Object via a value in the routes path
 
-These attributes can be used in both minimal APIs & in your controller(s):
+If you want to use these attributes, you need to configure how the user's identity is resolved from the `ClaimsPrincipal`.
+The example below uses the Name, which is mapped to the User ID in a default Auth0 integration.
+
+```cs
+builder.Services.AddOpenFgaMiddleware(config =>
+{
+    //DSL v1.1 requires the user type to be included
+    config.UserIdentityResolver = principal => $"user:{principal.Identity!.Name!}";
+});
+```
+
+These attributes can then be used in both minimal APIs & in your controller(s):
 ```cs
     // Traditional Controllers
     [ApiController]
@@ -101,19 +112,10 @@ These attributes can be used in both minimal APIs & in your controller(s):
     // Minimal APIs
     app.MapGet("/viewminimal/{documentId}", (string documentId) => Task.FromResult(documentId))
         .RequireAuthorization(FgaAuthorizationDefaults.PolicyKey)
-        .WithMetadata(new FgaRouteObjectAttribute("read", "document", "documentId"));
-```
-
-
-If you want to use the built-in attributes, you need to configure how the user's identity is resolved from the `ClaimsPrincipal`.
-The example below uses the Name, which should be suitable for most people (given the claim is mapped correctly).
-
-```cs
-builder.Services.AddOpenFgaMiddleware(config =>
-{
-    //DSL v1.1 requires the user type to be included
-    config.UserIdentityResolver = principal => $"user:{principal.Identity!.Name!}";
-});
+        // Extensions methods are included for the built-in attributes
+        .WithFgaRouteCheck("read", "document", "documentId")
+        // You can apply custom attributes like so
+        .WithMetadata(new ComputedRelationshipAttribute("document", "documentId"));
 ```
 
 ### Custom Attributes
@@ -123,19 +125,17 @@ To do this, inherit from either `FgaBaseObjectAttribute`, which uses the configu
 
 For example, an equivalent to the [How To Integrate Within A Framework](https://docs.fga.dev/integration/framework) tutorial would be:
 ```cs
-public class ComputedRelationshipAttribute : FgaAttribute
+public class ComputedRelationshipAttribute : FgaBaseObjectAttribute
 {
     private readonly string _prefix;
     private readonly string _routeValue;
-    public EntityAuthorizationAttribute(string prefix, string routeValue)
+    
+    public ComputedRelationshipAttribute(string prefix, string routeValue)
     {
         _prefix = prefix;
         _routeValue = routeValue;
     }
-
-    public override ValueTask<string> GetUser(HttpContext context) 
-        => ValueTask.FromResult(context.User.Identity!.Name!);
-
+    
     public override ValueTask<string> GetRelation(HttpContext context) 
         => ValueTask.FromResult(context.Request.Method switch 
         {
