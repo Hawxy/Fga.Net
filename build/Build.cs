@@ -12,7 +12,8 @@ using static Nuke.Common.Tools.DotNet.DotNetTasks;
 [GitHubActions(
     "Build & Test",
     GitHubActionsImage.UbuntuLatest,
-    On = new[] { GitHubActionsTrigger.Push, GitHubActionsTrigger.PullRequest },
+    OnPushBranches = new []{ "main" },
+    OnPullRequestBranches = new []{ "main" },
     InvokedTargets = new[] { nameof(Test) },
     ImportSecrets = new []{ nameof(FgaStoreId), nameof(FgaClientId), nameof(FgaClientSecret) })]
 [GitHubActions(
