@@ -6,6 +6,21 @@
     "build": {
       "type": "object",
       "properties": {
+        "AUTH0FGA__CLIENTID": {
+          "type": "string",
+          "description": "FGA Client ID",
+          "default": "Secrets must be entered via 'nuke :secrets [profile]'"
+        },
+        "AUTH0FGA__CLIENTSECRET": {
+          "type": "string",
+          "description": "FGA Client Secret",
+          "default": "Secrets must be entered via 'nuke :secrets [profile]'"
+        },
+        "AUTH0FGA__STOREID": {
+          "type": "string",
+          "description": "FGA Store ID",
+          "default": "Secrets must be entered via 'nuke :secrets [profile]'"
+        },
         "Continue": {
           "type": "boolean",
           "description": "Indicates to continue a previously failed build attempt"
@@ -21,6 +36,7 @@
             "AppVeyor",
             "AzurePipelines",
             "Bamboo",
+            "Bitbucket",
             "Bitrise",
             "GitHubActions",
             "GitLab",

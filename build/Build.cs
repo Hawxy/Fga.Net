@@ -1,12 +1,26 @@
 using Nuke.Common;
 using Nuke.Common.CI;
+using Nuke.Common.CI.GitHubActions;
 using Nuke.Common.IO;
 using Nuke.Common.ProjectModel;
+using Nuke.Common.Tooling;
 using Nuke.Common.Tools.DotNet;
 using static Nuke.Common.IO.FileSystemTasks;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 
 [ShutdownDotNetAfterServerBuild]
+[GitHubActions(
+    "Build & Test",
+    GitHubActionsImage.UbuntuLatest,
+    On = new[] { GitHubActionsTrigger.Push, GitHubActionsTrigger.PullRequest },
+    InvokedTargets = new[] { nameof(Test) },
+    ImportSecrets = new []{ nameof(FgaStoreId), nameof(FgaClientId), nameof(FgaClientSecret) })]
+[GitHubActions(
+    "Manual Nuget Push",
+    GitHubActionsImage.UbuntuLatest,
+    On = new[] { GitHubActionsTrigger.WorkflowDispatch },
+    InvokedTargets = new[] { nameof(NugetPush) },
+    ImportSecrets = new[] { nameof(NugetApiKey) })]
 class Build : NukeBuild
 {
     /// Support plugins are available for:
@@ -19,7 +33,6 @@ class Build : NukeBuild
 
     [Solution(GenerateProjects = true)] readonly Solution Solution;
 
-    AbsolutePath SourceDirectory => RootDirectory / "src";
     AbsolutePath ArtifactsDirectory => RootDirectory / "artifacts";
 
     Target Clean => _ => _
@@ -47,12 +60,28 @@ class Build : NukeBuild
                 .EnableNoRestore());
         });
 
+    [Parameter("FGA Store ID")][Secret] readonly string FgaStoreId;
+    [Parameter("FGA Client ID")][Secret] readonly string FgaClientId;
+    [Parameter("FGA Client Secret")][Secret] readonly string FgaClientSecret;
+
     Target Test => _ => _
         .DependsOn(Compile)
         .Executes(() =>
         {
-            DotNetTest(s => s
-                .SetProjectFile(Solution.Fga_Net_Tests));
+            DotNetTest(s =>
+            {
+                var config = s
+                    .SetProjectFile(Solution.Fga_Net_Tests);
+                if (!string.IsNullOrEmpty(FgaStoreId))
+                {
+                   return config.AddProcessEnvironmentVariable("AUTH0FGA__STOREID", FgaStoreId)
+                        .AddProcessEnvironmentVariable("AUTH0FGA__CLIENTID", FgaClientId)
+                        .AddProcessEnvironmentVariable("AUTH0FGA__CLIENTSECRET", FgaClientSecret);
+                }
+
+                return config;
+
+            });
         });
 
     Target NugetPack => _ => _
@@ -72,10 +101,10 @@ class Build : NukeBuild
                 .SetOutputDirectory(ArtifactsDirectory));
         });
 
-    [Parameter("Nuget Api Key")]
-    readonly string NugetApiKey = string.Empty;
+    [Parameter("Nuget Api Key")] [Secret] readonly string NugetApiKey;
+
     Target NugetPush => _ => _
-        .After(NugetPack)
+        .DependsOn(NugetPack)
         .Requires(() => !string.IsNullOrEmpty(NugetApiKey))
         .Executes(() =>
         {
