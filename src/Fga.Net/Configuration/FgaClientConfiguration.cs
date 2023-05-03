@@ -16,15 +16,13 @@
  */
 #endregion
 
-
 using OpenFga.Sdk.Client;
 
-namespace Fga.Net.DependencyInjection;
+namespace Fga.Net.DependencyInjection.Configuration;
 
 /// <summary>
 /// FGA Authentication/Authorization configuration
 /// </summary>
 public sealed class FgaClientConfiguration : ClientConfiguration
 {
-    
 }

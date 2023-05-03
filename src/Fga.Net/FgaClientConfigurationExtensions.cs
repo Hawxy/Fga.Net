@@ -16,6 +16,7 @@
  */
 #endregion
 
+using Fga.Net.DependencyInjection.Configuration;
 using OpenFga.Sdk.Configuration;
 
 namespace Fga.Net.DependencyInjection;

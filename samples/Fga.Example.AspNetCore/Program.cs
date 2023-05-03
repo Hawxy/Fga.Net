@@ -38,6 +38,23 @@ builder.Services.AddOpenFgaClient(clientConfig =>
 
 });
 
+builder.Services.AddOpenFgaClient(config =>
+{
+    config.ConfigureAuth0Fga(x =>
+    {
+        x.WithAuthentication(builder.Configuration["Auth0Fga:ClientId"]!, builder.Configuration["Auth0Fga:ClientSecret"]!);
+    });
+    
+    config.ConfigureOpenFga(x =>
+    {
+        x.ApiHost = "localhost";
+        x.ApiScheme = "http";
+        x.WithApiKeyAuthentication("ApiKey");
+    });
+    
+    config.StoreId = builder.Configuration["Auth0Fga:StoreId"];
+});
+
 // OpenFGA
 /*builder.Services.AddOpenFgaClient(x =>
 {

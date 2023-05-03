@@ -16,9 +16,11 @@
  */
 #endregion
 
+using Fga.Net.DependencyInjection.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using OpenFga.Sdk.Api;
 using OpenFga.Sdk.Client;
+using OpenFga.Sdk.Configuration;
 
 namespace Fga.Net.DependencyInjection;
 
@@ -33,13 +35,63 @@ public static class ServiceCollectionExtensions
     /// <param name="collection"></param>
     /// <param name="configuration"></param>
     /// <returns>An <see cref="IHttpClientBuilder" /> that can be used to configure the <see cref="OpenFgaClient"/>.</returns>
-    public static IHttpClientBuilder AddOpenFgaClient(this IServiceCollection collection, Action<FgaClientConfiguration> configuration)
+    public static (IHttpClientBuilder openFgaApiBuilder, IHttpClientBuilder openFgaClientBuilder) AddOpenFgaClient(this IServiceCollection collection, Action<FgaClientConfiguration> configuration)
     {
         ArgumentNullException.ThrowIfNull(configuration);
 
-        collection.Configure(configuration);
-        collection.AddHttpClient<OpenFgaApi, InjectableFgaApi>();
-        return collection.AddHttpClient<OpenFgaClient, InjectableFgaClient>();
+        var config = new FgaClientConfiguration();
+        
+        configuration.Invoke(config);
+
+        if (config.Credentials?.Method is CredentialsMethod.ClientCredentials)
+        {
+            
+        }
+
+        collection.Configure<FgaClientConfiguration>(x =>
+        {
+            
+        });
+
+        return (collection.AddHttpClient<OpenFgaApi, InjectableFgaApi>(), collection.AddHttpClient<OpenFgaClient, InjectableFgaClient>());
+
     }
+
+
+    public static void AddOpenFgaClient(this IServiceCollection collection, Action<FgaConfigurationRoot> config)
+    {
+        var apiClientBuilder = collection.AddHttpClient<OpenFgaApi, InjectableFgaApi>();
+        var fgaClientBuilder = collection.AddHttpClient<OpenFgaClient, InjectableFgaClient>();
+        
+        var configRoot = new FgaConfigurationRoot();
+        config.Invoke(configRoot);
+
+        var connection = configRoot.GetConnectionConfiguration();
+
+        collection.Configure<FgaClientConfiguration>(x=> 
+            ConfigureOptions(x, configRoot, connection.Credentials?.Method is CredentialsMethod.ApiToken ? connection.Credentials : null));
+
+        if (connection.Credentials?.Method is CredentialsMethod.ClientCredentials)
+        {
+            apiClientBuilder.AddHttpMessageHandler<OidcHttpHandler>();
+            fgaClientBuilder.AddHttpMessageHandler<OidcHttpHandler>();
+            
+        }
+        
+    }
+    
+    
+    private static void ConfigureOptions(FgaClientConfiguration x, FgaConfigurationRoot configRoot, Credentials? credentials)
+    {
+        x.StoreId = configRoot.StoreId;
+        x.AuthorizationModelId = configRoot.AuthorizationModelId;
+        if (configRoot.MaxRetry.HasValue)
+            x.MaxRetry = configRoot.MaxRetry.Value;
+        if (configRoot.MinWaitInMs.HasValue)
+            x.MinWaitInMs = configRoot.MinWaitInMs.Value;
+
+        x.Credentials = credentials;
+    }
+
 }
 
