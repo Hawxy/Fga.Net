@@ -2,14 +2,8 @@
 
 namespace Fga.Example.AspNetCore.TestControllers;
 
-public class TestAuthorizationAttribute : FgaAttribute
+public class TestAuthorizationAttribute : FgaBaseObjectAttribute
 {
-
-    public override ValueTask<string> GetUser(HttpContext context)
-    {
-        return ValueTask.FromResult(context.User.Identity!.Name!);
-    }
-
     public override ValueTask<string> GetRelation(HttpContext context)
     {
         return ValueTask.FromResult("fake-relation");

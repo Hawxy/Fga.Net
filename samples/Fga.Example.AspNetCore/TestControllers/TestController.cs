@@ -1,4 +1,5 @@
 ﻿using Fga.Net.AspNetCore.Authorization;
+using Fga.Net.AspNetCore.Authorization.Attributes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

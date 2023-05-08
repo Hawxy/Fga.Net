@@ -18,7 +18,9 @@
 
 using Fga.Net.DependencyInjection.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using OpenFga.Sdk.Api;
+using OpenFga.Sdk.ApiClient;
 using OpenFga.Sdk.Client;
 using OpenFga.Sdk.Configuration;
 
@@ -29,60 +31,60 @@ namespace Fga.Net.DependencyInjection;
 /// </summary>
 public static class ServiceCollectionExtensions
 {
+
+
+
     /// <summary>
     /// Registers and configures an <see cref="OpenFgaClient"/> and <see cref="OpenFgaApi"/> for the provided service collection.
     /// </summary>
     /// <param name="collection"></param>
     /// <param name="configuration"></param>
     /// <returns>An <see cref="IHttpClientBuilder" /> that can be used to configure the <see cref="OpenFgaClient"/>.</returns>
-    public static (IHttpClientBuilder openFgaApiBuilder, IHttpClientBuilder openFgaClientBuilder) AddOpenFgaClient(this IServiceCollection collection, Action<FgaClientConfiguration> configuration)
-    {
-        ArgumentNullException.ThrowIfNull(configuration);
-
-        var config = new FgaClientConfiguration();
-        
-        configuration.Invoke(config);
-
-        if (config.Credentials?.Method is CredentialsMethod.ClientCredentials)
-        {
-            
-        }
-
-        collection.Configure<FgaClientConfiguration>(x =>
-        {
-            
-        });
-
-        return (collection.AddHttpClient<OpenFgaApi, InjectableFgaApi>(), collection.AddHttpClient<OpenFgaClient, InjectableFgaClient>());
-
-    }
-
-
-    public static void AddOpenFgaClient(this IServiceCollection collection, Action<FgaConfigurationRoot> config)
+    public static (IHttpClientBuilder openFgaApiBuilder, IHttpClientBuilder openFgaClientBuilder) AddOpenFgaClient(this IServiceCollection collection, Action<FgaConfigurationRoot> configuration)
     {
         var apiClientBuilder = collection.AddHttpClient<OpenFgaApi, InjectableFgaApi>();
         var fgaClientBuilder = collection.AddHttpClient<OpenFgaClient, InjectableFgaClient>();
         
         var configRoot = new FgaConfigurationRoot();
-        config.Invoke(configRoot);
+        configuration.Invoke(configRoot);
 
         var connection = configRoot.GetConnectionConfiguration();
 
         collection.Configure<FgaClientConfiguration>(x=> 
-            ConfigureOptions(x, configRoot, connection.Credentials?.Method is CredentialsMethod.ApiToken ? connection.Credentials : null));
+            x.ConfigureFgaOptions(configRoot, connection));
 
         if (connection.Credentials?.Method is CredentialsMethod.ClientCredentials)
         {
+            collection.AddSingleton<OAuth2Client>(provider =>
+            {
+                var httpClient = new HttpClient(new SocketsHttpHandler()
+                {
+                    PooledConnectionLifetime = TimeSpan.FromHours(1)
+                });
+                var client = new BaseClient(provider.GetRequiredService<IOptions<FgaClientConfiguration>>().Value, httpClient);
+                return new OAuth2Client(connection.Credentials, client);
+            });
+
+            collection.AddTransient<OidcHttpHandler>();
+
             apiClientBuilder.AddHttpMessageHandler<OidcHttpHandler>();
             fgaClientBuilder.AddHttpMessageHandler<OidcHttpHandler>();
-            
         }
-        
+
+        return (apiClientBuilder, fgaClientBuilder);
     }
     
     
-    private static void ConfigureOptions(FgaClientConfiguration x, FgaConfigurationRoot configRoot, Credentials? credentials)
+    private static void ConfigureFgaOptions(this FgaClientConfiguration x, FgaConfigurationRoot configRoot, FgaConnectionConfiguration connection)
     {
+        x.ApiScheme = connection.ApiScheme switch
+        {
+            Scheme.Http => "http",
+            Scheme.Https => "https",
+            _ => throw new ArgumentOutOfRangeException()
+        };
+        x.ApiHost = connection.ApiHost;
+        
         x.StoreId = configRoot.StoreId;
         x.AuthorizationModelId = configRoot.AuthorizationModelId;
         if (configRoot.MaxRetry.HasValue)
@@ -90,7 +92,7 @@ public static class ServiceCollectionExtensions
         if (configRoot.MinWaitInMs.HasValue)
             x.MinWaitInMs = configRoot.MinWaitInMs.Value;
 
-        x.Credentials = credentials;
+        x.Credentials = connection.Credentials?.Method is CredentialsMethod.ApiToken ? connection.Credentials : null;
     }
 
 }

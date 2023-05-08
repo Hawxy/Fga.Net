@@ -1,5 +1,6 @@
 using Fga.Example.GenericHost;
 using Fga.Net.DependencyInjection;
+using Fga.Net.DependencyInjection.Configuration;
 
 var host = Host.CreateDefaultBuilder(args)
     .ConfigureServices((context, services) =>
@@ -7,12 +8,17 @@ var host = Host.CreateDefaultBuilder(args)
         services.AddOpenFgaClient(config =>
         {
             // Auth0 FGA
-            config.WithAuth0FgaDefaults(context.Configuration["Auth0Fga:ClientId"], context.Configuration["Auth0Fga:ClientSecret"]);
+            config.ConfigureAuth0Fga(x =>
+            {
+                x.WithAuthentication(context.Configuration["Auth0Fga:ClientId"], context.Configuration["Auth0Fga:ClientSecret"]);
+            });
             config.StoreId = context.Configuration["Auth0Fga:StoreId"];
 
             // OpenFGA
-            config.ApiScheme = context.Configuration["Fga:ApiScheme"];
-            config.ApiHost = context.Configuration["Fga:ApiHost"];
+            config.ConfigureOpenFga(x =>
+            {
+                x.SetConnection(Scheme.Http, context.Configuration["Fga:ApiHost"]);
+            });
             config.StoreId = context.Configuration["Fga:StoreId"];
         });
 

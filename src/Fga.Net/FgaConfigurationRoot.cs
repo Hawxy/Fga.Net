@@ -70,7 +70,7 @@ public sealed class FgaConfigurationRoot
     internal FgaConnectionConfiguration GetConnectionConfiguration()
     {
         if (_fgaConfiguration is null)
-            throw new InvalidOperationException("OpenFga or Auth0 FGA configuration must be added");
+            throw new InvalidOperationException("OpenFga or Auth0 FGA configuration must be set");
         return _fgaConfiguration;
     }
 }

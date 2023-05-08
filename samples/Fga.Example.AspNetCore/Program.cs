@@ -1,8 +1,6 @@
 using System.Security.Claims;
-using Fga.Example.AspNetCore;
 using Fga.Net.AspNetCore;
 using Fga.Net.AspNetCore.Authorization;
-using Fga.Net.AspNetCore.Authorization.Attributes;
 using Fga.Net.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -30,13 +28,13 @@ builder.Services.AddAuthentication(options =>
 
 
 // Auth0 FGA
-builder.Services.AddOpenFgaClient(clientConfig =>
+/*builder.Services.AddOpenFgaClient(clientConfig =>
 {
     clientConfig.WithAuth0FgaDefaults(builder.Configuration["Auth0Fga:ClientId"]!,
         builder.Configuration["Auth0Fga:ClientSecret"]!);
     clientConfig.StoreId = builder.Configuration["Auth0Fga:StoreId"];
 
-});
+});*/
 
 builder.Services.AddOpenFgaClient(config =>
 {
@@ -44,14 +42,7 @@ builder.Services.AddOpenFgaClient(config =>
     {
         x.WithAuthentication(builder.Configuration["Auth0Fga:ClientId"]!, builder.Configuration["Auth0Fga:ClientSecret"]!);
     });
-    
-    config.ConfigureOpenFga(x =>
-    {
-        x.ApiHost = "localhost";
-        x.ApiScheme = "http";
-        x.WithApiKeyAuthentication("ApiKey");
-    });
-    
+  
     config.StoreId = builder.Configuration["Auth0Fga:StoreId"];
 });
 

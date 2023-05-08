@@ -72,6 +72,12 @@ internal sealed class FineGrainedAuthorizationHandler : AuthorizationHandler<Fin
                     _logger.NullValuesReturned(user, relation, @object);
                     return;
                 }
+
+                if (!IsValidUser(user))
+                {
+                    _logger.InvalidUser(user);
+                    return;
+                }
                 
                 checks.Add(new ClientCheckRequest
                 {
@@ -105,5 +111,17 @@ internal sealed class FineGrainedAuthorizationHandler : AuthorizationHandler<Fin
                 context.Succeed(requirement);
             }
         }
+    }
+
+    // Validate the user is either in the type:id format or '*'
+    private static bool IsValidUser(string user)
+    {
+        var split = user.Split(":", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        if (split.Length == 2)
+            return true;
+        if (user == "*")
+            return true;
+
+        return false;
     }
 }

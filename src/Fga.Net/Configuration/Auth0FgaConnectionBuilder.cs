@@ -32,8 +32,8 @@ public class Auth0FgaConnectionBuilder
 
     private readonly Auth0Environment _environment = Auth0Environment.Us;
 
-    private string _clientId;
-    private string _clientSecret;
+    private string _clientId = null!;
+    private string _clientSecret = null!;
  
     public void WithAuthentication(string clientId, string clientSecret)
     {

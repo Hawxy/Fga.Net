@@ -23,10 +23,14 @@ namespace Fga.Net.Tests.Unit
         {
             var collection = new ServiceCollection();
 
-            collection.AddOpenFgaClient(x =>
+            collection.AddOpenFgaClient(config =>
             {
-                x.StoreId = Guid.NewGuid().ToString();
-                x.WithAuth0FgaDefaults(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
+                config.StoreId = Guid.NewGuid().ToString();
+                
+                config.ConfigureAuth0Fga(x =>
+                {
+                    x.WithAuthentication(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
+                });
 
             });
 
@@ -46,10 +50,13 @@ namespace Fga.Net.Tests.Unit
         {
             var collection = new ServiceCollection();
 
-            collection.AddOpenFgaClient(x =>
+            collection.AddOpenFgaClient(config =>
             {
-                x.StoreId = Guid.NewGuid().ToString();
-                x.WithAuth0FgaDefaults(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
+                config.StoreId = Guid.NewGuid().ToString();
+                config.ConfigureAuth0Fga(x =>
+                {
+                    x.WithAuthentication(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
+                });
             });
 
             collection.AddOpenFgaMiddleware(x =>
