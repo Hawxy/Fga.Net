@@ -17,6 +17,7 @@
 #endregion
 
 using Fga.Net.DependencyInjection.Configuration;
+using Fga.Net.DependencyInjection.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OpenFga.Sdk.Api;

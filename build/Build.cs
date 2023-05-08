@@ -41,7 +41,7 @@ class Build : NukeBuild
         .Before(Restore)
         .Executes(() =>
         {
-            EnsureCleanDirectory(ArtifactsDirectory);
+          //  AbsolutePath.CreateOrCleanDirectory(ArtifactsDirectory);
         });
 
     Target Restore => _ => _

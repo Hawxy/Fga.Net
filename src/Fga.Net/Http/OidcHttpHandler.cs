@@ -1,8 +1,7 @@
 using System.Net.Http.Headers;
 using OpenFga.Sdk.ApiClient;
-using OpenFga.Sdk.Configuration;
 
-namespace Fga.Net.DependencyInjection;
+namespace Fga.Net.DependencyInjection.Http;
 
 internal sealed class OidcHttpHandler : DelegatingHandler
 {
