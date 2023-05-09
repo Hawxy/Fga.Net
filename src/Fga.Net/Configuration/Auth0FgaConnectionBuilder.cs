@@ -13,20 +13,20 @@ public enum Auth0Environment
     Us
 }
 
-internal record Auth0FgaEnvironment(Scheme Scheme, string ApiHost, string ApiTokenIssuer, string ApiAudience);
+internal sealed record Auth0FgaEnvironment(string Scheme, string ApiHost, string ApiTokenIssuer, string ApiAudience);
 
 
 /// <summary>
 /// Configuration for Auth0 FGA environments
 /// </summary>
-public class Auth0FgaConnectionBuilder
+public sealed class Auth0FgaConnectionBuilder
 {
     private readonly IReadOnlyDictionary<Auth0Environment, Auth0FgaEnvironment> _fgaEnvironments =
         new Dictionary<Auth0Environment, Auth0FgaEnvironment>()
         {
             {
                 Auth0Environment.Us,
-                new Auth0FgaEnvironment(Scheme.Https, "api.us1.fga.dev", "fga.us.auth0.com", "https://api.us1.fga.dev/")
+                new Auth0FgaEnvironment(HttpScheme.Https, "api.us1.fga.dev", "fga.us.auth0.com", "https://api.us1.fga.dev/")
             }
         };
 
@@ -35,6 +35,11 @@ public class Auth0FgaConnectionBuilder
     private string _clientId = null!;
     private string _clientSecret = null!;
  
+    /// <summary>
+    /// Config
+    /// </summary>
+    /// <param name="clientId"></param>
+    /// <param name="clientSecret"></param>
     public void WithAuthentication(string clientId, string clientSecret)
     {
         ArgumentNullException.ThrowIfNull(clientId);
@@ -46,6 +51,9 @@ public class Auth0FgaConnectionBuilder
 
     internal FgaConnectionConfiguration Build()
     {
+        if (string.IsNullOrEmpty(_clientId) || string.IsNullOrEmpty(_clientSecret))
+            throw new InvalidOperationException("Auth0 FGA ClientId and ClientSecret must be set to non-empty values");
+        
         var environment = _fgaEnvironments[_environment];
 
         var credentials = new Credentials()

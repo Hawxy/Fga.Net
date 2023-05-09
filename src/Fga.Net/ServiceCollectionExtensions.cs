@@ -19,7 +19,6 @@
 using Fga.Net.DependencyInjection.Configuration;
 using Fga.Net.DependencyInjection.Http;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using OpenFga.Sdk.Api;
 using OpenFga.Sdk.ApiClient;
 using OpenFga.Sdk.Client;
@@ -32,8 +31,6 @@ namespace Fga.Net.DependencyInjection;
 /// </summary>
 public static class ServiceCollectionExtensions
 {
-
-
 
     /// <summary>
     /// Registers and configures an <see cref="OpenFgaClient"/> and <see cref="OpenFgaApi"/> for the provided service collection.
@@ -56,15 +53,15 @@ public static class ServiceCollectionExtensions
 
         if (connection.Credentials?.Method is CredentialsMethod.ClientCredentials)
         {
-            collection.AddSingleton<OAuth2Client>(provider =>
-            {
-                var httpClient = new HttpClient(new SocketsHttpHandler()
+            collection.AddHttpClient<BaseClient, InjectableBaseClient>()
+                .ConfigurePrimaryHttpMessageHandler(() => 
+                    new SocketsHttpHandler()
                 {
-                    PooledConnectionLifetime = TimeSpan.FromHours(1)
-                });
-                var client = new BaseClient(provider.GetRequiredService<IOptions<FgaClientConfiguration>>().Value, httpClient);
-                return new OAuth2Client(connection.Credentials, client);
-            });
+                    PooledConnectionLifetime = TimeSpan.FromMinutes(2)
+                })
+                .SetHandlerLifetime(Timeout.InfiniteTimeSpan);
+            
+            collection.AddSingleton<OAuth2Client>(provider => new OAuth2Client(connection.Credentials, provider.GetRequiredService<BaseClient>()));
 
             collection.AddTransient<OidcHttpHandler>();
 
@@ -78,12 +75,7 @@ public static class ServiceCollectionExtensions
     
     private static void ConfigureFgaOptions(this FgaClientConfiguration x, FgaConfigurationRoot configRoot, FgaConnectionConfiguration connection)
     {
-        x.ApiScheme = connection.ApiScheme switch
-        {
-            Scheme.Http => "http",
-            Scheme.Https => "https",
-            _ => throw new ArgumentOutOfRangeException()
-        };
+        x.ApiScheme = connection.ApiScheme;
         x.ApiHost = connection.ApiHost;
         
         x.StoreId = configRoot.StoreId;
