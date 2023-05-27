@@ -10,6 +10,7 @@ public class ValidationTests
     [InlineData("type:id", true)]
     [InlineData("*asdf", false)]
     [InlineData("type:", false)]
+    [InlineData(":user", false)]
     [InlineData(":", false)]
     public void UserValidation_ValidatesCorrectly(string user, bool expected)
     {
