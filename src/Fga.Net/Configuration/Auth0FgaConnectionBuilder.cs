@@ -26,7 +26,7 @@ public sealed class Auth0FgaConnectionBuilder
         {
             {
                 Auth0Environment.Us,
-                new Auth0FgaEnvironment(HttpScheme.Https, "api.us1.fga.dev", "fga.us.auth0.com", "https://api.us1.fga.dev/")
+                new Auth0FgaEnvironment(Uri.UriSchemeHttps, "api.us1.fga.dev", "fga.us.auth0.com", "https://api.us1.fga.dev/")
             }
         };
 

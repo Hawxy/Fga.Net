@@ -116,10 +116,32 @@ internal sealed class FineGrainedAuthorizationHandler : AuthorizationHandler<Fin
     // Validate the user is either in the type:id format or '*'
     private static bool IsValidUser(string user)
     {
-        var split = user.Split(":", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-        if (split.Length == 2)
+        // convert to span to avoid the string allocs
+        var strSpan = user.AsSpan();
+
+        var seperatorCount = 0;
+
+        for (var i = 0; i < strSpan.Length; i++)
+        {
+            var c = strSpan[i];
+            // if the string contains whitespace then it isn't valid.
+            if (char.IsWhiteSpace(c))
+                return false;
+
+            if (c == ':')
+            {
+                // if : is at the start or end it isn't valid
+                if (i == 0 || i == strSpan.Length - 1)
+                    return false;
+                seperatorCount++;
+            }
+        
+        }
+
+        if (seperatorCount == 1)
             return true;
-        if (user == "*")
+
+        if (strSpan.Length == 1 && strSpan[0] == '*')
             return true;
 
         return false;

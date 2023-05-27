@@ -7,13 +7,13 @@ namespace Fga.Net.DependencyInjection.Configuration;
 /// </summary>
 public sealed class OpenFgaConnectionBuilder
 {
-    private string _apiScheme = HttpScheme.Https;
+    private string _apiScheme = Uri.UriSchemeHttps;
     private string? _apiHost;
 
     /// <summary>
     /// Sets the connection configuration for the host.
     /// </summary>
-    /// <param name="apiScheme">API scheme, either http or https. <see cref="HttpScheme"/></param>
+    /// <param name="apiScheme">API scheme, either http or https.</param>
     /// <param name="apiHost">API host, should be in be plain URI format</param>
     /// <returns></returns>
     public OpenFgaConnectionBuilder SetConnection(string apiScheme, string apiHost)
@@ -69,8 +69,10 @@ public sealed class OpenFgaConnectionBuilder
     {
         if (string.IsNullOrEmpty(_apiHost))
             throw new InvalidOperationException("API Host cannot be null or empty");
-        if (_apiScheme != HttpScheme.Https && _apiScheme != HttpScheme.Http)
+        if (_apiScheme != Uri.UriSchemeHttps && _apiScheme != Uri.UriSchemeHttp)
             throw new InvalidOperationException("API Scheme must be http or https");
+        if (_credentials?.Method == CredentialsMethod.ApiToken && string.IsNullOrEmpty(_credentials.Config?.ApiToken))
+            throw new InvalidOperationException("API Key cannot be empty");
         
         return new FgaConnectionConfiguration(_apiScheme, _apiHost, _credentials);
     }

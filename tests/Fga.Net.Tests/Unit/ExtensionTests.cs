@@ -14,47 +14,42 @@ using Microsoft.Extensions.DependencyInjection;
 using OpenFga.Sdk.Api;
 using OpenFga.Sdk.Client;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Fga.Net.Tests.Unit;
 
-public class ExtensionTests
+public partial class ExtensionTests
 {
-    public static TheoryData<Action<FgaConfigurationRoot>> BadExtensions =>
+    public static TheoryData<ExtensionScenario> BadExtensions =>
         new()
         {
-            config => config.ConfigureAuth0Fga(x =>
+            new ExtensionScenario("Empty Extension Config - Auth0 FGA", 
+                config => config.ConfigureAuth0Fga(x => { })),
+            new ExtensionScenario("Empty Schema",
+                config => config.ConfigureOpenFga(x => { x.SetConnection("", "localhost"); })),
+            new ExtensionScenario("Empty API Key", config => config.ConfigureOpenFga(x =>
             {
-                    
-            }),
-            config => config.ConfigureOpenFga(x =>
-            {
-                x.SetConnection("", "localhost");
-            }),
-            config => config.ConfigureOpenFga(x =>
-            {
-                x.SetConnection(HttpScheme.Https, "localhost")
+                x.SetConnection(Uri.UriSchemeHttps, "localhost")
                     .WithApiKeyAuthentication("");
-            }),
-            config => config.ConfigureOpenFga(x =>
+            })),
+            new ExtensionScenario("Empty OIDC configuration", config => config.ConfigureOpenFga(x =>
             {
-                x.SetConnection(HttpScheme.Https, "localhost")
+                x.SetConnection(Uri.UriSchemeHttps, "localhost")
                     .WithOidcAuthentication("clientId", "", "issuer", "audience");
-            }),
+            })),
         };
 
     [Theory]
     [MemberData(nameof(BadExtensions))]
-    public void InvalidConfiguration_ThrowsException(Action<FgaConfigurationRoot> extension)
+    public void InvalidConfiguration_ThrowsException(ExtensionScenario scenario)
     {
         var collection = new ServiceCollection();
 
         Assert.Throws<InvalidOperationException>(() =>
             collection.AddOpenFgaClient(config =>
             {
-                config.StoreId = Guid.NewGuid().ToString();
+                config.SetStoreId(Guid.NewGuid().ToString()); 
 
-                extension(config);
+                scenario.Configuration(config);
             }));
     }
         
@@ -68,7 +63,7 @@ public class ExtensionTests
 
         collection.AddOpenFgaClient(config =>
         {
-            config.StoreId = Guid.NewGuid().ToString();
+            config.SetStoreId(Guid.NewGuid().ToString()); 
 
             scenario.Configuration(config);
 
@@ -94,7 +89,7 @@ public class ExtensionTests
 
         collection.AddOpenFgaClient(config =>
         {
-            config.StoreId = Guid.NewGuid().ToString();
+            config.SetStoreId(Guid.NewGuid().ToString()); 
             scenario.Configuration(config);
         });
 
@@ -110,36 +105,6 @@ public class ExtensionTests
         Assert.Contains(col, handler => handler is FineGrainedAuthorizationHandler);
     }
 
-    public class ExtensionScenario : IXunitSerializable 
-    {
-        public ExtensionScenario()
-        {
-        }
-
-        public ExtensionScenario(string description, Action<FgaConfigurationRoot> configuration)
-        {
-            Description = description;
-            Configuration = configuration;
-        }
-
-        public override string ToString()
-        {
-            return Description;
-        }
-
-        public void Deserialize(IXunitSerializationInfo info)
-        { }
-
-        public void Serialize(IXunitSerializationInfo info)
-        {
-            info.AddValue(nameof(Description), Description);
-        }
-
-        public string Description { get; init; }
-        public Action<FgaConfigurationRoot> Configuration { get; }
-
-    }
-
     public static TheoryData<ExtensionScenario> WorkingExtensions =>
         new()
         {
@@ -150,19 +115,19 @@ public class ExtensionTests
                 })),
             new ExtensionScenario("OpenFGA - No Credentials",
                 config => config.ConfigureOpenFga(x =>
-                { x.SetConnection(HttpScheme.Http, "localhost"); 
+                { x.SetConnection(Uri.UriSchemeHttp, "localhost"); 
                         
                 })),
             new ExtensionScenario("OpenFGA - API Key Auth", 
                 config => config.ConfigureOpenFga(x =>
                 {
-                    x.SetConnection(HttpScheme.Https, "localhost")
+                    x.SetConnection(Uri.UriSchemeHttps, "localhost")
                         .WithApiKeyAuthentication("my-special-key");
                 })),
             new ExtensionScenario("OpenFGA - OIDC Auth", 
                 config => config.ConfigureOpenFga(x =>
                 {
-                    x.SetConnection(HttpScheme.Https, "localhost")
+                    x.SetConnection(Uri.UriSchemeHttps, "localhost")
                         .WithOidcAuthentication("clientId", "clientSecret", "issuer", "audience");
                 })),
         };

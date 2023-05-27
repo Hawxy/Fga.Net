@@ -20,4 +20,12 @@ using OpenFga.Sdk.Configuration;
 
 namespace Fga.Net.DependencyInjection;
 
+
+internal sealed record FgaBuiltConfiguration(
+    string StoreId, 
+    string? AuthorizationModelId, 
+    int? MaxRetry,
+    int? MinWaitInMs,
+    FgaConnectionConfiguration Connection);
+
 internal sealed record FgaConnectionConfiguration(string ApiScheme, string ApiHost, Credentials? Credentials);

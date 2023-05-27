@@ -24,21 +24,45 @@ namespace Fga.Net.DependencyInjection;
 /// <summary>
 /// Base configuration for all Fga implementations
 /// </summary>
-public sealed class FgaConfigurationRoot 
+public sealed class FgaConfigurationBuilder 
 {
-    /// <inheritdoc cref="ClientConfiguration.StoreId"/>
-    public string? StoreId { get; set; }
+    private FgaConnectionConfiguration? _fgaConfiguration;
 
+    private string? _storeId;
+    
+    /// <inheritdoc cref="ClientConfiguration.StoreId"/>
+    public FgaConfigurationBuilder SetStoreId(string? storeId)
+    {
+        _storeId = storeId;
+        return this;
+    }
+
+    private string? _authorizationModelId;
+    
     /// <inheritdoc cref="ClientConfiguration.AuthorizationModelId"/>
-    public string? AuthorizationModelId { get; set; }
+    public FgaConfigurationBuilder SetAuthorizationModelId(string authorizationModelId)
+    {
+        _authorizationModelId = authorizationModelId;
+        return this;
+    }
+
+    private int? _maxRetry;
 
     /// <inheritdoc cref="ClientConfiguration.MaxRetry"/>
-    public int? MaxRetry { get; set; }
+    public FgaConfigurationBuilder SetMaxRetry(int maxRetry)
+    {
+        _maxRetry = maxRetry;
+        return this;
+    }
 
+    private int? _minWaitInMs;
     /// <inheritdoc cref="ClientConfiguration.MinWaitInMs"/>
-    public int? MinWaitInMs { get; set; }
-
-    private FgaConnectionConfiguration? _fgaConfiguration;
+    public FgaConfigurationBuilder SetWaitInMs(int waitInMs)
+    {
+        _minWaitInMs = waitInMs;
+        return this;
+    }
+    
 
     /// <summary>
     /// Configures the client for use with OpenFga
@@ -66,11 +90,13 @@ public sealed class FgaConfigurationRoot
         config.Invoke(configuration);
         _fgaConfiguration = configuration.Build();
     }
-
-    internal FgaConnectionConfiguration GetConnectionConfiguration()
+    internal FgaBuiltConfiguration Build()
     {
         if (_fgaConfiguration is null)
             throw new InvalidOperationException("OpenFga or Auth0 FGA configuration must be set");
-        return _fgaConfiguration;
+        if (string.IsNullOrEmpty(_storeId))
+            throw new InvalidOperationException("Store ID must be set");
+
+        return new FgaBuiltConfiguration(_storeId, _authorizationModelId, _maxRetry, _minWaitInMs, _fgaConfiguration);
     }
 }

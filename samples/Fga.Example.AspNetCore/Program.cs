@@ -42,17 +42,19 @@ builder.Services.AddOpenFgaClient(config =>
     {
         x.WithAuthentication(builder.Configuration["Auth0Fga:ClientId"]!, builder.Configuration["Auth0Fga:ClientSecret"]!);
     });
-  
-    config.StoreId = builder.Configuration["Auth0Fga:StoreId"];
+
+    config.SetStoreId(builder.Configuration["Auth0Fga:StoreId"]!);
 });
 
 // OpenFGA
-/*builder.Services.AddOpenFgaClient(x =>
+builder.Services.AddOpenFgaClient(x =>
 {
+    x.SetStoreId(builder.Configuration["Fga:StoreId"]);
+    
     x.ApiScheme = builder.Configuration["Fga:ApiScheme"];
     x.ApiHost = builder.Configuration["Fga:ApiHost"];
     x.StoreId = builder.Configuration["Fga:StoreId"];
-});*/
+});
 
 builder.Services.AddOpenFgaMiddleware(middlewareConfig =>
 {

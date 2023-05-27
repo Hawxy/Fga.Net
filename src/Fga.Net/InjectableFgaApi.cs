@@ -24,14 +24,24 @@ namespace Fga.Net.DependencyInjection;
 
 internal sealed class InjectableFgaApi : OpenFgaApi
 {
-    public InjectableFgaApi(IOptions<FgaClientConfiguration> configuration, HttpClient httpClient) : base(configuration.Value, httpClient)
+    public InjectableFgaApi(IOptions<FgaClientConfiguration> configuration, HttpClient httpClient) : base(configuration.Value.PurgeHeader(), httpClient)
     {
     }
 }
 
 internal sealed class InjectableFgaClient : OpenFgaClient
 {
-    public InjectableFgaClient(IOptions<FgaClientConfiguration> configuration, HttpClient httpClient) : base(configuration.Value, httpClient)
+    public InjectableFgaClient(IOptions<FgaClientConfiguration> configuration, HttpClient httpClient) : base(configuration.Value.PurgeHeader(), httpClient)
     {
+    }
+}
+
+internal static class ConfigurationExtensions
+{
+    // This fixes an exception when using API Tokens.
+    public static FgaClientConfiguration PurgeHeader(this FgaClientConfiguration configuration)
+    {
+        configuration.DefaultHeaders.Remove("Authorization");
+        return configuration;
     }
 }

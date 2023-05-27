@@ -12,14 +12,14 @@ var host = Host.CreateDefaultBuilder(args)
             {
                 x.WithAuthentication(context.Configuration["Auth0Fga:ClientId"], context.Configuration["Auth0Fga:ClientSecret"]);
             });
-            config.StoreId = context.Configuration["Auth0Fga:StoreId"];
+            config.SetStoreId(context.Configuration["Auth0Fga:StoreId"]);
 
             // OpenFGA
             config.ConfigureOpenFga(x =>
             {
-                x.SetConnection(Scheme.Http, context.Configuration["Fga:ApiHost"]);
+                x.SetConnection(Uri.UriSchemeHttp, context.Configuration["Fga:ApiHost"]);
             });
-            config.StoreId = context.Configuration["Fga:StoreId"];
+            config.SetStoreId(context.Configuration["Fga:StoreId"]);
         });
 
         services.AddHostedService<MyBackgroundWorker>();
