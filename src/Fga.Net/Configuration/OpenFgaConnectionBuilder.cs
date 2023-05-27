@@ -73,6 +73,12 @@ public sealed class OpenFgaConnectionBuilder
             throw new InvalidOperationException("API Scheme must be http or https");
         if (_credentials?.Method == CredentialsMethod.ApiToken && string.IsNullOrEmpty(_credentials.Config?.ApiToken))
             throw new InvalidOperationException("API Key cannot be empty");
+        if(_credentials?.Method == CredentialsMethod.ClientCredentials 
+           && (string.IsNullOrEmpty(_credentials.Config?.ClientId) 
+               || string.IsNullOrEmpty(_credentials.Config?.ClientSecret) 
+               || string.IsNullOrEmpty(_credentials.Config?.ApiTokenIssuer) 
+               || string.IsNullOrEmpty(_credentials.Config?.ApiAudience))) 
+            throw new InvalidOperationException("Clients credential configuration cannot be contain missing values.");
         
         return new FgaConnectionConfiguration(_apiScheme, _apiHost, _credentials);
     }

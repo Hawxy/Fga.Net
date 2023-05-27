@@ -17,7 +17,7 @@ using Xunit;
 
 namespace Fga.Net.Tests.Unit;
 
-public partial class ExtensionTests
+public class ExtensionTests
 {
     public static TheoryData<ExtensionScenario> BadExtensions =>
         new()

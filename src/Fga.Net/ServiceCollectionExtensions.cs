@@ -17,32 +17,39 @@
 #endregion
 
 using Fga.Net.DependencyInjection.Configuration;
-using Fga.Net.DependencyInjection.Http;
 using Microsoft.Extensions.DependencyInjection;
 using OpenFga.Sdk.Api;
-using OpenFga.Sdk.ApiClient;
 using OpenFga.Sdk.Client;
-using OpenFga.Sdk.Configuration;
 
 namespace Fga.Net.DependencyInjection;
 
 /// <summary>
-/// Extensions for registering Fga features to a .NET environment.
+/// Extensions for registering Fga features to a <see cref="IServiceCollection"/>
 /// </summary>
 public static class ServiceCollectionExtensions
 {
 
     /// <summary>
     /// Registers and configures an <see cref="OpenFgaClient"/> and <see cref="OpenFgaApi"/> for the provided service collection.
+    /// Both clients are registered as singletons.
     /// </summary>
-    /// <param name="collection"></param>
-    /// <param name="fgaConfiguration"></param>
-    /// <returns>An <see cref="IHttpClientBuilder" /> that can be used to configure the <see cref="OpenFgaClient"/>.</returns>
-    public static (IHttpClientBuilder openFgaApiBuilder, IHttpClientBuilder openFgaClientBuilder) AddOpenFgaClient(this IServiceCollection collection, Action<FgaConfigurationBuilder> fgaConfiguration)
+    /// <param name="collection">The service collection</param>
+    /// <param name="fgaConfiguration">The lambda that configures the builder</param>
+    /// <returns>An <see cref="IHttpClientBuilder" /> that can be used to further configure the underlying <see cref="HttpClient"/></returns>
+    public static IHttpClientBuilder AddOpenFgaClient(this IServiceCollection collection, Action<FgaConfigurationBuilder> fgaConfiguration)
     {
-        var apiClientBuilder = collection.AddHttpClient<OpenFgaApi, InjectableFgaApi>();
-        var fgaClientBuilder = collection.AddHttpClient<OpenFgaClient, InjectableFgaClient>();
-        
+        // Add a HTTP factory instance that's suitable for injection into a singleton service.
+        var httpClient = collection.AddHttpClient(Constants.FgaHttpClient)
+            .ConfigurePrimaryHttpMessageHandler(() => 
+                new SocketsHttpHandler()
+                {
+                    PooledConnectionLifetime = TimeSpan.FromMinutes(2)
+                })
+            .SetHandlerLifetime(Timeout.InfiniteTimeSpan);
+
+        collection.AddSingleton<OpenFgaApi, InjectableFgaApi>();
+        collection.AddSingleton<OpenFgaClient, InjectableFgaClient>();
+
         var configRoot = new FgaConfigurationBuilder();
         fgaConfiguration.Invoke(configRoot);
 
@@ -51,69 +58,25 @@ public static class ServiceCollectionExtensions
         collection.Configure<FgaClientConfiguration>(x=> 
             x.ConfigureFgaOptions(config));
 
-        // Custom handling of the client credentials flow as we need the OAuth2 client to store handle token lifetimes outside of the client itself
-        if (config.Connection.Credentials?.Method is CredentialsMethod.ClientCredentials)
-        {
-            collection.AddHttpClient<BaseClient, InjectableBaseClient>()
-                .ConfigurePrimaryHttpMessageHandler(() => 
-                    new SocketsHttpHandler()
-                {
-                    PooledConnectionLifetime = TimeSpan.FromMinutes(2)
-                })
-                .SetHandlerLifetime(Timeout.InfiniteTimeSpan);
-            
-            collection.AddSingleton<OAuth2Client>(provider => new OAuth2Client(config.Connection.Credentials, provider.GetRequiredService<BaseClient>()));
-
-            collection.AddTransient<OidcHttpHandler>();
-
-            apiClientBuilder.AddHttpMessageHandler<OidcHttpHandler>();
-            fgaClientBuilder.AddHttpMessageHandler<OidcHttpHandler>();
-        }
-
-        return (apiClientBuilder, fgaClientBuilder);
+        return httpClient;
     }
 
+    /// <summary>
+    /// Replaces the existing FGA configuration options with the new configuration. Useful within test infrastructure.
+    /// </summary>
+    /// <param name="collection">The service collection</param>
+    /// <param name="fgaConfiguration">The lambda that configures the builder</param>
     public static void PostConfigureFgaClient(this IServiceCollection collection, Action<FgaConfigurationBuilder> fgaConfiguration)
     {
-        var configRoot = new FgaConfigurationBuilder();
-        fgaConfiguration.Invoke(configRoot);
+        var configBuilder = new FgaConfigurationBuilder();
+        fgaConfiguration.Invoke(configBuilder);
 
-        var config = configRoot.Build();
+        var config = configBuilder.Build();
 
         collection.PostConfigure<FgaClientConfiguration>(x=> 
             x.ConfigureFgaOptions(config));
-        
-        
     }
-
-
-    private static (IHttpClientBuilder openFgaApiBuilder, IHttpClientBuilder openFgaClientBuilder) ConfigureFgaClientInternal(this IServiceCollection collection,
-        FgaBuiltConfiguration config)
-    {
-        var apiClientBuilder = collection.AddHttpClient<OpenFgaApi, InjectableFgaApi>();
-        var fgaClientBuilder = collection.AddHttpClient<OpenFgaClient, InjectableFgaClient>();
-        
-        // Custom handling of the client credentials flow as we need the OAuth2 client to store handle token lifetimes outside of the client itself
-        if (config.Connection.Credentials?.Method is CredentialsMethod.ClientCredentials)
-        {
-            collection.AddHttpClient<BaseClient, InjectableBaseClient>()
-                .ConfigurePrimaryHttpMessageHandler(() => 
-                    new SocketsHttpHandler()
-                    {
-                        PooledConnectionLifetime = TimeSpan.FromMinutes(2)
-                    })
-                .SetHandlerLifetime(Timeout.InfiniteTimeSpan);
-            
-            collection.AddSingleton<OAuth2Client>(provider => new OAuth2Client(config.Connection.Credentials, provider.GetRequiredService<BaseClient>()));
-
-            collection.AddTransient<OidcHttpHandler>();
-
-            apiClientBuilder.AddHttpMessageHandler<OidcHttpHandler>();
-            fgaClientBuilder.AddHttpMessageHandler<OidcHttpHandler>();
-        }
-
-        return (apiClientBuilder, fgaClientBuilder);
-    }
+    
     
     
     private static void ConfigureFgaOptions(this FgaClientConfiguration x, FgaBuiltConfiguration config)
@@ -128,7 +91,7 @@ public static class ServiceCollectionExtensions
         if (config.MinWaitInMs.HasValue)
             x.MinWaitInMs = config.MinWaitInMs.Value;
 
-        x.Credentials = config.Connection.Credentials?.Method is CredentialsMethod.ApiToken ? config.Connection.Credentials : null;
+        x.Credentials = config.Connection.Credentials;
     }
 
 }

@@ -63,7 +63,7 @@ public class AttributeTests
     [Fact]
     public async Task PropertyObjectAttribute_ThrowsOnMissingProperty()
     {
-        var data = Encoding.UTF8.GetBytes("{\"Foo\":\"Bar\",\"Array\":[]}");
+        var data = "{\"Foo\":\"Bar\",\"Array\":[]}"u8.ToArray();
 
         var httpContext = new HttpContextMock()
             .SetupUrl("http://localhost:8000/path")

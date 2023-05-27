@@ -34,12 +34,13 @@ public sealed class Auth0FgaConnectionBuilder
 
     private string _clientId = null!;
     private string _clientSecret = null!;
- 
+
+    
     /// <summary>
-    /// Config
+    /// Configure authentication for Auth0 FGA
     /// </summary>
-    /// <param name="clientId"></param>
-    /// <param name="clientSecret"></param>
+    /// <param name="clientId">Client Id from your  Auth0 FGA Account</param>
+    /// <param name="clientSecret">Client Secret from your Auth0 FGA Account</param>
     public void WithAuthentication(string clientId, string clientSecret)
     {
         ArgumentNullException.ThrowIfNull(clientId);

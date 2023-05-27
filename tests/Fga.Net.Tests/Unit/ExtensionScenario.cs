@@ -29,7 +29,6 @@ public sealed class ExtensionScenario : IXunitSerializable
         info.AddValue(nameof(Description), Description);
     }
 
-    public string Description { get; init; }
-    public Action<FgaConfigurationBuilder> Configuration { get; }
-
+    public string Description { get; init; } = null!;
+    public Action<FgaConfigurationBuilder> Configuration { get; } = null!;
 }
