@@ -31,7 +31,7 @@ public sealed class FgaConfigurationBuilder
     private string? _storeId;
     
     /// <inheritdoc cref="ClientConfiguration.StoreId"/>
-    public FgaConfigurationBuilder SetStoreId(string? storeId)
+    public FgaConfigurationBuilder SetStoreId(string storeId)
     {
         _storeId = storeId;
         return this;
