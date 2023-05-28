@@ -76,9 +76,8 @@ public static class ServiceCollectionExtensions
         collection.PostConfigure<FgaClientConfiguration>(x=> 
             x.ConfigureFgaOptions(config));
     }
-    
-    
-    
+
+
     private static void ConfigureFgaOptions(this FgaClientConfiguration x, FgaBuiltConfiguration config)
     {
         x.ApiScheme = config.Connection.ApiScheme;

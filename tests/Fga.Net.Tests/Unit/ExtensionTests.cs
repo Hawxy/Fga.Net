@@ -11,8 +11,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using OpenFga.Sdk.Api;
 using OpenFga.Sdk.Client;
+using OpenFga.Sdk.Configuration;
 using Xunit;
 
 namespace Fga.Net.Tests.Unit;
@@ -171,6 +173,39 @@ public class ExtensionTests
         {
             throw new NotImplementedException();
         }
+    }
+
+
+    [Fact]
+    public void PostConfigureOptions_OverridesSettings()
+    {
+        var collection = new ServiceCollection();
+
+        collection.AddOpenFgaClient(config =>
+        {
+            config.SetStoreId(Guid.NewGuid().ToString()); 
+
+            config.ConfigureAuth0Fga(x=> x.WithAuthentication("FgaClientId", "FgaClientSecret"));
+
+        });
+
+        var openFgaUrl = "localhost:8080";
+        collection.PostConfigureFgaClient(config =>
+        {
+            config.SetStoreId(Guid.NewGuid().ToString());
+            config.ConfigureOpenFga(x =>
+            {
+                x.SetConnection(Uri.UriSchemeHttp, openFgaUrl);
+            });
+        });
+
+        var provider = collection.BuildServiceProvider();
+
+        var config = provider.GetRequiredService<IOptions<FgaClientConfiguration>>().Value;
+        
+        Assert.Null(config.Credentials);
+        Assert.Equal(openFgaUrl, config.ApiHost);
+
     }
 
 }

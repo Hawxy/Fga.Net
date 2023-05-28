@@ -3,7 +3,7 @@
 [![Nuget (with prereleases)](https://img.shields.io/nuget/vpre/Fga.Net.DependencyInjection?label=Fga.Net.DependencyInjection&style=flat-square)](https://www.nuget.org/packages/Fga.Net.DependencyInjection)
 [![Nuget (with prereleases)](https://img.shields.io/nuget/vpre/Fga.Net.AspNetCore?label=Fga.Net.AspNetCore&style=flat-square)](https://www.nuget.org/packages/Fga.Net.AspNetCore)
 
-#### Note: This project is in its early stages and will have breaking changes as FGA matures.
+#### Note: This project is currently in beta. Breaking changes may occur before release.
 
 ### Packages
 **`Fga.Net.DependencyInjection`**: Provides dependency injection/configuration extensions for [OpenFga.Sdk](https://github.com/openfga/dotnet-sdk)
@@ -42,7 +42,7 @@ builder.Services.AddOpenFgaClient(config =>
 builder.Services.AddOpenFgaMiddleware();
 ```
 
-The `WithAuth0FgaDefaults` extension will configure the relevant OpenFGA client settings to work with Auth0 FGA's US environment.
+The `ConfigureAuth0Fga` extension will configure the client to work with the Auth0 US environment. An environment selector will be added as additional regions come online.
 
 ### OpenFGA
 
@@ -109,7 +109,7 @@ The example below uses the Name, which is mapped to the User ID in a default Aut
 ```cs
 builder.Services.AddOpenFgaMiddleware(config =>
 {
-    //DSL v1.1 requires the user type to be included
+    //'user' should be the name of the user type that you're using within your model
     config.UserIdentityResolver = principal => $"user:{principal.Identity!.Name!}";
 });
 ```
@@ -175,6 +175,23 @@ An additional pre-made attribute that allows all tuple values to be hardcoded st
 ## Client Injection
 
 This package registers both the `OpenFgaApi` and `OpenFgaClient` types in the DI container. `OpenFgaClient` is a higher level abstraction and preferred over `OpenFgaApi` for general use.
+
+## Testing
+
+When running tests against your API or service collection, you likely want a different client configuration than usual. You can achieve this by calling `PostConfigureFgaClient` on your services configuration:
+
+```cs
+// Replaces existing configuration
+services.PostConfigureFgaClient(config =>
+{
+    config.SetStoreId(storeId);
+    config.ConfigureOpenFga(x =>
+    {
+        x.SetConnection(Uri.UriSchemeHttp, openFgaUrl);
+    });
+});
+
+```
 
 ## Worker Service / Generic Host Setup
 
