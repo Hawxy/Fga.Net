@@ -57,6 +57,8 @@ services.AddOpenFgaClient(config =>
     });
     config.SetStoreId(context.Configuration["Fga:StoreId"]);
 });
+
+builder.Services.AddOpenFgaMiddleware();
 ```
 
 Authentication can be added to OpenFGA connections via the relevant extensions:
@@ -103,14 +105,14 @@ A constant authorization key is included for convenience, but `AddFgaRequirement
 - `FgaQueryObjectAttribute` - Computes the Object via a value in the query string
 - `FgaRouteObjectAttribute` - Computes the Object via a value in the routes path
 
-If you want to use these attributes, you need to configure how the user's identity is resolved from the `ClaimsPrincipal`.
+If you want to use these attributes, you need to configure how the user's identifier is constructed from the users claims.
 The example below uses the Name, which is mapped to the User ID in a default Auth0 integration.
 
 ```cs
 builder.Services.AddOpenFgaMiddleware(config =>
 {
-    //'user' should be the name of the user type that you're using within your model
-    config.UserIdentityResolver = principal => $"user:{principal.Identity!.Name!}";
+    //'user' should be the name of the user type that you're using within your FGA model
+    config.SetUserIdentifier("user", principal => principal.Identity!.Name!);
 });
 ```
 

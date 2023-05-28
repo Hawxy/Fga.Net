@@ -97,7 +97,7 @@ public class ExtensionTests
 
         collection.AddOpenFgaMiddleware(x =>
         {
-            x.UserIdentityResolver = principal => principal.Identity!.Name!;
+            x.SetUserIdentifier("user", principal => principal.Identity!.Name!);
         });
 
         var provider = collection.BuildServiceProvider();

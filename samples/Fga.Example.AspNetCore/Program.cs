@@ -51,7 +51,7 @@ builder.Services.AddOpenFgaClient(x =>
 
 builder.Services.AddOpenFgaMiddleware(middlewareConfig =>
 {
-    middlewareConfig.UserIdentityResolver = principal => $"user:{principal.Identity!.Name!}";
+    middlewareConfig.SetUserIdentifier("user", principal => principal.Identity!.Name!);
 });
 
 builder.Services.AddAuthorization(options =>
