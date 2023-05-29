@@ -3,16 +3,16 @@
 [![Nuget (with prereleases)](https://img.shields.io/nuget/vpre/Fga.Net.DependencyInjection?label=Fga.Net.DependencyInjection&style=flat-square)](https://www.nuget.org/packages/Fga.Net.DependencyInjection)
 [![Nuget (with prereleases)](https://img.shields.io/nuget/vpre/Fga.Net.AspNetCore?label=Fga.Net.AspNetCore&style=flat-square)](https://www.nuget.org/packages/Fga.Net.AspNetCore)
 
-#### Note: This project is in its early stages and will have breaking changes as FGA matures.
+#### Note: This project is currently in beta. Breaking changes may occur before release.
 
 ### Packages
 **`Fga.Net.DependencyInjection`**: Provides dependency injection/configuration extensions for [OpenFga.Sdk](https://github.com/openfga/dotnet-sdk)
 
-**`Fga.Net.AspNetCore`**: Includes Authorization middleware to support FGA checks as part of a request's lifecycle.
+**`Fga.Net.AspNetCore`**: Authorization middleware to perform FGA checks for inbound requests.
 
 ## Getting Started
 
-This package is compatible with the OSS OpenFGA as well as the managed Auth0 FGA service.
+This package is compatible with the OSS OpenFGA as well as the managed Auth0 FGA service. Usage of DSL v1.1 is required.
 
 Please ensure you have a basic understanding of how FGA works before continuing: [OpenFGA Docs](https://openfga.dev/) or [Auth0 FGA Docs](https://docs.fga.dev/)
 
@@ -26,42 +26,63 @@ Install `Fga.Net.AspNetCore` from Nuget before continuing.
 
 Ensure you have a Store ID, Client ID, and Client Secret ready from [How to get your API keys](https://docs.fga.dev/integration/getting-your-api-keys).
 
-
 1. Add your `StoreId`, `ClientId` and `ClientSecret` to your application configuration, ideally via the [dotnet secrets manager](https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-6.0&tabs=windows#enable-secret-storage).
 2. Add the following code to your ASP.NET Core services configuration:
 ```cs
-builder.Services.AddOpenFgaClient(x =>
+builder.Services.AddOpenFgaClient(config =>
 {
-    x.WithAuth0FgaDefaults(builder.Configuration["Auth0Fga:ClientId"], builder.Configuration["Auth0Fga:ClientSecret"]);
+    config.ConfigureAuth0Fga(x =>
+    {
+        x.WithAuthentication(builder.Configuration["Auth0Fga:ClientId"]!, builder.Configuration["Auth0Fga:ClientSecret"]!);
+    });
 
-    x.StoreId = builder.Configuration["Auth0Fga:StoreId"];
+    config.SetStoreId(builder.Configuration["Auth0Fga:StoreId"]!);
 });
 
 builder.Services.AddOpenFgaMiddleware();
 ```
 
-The `WithAuth0FgaDefaults` extension will configure the relevant OpenFGA client settings to work with Auth0 FGA's US environment.
+The `ConfigureAuth0Fga` extension will configure the client to work with the Auth0 US environment. An environment selector will be added as additional regions come online.
 
 ### OpenFGA
-
-OpenFGA configuration is very similar to the [SDK Setup Guide](https://openfga.dev/docs/getting-started/setup-sdk-client)
 
 1. Add the FGA `ApiScheme`, `ApiHost` & `StoreId` to your application configuration.
 2. Add the following code to your ASP.NET Core configuration:
 ```cs
-builder.Services.AddOpenFgaClient(x =>
+services.AddOpenFgaClient(config =>
 {
-    x.ApiScheme = builder.Configuration["Fga:ApiScheme"];
-    x.ApiHost = builder.Configuration["Fga:ApiHost"];
-    x.StoreId = builder.Configuration["Fga:StoreId"];
+    config.ConfigureOpenFga(x =>
+    {
+        x.SetConnection(context.Configuration["Fga:ApiScheme"] context.Configuration["Fga:ApiHost"]);
+    });
+    config.SetStoreId(context.Configuration["Fga:StoreId"]);
 });
 
 builder.Services.AddOpenFgaMiddleware();
 ```
 
+Authentication can be added to OpenFGA connections via the relevant extensions:
+
+```csharp
+config.ConfigureOpenFga(x =>
+{
+    x.SetConnection(Uri.UriSchemeHttp, context.Configuration["Fga:ApiHost"]);
+    
+    // Add API key auth
+    x.WithApiKeyAuthentication(context.Configuration["Fga:ApiKey"]);
+    // or OIDC auth
+    x.WithOidcAuthentication(
+        context.Configuration["Fga:ClientId"], 
+        context.Configuration["Fga:ClientSecret"], 
+        context.Configuration["Fga:Issuer"], 
+        context.Configuration["Fga:Audience"]);
+});
+
+```
+
 ### Authorization Policy Setup
 
-We'll need to setup our authorization policy like so:
+Your authorization policy should be configured with `RequireAuthenticatedUser` and `AddFgaRequirement` at minimum:
 
 ```cs
 builder.Services.AddAuthorization(options =>
@@ -73,6 +94,8 @@ builder.Services.AddAuthorization(options =>
 });
 ```
 
+A constant authorization key is included for convenience, but `AddFgaRequirement` can be used with any additional policy as required.
+
 ### Built-in Check Attributes
 
 `Fga.Net.AspNetCore` ships with a number of attributes that should cover the most common authorization sources for FGA checks:
@@ -82,14 +105,14 @@ builder.Services.AddAuthorization(options =>
 - `FgaQueryObjectAttribute` - Computes the Object via a value in the query string
 - `FgaRouteObjectAttribute` - Computes the Object via a value in the routes path
 
-If you want to use these attributes, you need to configure how the user's identity is resolved from the `ClaimsPrincipal`.
+If you want to use these attributes, you need to configure how the user's identifier is constructed from the users claims.
 The example below uses the Name, which is mapped to the User ID in a default Auth0 integration.
 
 ```cs
 builder.Services.AddOpenFgaMiddleware(config =>
 {
-    //DSL v1.1 requires the user type to be included
-    config.UserIdentityResolver = principal => $"user:{principal.Identity!.Name!}";
+    //'user' should be the name of the user type that you're using within your FGA model
+    config.SetUserIdentifier("user", principal => principal.Identity!.Name!);
 });
 ```
 
@@ -155,6 +178,23 @@ An additional pre-made attribute that allows all tuple values to be hardcoded st
 
 This package registers both the `OpenFgaApi` and `OpenFgaClient` types in the DI container. `OpenFgaClient` is a higher level abstraction and preferred over `OpenFgaApi` for general use.
 
+## Testing
+
+When running tests against your API or service collection, you likely want a different client configuration than usual. You can achieve this by calling `PostConfigureFgaClient` on your services configuration:
+
+```cs
+// Replaces existing configuration
+services.PostConfigureFgaClient(config =>
+{
+    config.SetStoreId(storeId);
+    config.ConfigureOpenFga(x =>
+    {
+        x.SetConnection(Uri.UriSchemeHttp, openFgaUrl);
+    });
+});
+
+```
+
 ## Worker Service / Generic Host Setup
 
 `Fga.Net.DependencyInjection` ships with the `AddOpenFgaClient` service collection extension that handles all required wire-up.
@@ -169,16 +209,32 @@ To get started:
 var host = Host.CreateDefaultBuilder(args)
     .ConfigureServices((context, services) =>
     {
+         // Auth0 FGA
         services.AddOpenFgaClient(config =>
         {
-            // Auth0 FGA
-            config.WithAuth0FgaDefaults(context.Configuration["Auth0Fga:ClientId"], context.Configuration["Auth0Fga:ClientSecret"]);
-            config.StoreId = context.Configuration["Auth0Fga:StoreId"];
-
-            // OpenFGA
-            config.ApiScheme = context.Configuration["Fga:ApiScheme"];
-            config.ApiHost = context.Configuration["Fga:ApiHost"];
-            config.StoreId = context.Configuration["Fga:StoreId"];
+            config.ConfigureAuth0Fga(x =>
+            {
+                x.WithAuthentication(context.Configuration["Auth0Fga:ClientId"], context.Configuration["Auth0Fga:ClientSecret"]);
+            });
+            config.SetStoreId(context.Configuration["Auth0Fga:StoreId"]);
+        });
+        
+        // OpenFGA
+        services.AddOpenFgaClient(config =>
+        {
+            config.ConfigureOpenFga(x =>
+            {
+                x.SetConnection(Uri.UriSchemeHttp, context.Configuration["Fga:ApiHost"]);
+                
+                // Optionally add authentication settings
+                x.WithApiKeyAuthentication(context.Configuration["Fga:ApiKey"]);
+                x.WithOidcAuthentication(
+                    context.Configuration["Fga:ClientId"], 
+                    context.Configuration["Fga:ClientSecret"], 
+                    context.Configuration["Fga:Issuer"], 
+                    context.Configuration["Fga:Audience"]);
+            });
+            config.SetStoreId(context.Configuration["Fga:StoreId"]);
         });
 
         services.AddHostedService<MyBackgroundWorker>();

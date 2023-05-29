@@ -27,7 +27,7 @@ public class WebAppFixture : IAsyncLifetime
             .ReturnsAsync((List<ClientCheckRequest> res, CancellationToken _) =>
             {
                 var entry = res.First();
-                return entry.User == MockJwtConfiguration.DefaultUser
+                return entry.User == $"user:{MockJwtConfiguration.DefaultUser}"
                     ? new BatchCheckResponse() { Responses = new List<BatchCheckSingleResponse>() { new(true, entry) } }
                     : new BatchCheckResponse() { Responses = new List<BatchCheckSingleResponse>() { new(false, entry) } };
             });

@@ -72,6 +72,12 @@ internal sealed class FineGrainedAuthorizationHandler : AuthorizationHandler<Fin
                     _logger.NullValuesReturned(user, relation, @object);
                     return;
                 }
+
+                if (!Validation.IsValidUser(user))
+                {
+                    _logger.InvalidUser(user);
+                    return;
+                }
                 
                 checks.Add(new ClientCheckRequest
                 {
@@ -106,4 +112,6 @@ internal sealed class FineGrainedAuthorizationHandler : AuthorizationHandler<Fin
             }
         }
     }
+
+ 
 }

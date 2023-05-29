@@ -1,8 +1,6 @@
 using System.Security.Claims;
-using Fga.Example.AspNetCore;
 using Fga.Net.AspNetCore;
 using Fga.Net.AspNetCore.Authorization;
-using Fga.Net.AspNetCore.Authorization.Attributes;
 using Fga.Net.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -30,25 +28,30 @@ builder.Services.AddAuthentication(options =>
 
 
 // Auth0 FGA
-builder.Services.AddOpenFgaClient(clientConfig =>
+builder.Services.AddOpenFgaClient(config =>
 {
-    clientConfig.WithAuth0FgaDefaults(builder.Configuration["Auth0Fga:ClientId"]!,
-        builder.Configuration["Auth0Fga:ClientSecret"]!);
-    clientConfig.StoreId = builder.Configuration["Auth0Fga:StoreId"];
+    config.ConfigureAuth0Fga(x =>
+    {
+        x.WithAuthentication(builder.Configuration["Auth0Fga:ClientId"]!, builder.Configuration["Auth0Fga:ClientSecret"]!);
+    });
 
+    config.SetStoreId(builder.Configuration["Auth0Fga:StoreId"]!);
 });
 
-// OpenFGA
-/*builder.Services.AddOpenFgaClient(x =>
+/* OpenFGA
+builder.Services.AddOpenFgaClient(x =>
 {
-    x.ApiScheme = builder.Configuration["Fga:ApiScheme"];
-    x.ApiHost = builder.Configuration["Fga:ApiHost"];
-    x.StoreId = builder.Configuration["Fga:StoreId"];
+    x.ConfigureOpenFga(x =>
+    {
+        x.SetConnection(builder.Configuration["Fga:ApiScheme"]!, builder.Configuration["Fga:ApiHost"]!);
+    });
+    
+    x.SetStoreId(builder.Configuration["Fga:StoreId"]);
 });*/
 
 builder.Services.AddOpenFgaMiddleware(middlewareConfig =>
 {
-    middlewareConfig.UserIdentityResolver = principal => $"user:{principal.Identity!.Name!}";
+    middlewareConfig.SetUserIdentifier("user", principal => principal.Identity!.Name!);
 });
 
 builder.Services.AddAuthorization(options =>

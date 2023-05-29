@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 /*
    Copyright 2021-2023 Hawxy
 
@@ -16,15 +16,16 @@
  */
 #endregion
 
-
-using OpenFga.Sdk.Client;
+using OpenFga.Sdk.Configuration;
 
 namespace Fga.Net.DependencyInjection;
 
-/// <summary>
-/// FGA Authentication/Authorization configuration
-/// </summary>
-public sealed class FgaClientConfiguration : ClientConfiguration
-{
-    
-}
+
+internal sealed record FgaBuiltConfiguration(
+    string StoreId, 
+    string? AuthorizationModelId, 
+    int? MaxRetry,
+    int? MinWaitInMs,
+    FgaConnectionConfiguration Connection);
+
+internal sealed record FgaConnectionConfiguration(string ApiScheme, string ApiHost, Credentials? Credentials);
