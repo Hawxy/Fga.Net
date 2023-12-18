@@ -3,8 +3,6 @@
 [![Nuget (with prereleases)](https://img.shields.io/nuget/vpre/Fga.Net.DependencyInjection?label=Fga.Net.DependencyInjection&style=flat-square)](https://www.nuget.org/packages/Fga.Net.DependencyInjection)
 [![Nuget (with prereleases)](https://img.shields.io/nuget/vpre/Fga.Net.AspNetCore?label=Fga.Net.AspNetCore&style=flat-square)](https://www.nuget.org/packages/Fga.Net.AspNetCore)
 
-#### Note: This project is currently in beta. Breaking changes may occur before release.
-
 ### Packages
 **`Fga.Net.DependencyInjection`**: Provides dependency injection/configuration extensions for [OpenFga.Sdk](https://github.com/openfga/dotnet-sdk)
 
