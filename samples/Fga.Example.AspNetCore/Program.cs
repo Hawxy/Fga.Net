@@ -26,6 +26,7 @@ builder.Services.AddAuthentication(options =>
         };
     });
 
+builder.Services.AddHttpLogging(x => { });
 
 // Auth0 FGA
 builder.Services.AddOpenFgaClient(config =>

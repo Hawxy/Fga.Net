@@ -6,6 +6,7 @@ using Fga.Net.AspNetCore.Authorization.Attributes;
 using Fga.Net.AspNetCore.Exceptions;
 using HttpContextMoq;
 using HttpContextMoq.Extensions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Primitives;
@@ -44,7 +45,7 @@ public class AttributeTests
     [Fact]
     public async Task PropertyObjectAttribute_WorksAsExpected()
     {
-        var data = Encoding.UTF8.GetBytes("{\"Foo\":\"Bar\",\"Array\":[]}");
+        var data = "{\"Foo\":\"Bar\",\"Array\":[]}"u8.ToArray();
 
         var httpContext = new HttpContextMock()
                 .SetupUrl("http://localhost:8000/path")
@@ -64,7 +65,7 @@ public class AttributeTests
     public async Task PropertyObjectAttribute_ThrowsOnMissingProperty()
     {
         var data = "{\"Foo\":\"Bar\",\"Array\":[]}"u8.ToArray();
-
+        
         var httpContext = new HttpContextMock()
             .SetupUrl("http://localhost:8000/path")
             .SetupRequestMethod("POST")
