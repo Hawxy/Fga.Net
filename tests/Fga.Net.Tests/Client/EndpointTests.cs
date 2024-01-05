@@ -2,7 +2,9 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Alba;
+using Fga.Net.DependencyInjection.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using OpenFga.Sdk.Api;
 using OpenFga.Sdk.Client;
 using OpenFga.Sdk.Client.Model;
@@ -26,7 +28,8 @@ public class EndpointTests
     {
         using var scope = _host.Services.CreateScope();
         var client = scope.ServiceProvider.GetRequiredService<OpenFgaApi>();
-        var modelsResponse = await client.ReadAuthorizationModels();
+        var config = scope.ServiceProvider.GetRequiredService<IOptions<FgaClientConfiguration>>().Value;
+        var modelsResponse = await client.ReadAuthorizationModels(config.StoreId!);
 
         Assert.NotNull(modelsResponse);
         Assert.NotNull(modelsResponse.AuthorizationModels);
@@ -34,12 +37,12 @@ public class EndpointTests
 
         var modelId = modelsResponse.AuthorizationModels?.First().Id!;
 
-        var modelResponse = await client.ReadAuthorizationModel(modelId);
+        var modelResponse = await client.ReadAuthorizationModel(config.StoreId!, modelId);
 
         Assert.NotNull(modelResponse);
         Assert.NotNull(modelResponse.AuthorizationModel?.Id);
 
-        var assertions = await client.ReadAssertions(modelId);
+        var assertions = await client.ReadAssertions(config.StoreId!, modelId);
 
         Assert.NotNull(assertions);
         Assert.True(assertions.Assertions?.Count > 0);
@@ -49,16 +52,16 @@ public class EndpointTests
         Assert.NotEmpty(assertion.Relation!);
         Assert.NotEmpty(assertion.User!);
             
-        var graph = await client.Expand(new ExpandRequest()
+        var graph = await client.Expand(config.StoreId!, new ExpandRequest()
         {
             AuthorizationModelId = modelId,
-            TupleKey = assertion
+            TupleKey = new ExpandRequestTupleKey(assertion.Relation, assertion.Object)
         });
 
         Assert.NotNull(graph.Tree);
         Assert.NotNull(graph.Tree!.Root!.Name);
 
-        var watch = await client.ReadChanges();
+        var watch = await client.ReadChanges(config.StoreId!);
         Assert.NotNull(watch);
 
 

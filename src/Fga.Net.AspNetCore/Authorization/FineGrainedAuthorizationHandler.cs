@@ -37,81 +37,80 @@ internal sealed class FineGrainedAuthorizationHandler : AuthorizationHandler<Fin
     }
     protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, FineGrainedAuthorizationRequirement requirement)
     {
-        if (context.Resource is HttpContext httpContext)
+        if (context.Resource is not HttpContext httpContext)
+            throw new InvalidOperationException($"{nameof(FineGrainedAuthorizationHandler)} called with invalid resource type. This handler is only compatible with endpoint routing.");
+        
+        var endpoint = httpContext.GetEndpoint();
+        if (endpoint is null)
+            return;
+        var attributes = endpoint.Metadata.GetOrderedMetadata<FgaAttribute>();
+        // The user is enforcing the fga policy but there's no attributes here.
+        if (attributes.Count == 0)
+            return;
+
+        var checks = new List<ClientCheckRequest>();
+            
+        foreach (var attribute in attributes)
         {
-            var endpoint = httpContext.GetEndpoint();
-            if (endpoint is null)
-                return;
-            var attributes = endpoint.Metadata.GetOrderedMetadata<FgaAttribute>();
-            // The user is enforcing the fga policy but there's no attributes here.
-            if (attributes.Count == 0)
-                return;
-
-            var checks = new List<ClientCheckRequest>();
-            
-            foreach (var attribute in attributes)
+            string? user;
+            string? relation;
+            string? @object;
+            try
             {
-                string? user;
-                string? relation;
-                string? @object;
-                try
-                {
-                    user = await attribute.GetUser(httpContext);
-                    relation = await attribute.GetRelation(httpContext);
-                    @object = await attribute.GetObject(httpContext);
-                }
-                catch (FgaMiddlewareException ex)
-                {
-                    _logger.MiddlewareException(ex);
-                    return;
-                }
+                user = await attribute.GetUser(httpContext);
+                relation = await attribute.GetRelation(httpContext);
+                @object = await attribute.GetObject(httpContext);
+            }
+            catch (FgaMiddlewareException ex)
+            {
+                _logger.MiddlewareException(ex);
+                return;
+            }
 
-                // If we get back nulls from anything we cannot perform a check.
-                if (string.IsNullOrEmpty(user) || string.IsNullOrEmpty(relation) || string.IsNullOrEmpty(@object))
-                {
-                    _logger.NullValuesReturned(user, relation, @object);
-                    return;
-                }
+            // If we get back nulls from anything we cannot perform a check.
+            if (string.IsNullOrEmpty(user) || string.IsNullOrEmpty(relation) || string.IsNullOrEmpty(@object))
+            {
+                _logger.NullValuesReturned(user, relation, @object);
+                return;
+            }
 
-                if (!Validation.IsValidUser(user))
-                {
-                    _logger.InvalidUser(user);
-                    return;
-                }
+            if (!Validation.IsValidUser(user))
+            {
+                _logger.InvalidUser(user);
+                return;
+            }
                 
-                checks.Add(new ClientCheckRequest
-                {
-                    User = user,
-                    Relation = relation,
-                    Object = @object
-                });
-            }
+            checks.Add(new ClientCheckRequest
+            {
+                User = user,
+                Relation = relation,
+                Object = @object
+            });
+        }
           
-            var results = await _client.BatchCheck(checks, httpContext.RequestAborted);
+        var results = await _client.BatchCheck(checks, httpContext.RequestAborted);
 
-            var failedChecks = results.Responses.Where(x=> x.Allowed is false).ToArray();
+        var failedChecks = results.Responses.Where(x=> x.Allowed is false).ToArray();
             
-            // log all of reasons for the failed checks
-            if (failedChecks.Length > 0)
+        // log all of reasons for the failed checks
+        if (failedChecks.Length > 0)
+        {
+            foreach (var response in failedChecks)
             {
-                foreach (var response in failedChecks)
+                if (response.Error is not null)
                 {
-                    if (response.Error is not null)
-                    {
-                        _logger.CheckException(response.Request.User, response.Request.Relation, response.Request.Object, response.Error);
-                    }
-                    else if (response.Allowed is false)
-                    {
-                        _logger.CheckFailure(response.Request.User, response.Request.Relation, response.Request.Object);
-                    }
+                    _logger.CheckException(response.Request.User, response.Request.Relation, response.Request.Object, response.Error);
                 }
-            }
-            else
-            {
-                context.Succeed(requirement);
+                else if (response.Allowed is false)
+                {
+                    _logger.CheckFailure(response.Request.User, response.Request.Relation, response.Request.Object);
+                }
             }
         }
+        else
+        {
+            context.Succeed(requirement);
+        }
+        
     }
-
- 
 }

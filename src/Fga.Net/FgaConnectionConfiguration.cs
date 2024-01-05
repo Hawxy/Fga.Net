@@ -28,4 +28,4 @@ internal sealed record FgaBuiltConfiguration(
     int? MinWaitInMs,
     FgaConnectionConfiguration Connection);
 
-internal sealed record FgaConnectionConfiguration(string ApiScheme, string ApiHost, Credentials? Credentials);
+internal sealed record FgaConnectionConfiguration(string ApiUrl, Credentials? Credentials);
