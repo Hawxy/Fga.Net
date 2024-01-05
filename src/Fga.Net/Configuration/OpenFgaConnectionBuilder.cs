@@ -95,7 +95,7 @@ public sealed class OpenFgaConnectionBuilder
 
     internal FgaConnectionConfiguration Build()
     {
-        if (string.IsNullOrEmpty(_apiHost))
+        if (string.IsNullOrEmpty(_apiUrl))
             throw new InvalidOperationException("API Host cannot be null or empty");
         if (!_apiUrl.Contains(Uri.UriSchemeHttps) && !_apiUrl.Contains(Uri.UriSchemeHttp))
             throw new InvalidOperationException("API Scheme must be http or https");
