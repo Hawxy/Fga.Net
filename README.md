@@ -44,14 +44,14 @@ The `ConfigureAuth0Fga` extension will configure the client to work with the Aut
 
 ### OpenFGA
 
-1. Add the FGA `ApiScheme`, `ApiHost` & `StoreId` to your application configuration.
+1. Add the FGA `ApiUrl` & `StoreId` to your application configuration.
 2. Add the following code to your ASP.NET Core configuration:
 ```cs
 services.AddOpenFgaClient(config =>
 {
     config.ConfigureOpenFga(x =>
     {
-        x.SetConnection(context.Configuration["Fga:ApiScheme"] context.Configuration["Fga:ApiHost"]);
+        x.SetConnection(context.Configuration["Fga:ApiUrl"]);
     });
     config.SetStoreId(context.Configuration["Fga:StoreId"]);
 });
@@ -64,7 +64,7 @@ Authentication can be added to OpenFGA connections via the relevant extensions:
 ```csharp
 config.ConfigureOpenFga(x =>
 {
-    x.SetConnection(Uri.UriSchemeHttp, context.Configuration["Fga:ApiHost"]);
+    x.SetConnection(context.Configuration["Fga:ApiUrl"]);
     
     // Add API key auth
     x.WithApiKeyAuthentication(context.Configuration["Fga:ApiKey"]);
@@ -187,7 +187,7 @@ services.PostConfigureFgaClient(config =>
     config.SetStoreId(storeId);
     config.ConfigureOpenFga(x =>
     {
-        x.SetConnection(Uri.UriSchemeHttp, openFgaUrl);
+        x.SetConnection(context.Configuration["Fga:ApiUrl"]);
     });
 });
 
@@ -200,7 +200,7 @@ services.PostConfigureFgaClient(config =>
 To get started:
 
 1. Install `Fga.Net.DependencyInjection`
-2. Add your `StoreId`, `ClientId` and `ClientSecret` Auth0 FGA configuration **OR** `ApiScheme`, `ApiHost` & `StoreId` OpenFGA configuration to your application configuration, ideally via the [dotnet secrets manager](https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-6.0&tabs=windows#enable-secret-storage).
+2. Add your `StoreId`, `ClientId` and `ClientSecret` Auth0 FGA configuration **OR** `ApiUrl` & `StoreId` OpenFGA configuration to your application configuration, ideally via the [dotnet secrets manager](https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-6.0&tabs=windows#enable-secret-storage).
 3. Register the authorization client:
 
 ```cs
@@ -222,7 +222,7 @@ var host = Host.CreateDefaultBuilder(args)
         {
             config.ConfigureOpenFga(x =>
             {
-                x.SetConnection(Uri.UriSchemeHttp, context.Configuration["Fga:ApiHost"]);
+                x.SetConnection(context.Configuration["Fga:ApiUrl"]);
                 
                 // Optionally add authentication settings
                 x.WithApiKeyAuthentication(context.Configuration["Fga:ApiKey"]);

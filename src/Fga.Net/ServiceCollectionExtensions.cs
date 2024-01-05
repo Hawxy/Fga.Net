@@ -80,8 +80,7 @@ public static class ServiceCollectionExtensions
 
     private static void ConfigureFgaOptions(this FgaClientConfiguration x, FgaBuiltConfiguration config)
     {
-        x.ApiScheme = config.Connection.ApiScheme;
-        x.ApiHost = config.Connection.ApiHost;
+        x.ApiUrl = config.Connection.ApiUrl;
         
         x.StoreId = config.StoreId;
         x.AuthorizationModelId = config.AuthorizationModelId;

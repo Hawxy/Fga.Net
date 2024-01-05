@@ -25,8 +25,7 @@ namespace Fga.Net.DependencyInjection.Configuration;
 /// </summary>
 public sealed class OpenFgaConnectionBuilder
 {
-    private string _apiScheme = Uri.UriSchemeHttps;
-    private string? _apiHost;
+    private string? _apiUrl;
 
     /// <summary>
     /// Sets the connection configuration for the host.
@@ -34,10 +33,21 @@ public sealed class OpenFgaConnectionBuilder
     /// <param name="apiScheme">API scheme, either http or https.</param>
     /// <param name="apiHost">API host, should be in be plain URI format</param>
     /// <returns></returns>
+    [Obsolete("Passing in a split scheme & host is obsolete and will be removed in a future release. Use SetConnection(string apiUrl)")]
     public OpenFgaConnectionBuilder SetConnection(string apiScheme, string apiHost)
     {
-        _apiScheme = apiScheme;
-        _apiHost = apiHost;
+        _apiUrl = $"{apiScheme}://{apiHost}";
+        return this;
+    }
+
+    /// <summary>
+    /// Sets the connection configuration for the host.
+    /// </summary>
+    /// <param name="apiUrl">The URL for the API, should include scheme + domain. Can optionally include port.</param>
+    /// <returns></returns>
+    public OpenFgaConnectionBuilder SetConnection(string apiUrl)
+    {
+        _apiUrl = apiUrl;
         return this;
     }
 
@@ -87,7 +97,7 @@ public sealed class OpenFgaConnectionBuilder
     {
         if (string.IsNullOrEmpty(_apiHost))
             throw new InvalidOperationException("API Host cannot be null or empty");
-        if (_apiScheme != Uri.UriSchemeHttps && _apiScheme != Uri.UriSchemeHttp)
+        if (!_apiUrl.Contains(Uri.UriSchemeHttps) && !_apiUrl.Contains(Uri.UriSchemeHttp))
             throw new InvalidOperationException("API Scheme must be http or https");
         if (_credentials?.Method == CredentialsMethod.ApiToken && string.IsNullOrEmpty(_credentials.Config?.ApiToken))
             throw new InvalidOperationException("API Key cannot be empty");
@@ -98,6 +108,6 @@ public sealed class OpenFgaConnectionBuilder
                || string.IsNullOrEmpty(_credentials.Config?.ApiAudience))) 
             throw new InvalidOperationException("Clients credential configuration cannot be contain missing values.");
         
-        return new FgaConnectionConfiguration(_apiScheme, _apiHost, _credentials);
+        return new FgaConnectionConfiguration(_apiUrl, _credentials);
     }
 }

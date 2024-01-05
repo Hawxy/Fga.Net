@@ -9,9 +9,9 @@ var host = Host.CreateDefaultBuilder(args)
         {
             config.ConfigureAuth0Fga(x =>
             {
-                x.WithAuthentication(context.Configuration["Auth0Fga:ClientId"], context.Configuration["Auth0Fga:ClientSecret"]);
+                x.WithAuthentication(context.Configuration["Auth0Fga:ClientId"]!, context.Configuration["Auth0Fga:ClientSecret"]!);
             });
-            config.SetStoreId(context.Configuration["Auth0Fga:StoreId"]);
+            config.SetStoreId(context.Configuration["Auth0Fga:StoreId"]!);
         });
         
         // OpenFGA
@@ -19,17 +19,17 @@ var host = Host.CreateDefaultBuilder(args)
         {
             config.ConfigureOpenFga(x =>
             {
-                x.SetConnection(Uri.UriSchemeHttp, context.Configuration["Fga:ApiHost"]);
+                x.SetConnection(context.Configuration["Fga:ApiUrl"]!);
                 
                 // Optionally add authentication settings
-                x.WithApiKeyAuthentication(context.Configuration["Fga:ApiKey"]);
+                x.WithApiKeyAuthentication(context.Configuration["Fga:ApiKey"]!);
                 x.WithOidcAuthentication(
-                    context.Configuration["Fga:ClientId"], 
-                    context.Configuration["Fga:ClientSecret"], 
-                    context.Configuration["Fga:Issuer"], 
-                    context.Configuration["Fga:Audience"]);
+                    context.Configuration["Fga:ClientId"]!, 
+                    context.Configuration["Fga:ClientSecret"]!, 
+                    context.Configuration["Fga:Issuer"]!, 
+                    context.Configuration["Fga:Audience"]!);
             });
-            config.SetStoreId(context.Configuration["Fga:StoreId"]);
+            config.SetStoreId(context.Configuration["Fga:StoreId"]!);
         });
 
         services.AddHostedService<MyBackgroundWorker>();

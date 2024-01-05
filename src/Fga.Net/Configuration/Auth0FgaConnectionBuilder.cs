@@ -32,7 +32,7 @@ public enum Auth0Environment
     Us
 }
 
-internal sealed record Auth0FgaEnvironment(string Scheme, string ApiHost, string ApiTokenIssuer, string ApiAudience);
+internal sealed record Auth0FgaEnvironment(string ApiHost, string ApiTokenIssuer, string ApiAudience);
 
 
 /// <summary>
@@ -45,7 +45,7 @@ public sealed class Auth0FgaConnectionBuilder
         {
             {
                 Auth0Environment.Us,
-                new Auth0FgaEnvironment(Uri.UriSchemeHttps, "api.us1.fga.dev", "fga.us.auth0.com", "https://api.us1.fga.dev/")
+                new Auth0FgaEnvironment("https://api.us1.fga.dev", "fga.us.auth0.com", "https://api.us1.fga.dev/")
             }
         };
 
@@ -88,6 +88,6 @@ public sealed class Auth0FgaConnectionBuilder
             }
         };
 
-        return new FgaConnectionConfiguration(environment.Scheme, environment.ApiHost, credentials);
+        return new FgaConnectionConfiguration(environment.ApiHost, credentials);
     }
 }

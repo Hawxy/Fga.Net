@@ -27,15 +27,15 @@ public class ExtensionTests
             new ExtensionScenario("Empty Extension Config - Auth0 FGA", 
                 config => config.ConfigureAuth0Fga(x => { })),
             new ExtensionScenario("Empty Schema",
-                config => config.ConfigureOpenFga(x => { x.SetConnection("", "localhost"); })),
+                config => config.ConfigureOpenFga(x => { x.SetConnection("localhost"); })),
             new ExtensionScenario("Empty API Key", config => config.ConfigureOpenFga(x =>
             {
-                x.SetConnection(Uri.UriSchemeHttps, "localhost")
+                x.SetConnection("http://localhost")
                     .WithApiKeyAuthentication("");
             })),
             new ExtensionScenario("Empty OIDC configuration", config => config.ConfigureOpenFga(x =>
             {
-                x.SetConnection(Uri.UriSchemeHttps, "localhost")
+                x.SetConnection("http://localhost")
                     .WithOidcAuthentication("clientId", "", "issuer", "audience");
             })),
         };
@@ -65,7 +65,7 @@ public class ExtensionTests
 
         collection.AddOpenFgaClient(config =>
         {
-            config.SetStoreId(Guid.NewGuid().ToString()); 
+            config.SetStoreId(Ulid.NewUlid().ToString()); 
 
             scenario.Configuration(config);
 
@@ -91,7 +91,7 @@ public class ExtensionTests
 
         collection.AddOpenFgaClient(config =>
         {
-            config.SetStoreId(Guid.NewGuid().ToString()); 
+            config.SetStoreId(Ulid.NewUlid().ToString()); 
             scenario.Configuration(config);
         });
 
@@ -117,19 +117,19 @@ public class ExtensionTests
                 })),
             new ExtensionScenario("OpenFGA - No Credentials",
                 config => config.ConfigureOpenFga(x =>
-                { x.SetConnection(Uri.UriSchemeHttp, "localhost"); 
+                { x.SetConnection("http://localhost"); 
                         
                 })),
             new ExtensionScenario("OpenFGA - API Key Auth", 
                 config => config.ConfigureOpenFga(x =>
                 {
-                    x.SetConnection(Uri.UriSchemeHttps, "localhost")
+                    x.SetConnection("http://localhost")
                         .WithApiKeyAuthentication("my-special-key");
                 })),
             new ExtensionScenario("OpenFGA - OIDC Auth", 
                 config => config.ConfigureOpenFga(x =>
                 {
-                    x.SetConnection(Uri.UriSchemeHttps, "localhost")
+                    x.SetConnection("http://localhost")
                         .WithOidcAuthentication("clientId", "clientSecret", "issuer", "audience");
                 })),
         };
@@ -189,13 +189,13 @@ public class ExtensionTests
 
         });
 
-        var openFgaUrl = "localhost:8080";
+        var openFgaUrl = "http://localhost:8080";
         collection.PostConfigureFgaClient(config =>
         {
             config.SetStoreId(Guid.NewGuid().ToString());
             config.ConfigureOpenFga(x =>
             {
-                x.SetConnection(Uri.UriSchemeHttp, openFgaUrl);
+                x.SetConnection(openFgaUrl);
             });
         });
 
@@ -204,7 +204,7 @@ public class ExtensionTests
         var config = provider.GetRequiredService<IOptions<FgaClientConfiguration>>().Value;
         
         Assert.Null(config.Credentials);
-        Assert.Equal(openFgaUrl, config.ApiHost);
+        Assert.Equal(openFgaUrl, config.ApiUrl);
 
     }
 

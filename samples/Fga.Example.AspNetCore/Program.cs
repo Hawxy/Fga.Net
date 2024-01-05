@@ -44,7 +44,7 @@ builder.Services.AddOpenFgaClient(x =>
 {
     x.ConfigureOpenFga(x =>
     {
-        x.SetConnection(builder.Configuration["Fga:ApiScheme"]!, builder.Configuration["Fga:ApiHost"]!);
+        x.SetConnection(context.Configuration["Fga:ApiUrl"]!);
     });
     
     x.SetStoreId(builder.Configuration["Fga:StoreId"]);
