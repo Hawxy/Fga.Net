@@ -31,6 +31,8 @@ builder.Services.AddOpenFgaClient(config =>
 {
     config.ConfigureAuth0Fga(x =>
     {
+        // Change to EU/AUS depending on where your store is located
+        x.SetEnvironment(FgaEnvironment.US);
         x.WithAuthentication(builder.Configuration["Auth0Fga:ClientId"]!, builder.Configuration["Auth0Fga:ClientSecret"]!);
     });
 

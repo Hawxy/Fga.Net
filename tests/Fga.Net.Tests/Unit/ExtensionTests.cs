@@ -113,7 +113,8 @@ public class ExtensionTests
             new ExtensionScenario("Auth0 FGA", 
                 config => config.ConfigureAuth0Fga(x =>
                 {
-                    x.WithAuthentication(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
+                    x.SetEnvironment(FgaEnvironment.AU)
+                        .WithAuthentication(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
                 })),
             new ExtensionScenario("OpenFGA - No Credentials",
                 config => config.ConfigureOpenFga(x =>
