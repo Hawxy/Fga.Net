@@ -24,12 +24,20 @@ namespace Fga.Net.DependencyInjection.Configuration;
 /// <summary>
 /// Available environments for Auth0 FGA
 /// </summary>
-public enum Auth0Environment
+public enum FgaEnvironment
 {
     /// <summary>
-    /// US Environment - `fga.us.auth0.com`
+    /// US Environment - `api.us1.fga.dev`
     /// </summary>
-    Us
+    US,
+    /// <summary>
+    /// AU Environment - `api.au1.fga.dev`
+    /// </summary>
+    AU,
+    /// <summary>
+    /// EU Environment - `api.eu1.fga.dev`
+    /// </summary>
+    EU
 }
 
 internal sealed record Auth0FgaEnvironment(string ApiHost, string ApiTokenIssuer, string ApiAudience);
@@ -40,33 +48,53 @@ internal sealed record Auth0FgaEnvironment(string ApiHost, string ApiTokenIssuer
 /// </summary>
 public sealed class Auth0FgaConnectionBuilder
 {
-    private readonly IReadOnlyDictionary<Auth0Environment, Auth0FgaEnvironment> _fgaEnvironments =
-        new Dictionary<Auth0Environment, Auth0FgaEnvironment>()
+    private const string FgaIssuer = "fga.us.auth0.com";
+    
+    private readonly IReadOnlyDictionary<FgaEnvironment, Auth0FgaEnvironment> _fgaEnvironments =
+        new Dictionary<FgaEnvironment, Auth0FgaEnvironment>()
         {
             {
-                Auth0Environment.Us,
-                new Auth0FgaEnvironment("https://api.us1.fga.dev", "fga.us.auth0.com", "https://api.us1.fga.dev/")
+                FgaEnvironment.US,
+                new Auth0FgaEnvironment("https://api.us1.fga.dev", FgaIssuer, "https://api.us1.fga.dev/")
+            },
+            {
+                FgaEnvironment.EU,
+                new Auth0FgaEnvironment("https://api.eu1.fga.dev", FgaIssuer, "https://api.eu1.fga.dev/")
+            },
+            {
+                FgaEnvironment.AU,
+                new Auth0FgaEnvironment("https://api.au1.fga.dev", FgaIssuer, "https://api.au1.fga.dev/")
             }
         };
 
-    private readonly Auth0Environment _environment = Auth0Environment.Us;
+    private FgaEnvironment _environment = FgaEnvironment.US;
 
     private string _clientId = null!;
     private string _clientSecret = null!;
 
+    /// <summary>
+    /// Set the region/environment that your Auth0 FGA store lives in. Defaults to <see cref="FgaEnvironment.US"/> if not set.
+    /// </summary>
+    /// <param name="environment">An Auth0 FGA region</param>
+    public Auth0FgaConnectionBuilder SetEnvironment(FgaEnvironment environment)
+    {
+        _environment = environment;
+        return this;
+    }
     
     /// <summary>
     /// Configure authentication for Auth0 FGA
     /// </summary>
     /// <param name="clientId">Client Id from your  Auth0 FGA Account</param>
     /// <param name="clientSecret">Client Secret from your Auth0 FGA Account</param>
-    public void WithAuthentication(string clientId, string clientSecret)
+    public Auth0FgaConnectionBuilder WithAuthentication(string clientId, string clientSecret)
     {
         ArgumentNullException.ThrowIfNull(clientId);
         ArgumentNullException.ThrowIfNull(clientSecret);
         
         _clientId = clientId;
         _clientSecret = clientSecret;
+        return this;
     }
 
     internal FgaConnectionConfiguration Build()

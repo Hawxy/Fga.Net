@@ -42,7 +42,8 @@ internal sealed class FineGrainedAuthorizationHandler : AuthorizationHandler<Fin
         
         var endpoint = httpContext.GetEndpoint();
         if (endpoint is null)
-            return;
+            throw new InvalidOperationException($"{nameof(FineGrainedAuthorizationHandler)} was unable to resolve the current endpoint. This handler is only compatible with endpoint routing.");
+        
         var attributes = endpoint.Metadata.GetOrderedMetadata<FgaAttribute>();
         // The user is enforcing the fga policy but there's no attributes here.
         if (attributes.Count == 0)
