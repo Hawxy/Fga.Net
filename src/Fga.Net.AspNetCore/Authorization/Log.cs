@@ -37,7 +37,5 @@ internal static partial class Log
 
     [LoggerMessage(3005, LogLevel.Debug, "User was not in a valid format of 'type:id' or '*'. Computed user as '{user}'")]
     public static partial void InvalidUser(this ILogger logger, string user);
-    
-
 
 }

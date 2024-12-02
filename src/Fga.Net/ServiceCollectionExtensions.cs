@@ -89,6 +89,8 @@ public static class ServiceCollectionExtensions
         if (config.MinWaitInMs.HasValue)
             x.MinWaitInMs = config.MinWaitInMs.Value;
 
+        x.Telemetry = config.TelemetryConfig;
+
         x.Credentials = config.Connection.Credentials;
     }
 

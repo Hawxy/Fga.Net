@@ -13,6 +13,7 @@ using static Nuke.Common.Tools.DotNet.DotNetTasks;
 [GitHubActions(
     "Build & Test",
     GitHubActionsImage.UbuntuLatest,
+    AutoGenerate = false,
     OnPushBranches = new []{ "main" },
     OnPullRequestBranches = new []{ "main" },
     InvokedTargets = new[] { nameof(Test) },
@@ -20,6 +21,7 @@ using static Nuke.Common.Tools.DotNet.DotNetTasks;
 [GitHubActions(
     "Manual Nuget Push",
     GitHubActionsImage.UbuntuLatest,
+    AutoGenerate = false,
     On = new[] { GitHubActionsTrigger.WorkflowDispatch },
     InvokedTargets = new[] { nameof(NugetPush) },
     ImportSecrets = new[] { nameof(NugetApiKey) })]

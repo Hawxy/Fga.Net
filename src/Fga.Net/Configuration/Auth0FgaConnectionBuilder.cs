@@ -48,10 +48,10 @@ internal sealed record Auth0FgaEnvironment(string ApiHost, string ApiTokenIssuer
 /// </summary>
 public sealed class Auth0FgaConnectionBuilder
 {
-    private const string FgaIssuer = "fga.us.auth0.com";
+    private const string FgaIssuer = "auth.fga.dev";
     
-    private readonly IReadOnlyDictionary<FgaEnvironment, Auth0FgaEnvironment> _fgaEnvironments =
-        new Dictionary<FgaEnvironment, Auth0FgaEnvironment>()
+    private readonly Dictionary<FgaEnvironment, Auth0FgaEnvironment> _fgaEnvironments =
+        new()
         {
             {
                 FgaEnvironment.US,

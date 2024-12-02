@@ -26,6 +26,7 @@ internal sealed record FgaBuiltConfiguration(
     string? AuthorizationModelId, 
     int? MaxRetry,
     int? MinWaitInMs,
+    TelemetryConfig? TelemetryConfig,
     FgaConnectionConfiguration Connection);
 
 internal sealed record FgaConnectionConfiguration(string ApiUrl, Credentials? Credentials);
