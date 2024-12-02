@@ -18,6 +18,7 @@
 
 using Fga.Net.DependencyInjection.Configuration;
 using OpenFga.Sdk.Client;
+using OpenFga.Sdk.Configuration;
 
 namespace Fga.Net.DependencyInjection;
 
@@ -62,7 +63,15 @@ public sealed class FgaConfigurationBuilder
         _minWaitInMs = waitInMs;
         return this;
     }
+
+    private TelemetryConfig? _telemetryConfig;
     
+    /// <inheritdoc cref="ClientConfiguration.Telemetry"/>
+    public FgaConfigurationBuilder SetTelemetry(TelemetryConfig config)
+    {
+        _telemetryConfig = config;
+        return this;
+    }
 
     /// <summary>
     /// Configures the client for use with OpenFga
@@ -90,6 +99,7 @@ public sealed class FgaConfigurationBuilder
         config.Invoke(configuration);
         _fgaConfiguration = configuration.Build();
     }
+    
     internal FgaBuiltConfiguration Build()
     {
         if (_fgaConfiguration is null)
@@ -97,6 +107,6 @@ public sealed class FgaConfigurationBuilder
         if (string.IsNullOrEmpty(_storeId))
             throw new InvalidOperationException("Store ID must be set");
 
-        return new FgaBuiltConfiguration(_storeId, _authorizationModelId, _maxRetry, _minWaitInMs, _fgaConfiguration);
+        return new FgaBuiltConfiguration(_storeId, _authorizationModelId, _maxRetry, _minWaitInMs, _telemetryConfig, _fgaConfiguration);
     }
 }

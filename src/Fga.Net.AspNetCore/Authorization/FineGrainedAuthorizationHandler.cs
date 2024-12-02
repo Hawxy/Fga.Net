@@ -48,7 +48,7 @@ internal sealed class FineGrainedAuthorizationHandler : AuthorizationHandler<Fin
         // The user is enforcing the fga policy but there's no attributes here.
         if (attributes.Count == 0)
             return;
-
+        
         var checks = new List<ClientCheckRequest>();
             
         foreach (var attribute in attributes)
@@ -56,11 +56,13 @@ internal sealed class FineGrainedAuthorizationHandler : AuthorizationHandler<Fin
             string? user;
             string? relation;
             string? @object;
+            List<ClientTupleKey>? contextualTuples;
             try
             {
                 user = await attribute.GetUser(httpContext);
                 relation = await attribute.GetRelation(httpContext);
                 @object = await attribute.GetObject(httpContext);
+                contextualTuples = await attribute.GetContextualTuple(httpContext);
             }
             catch (FgaMiddlewareException ex)
             {
@@ -85,7 +87,8 @@ internal sealed class FineGrainedAuthorizationHandler : AuthorizationHandler<Fin
             {
                 User = user,
                 Relation = relation,
-                Object = @object
+                Object = @object,
+                ContextualTuples = contextualTuples
             });
         }
           

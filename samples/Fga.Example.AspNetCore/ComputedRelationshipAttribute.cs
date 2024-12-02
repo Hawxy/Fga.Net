@@ -1,4 +1,5 @@
 ﻿using Fga.Net.AspNetCore.Authorization.Attributes;
+using OpenFga.Sdk.Client.Model;
 
 namespace Fga.Example.AspNetCore;
 

@@ -10,7 +10,7 @@
 
 ## Getting Started
 
-This package is compatible with the OSS OpenFGA as well as the managed Auth0 FGA service. Usage of DSL v1.1 is required.
+This package is compatible with the OSS OpenFGA as well as the managed Auth0 FGA service.
 
 Please ensure you have a basic understanding of how FGA works before continuing: [OpenFGA Docs](https://openfga.dev/) or [Auth0 FGA Docs](https://docs.fga.dev/)
 
@@ -173,6 +173,10 @@ public class ComputedRelationshipAttribute : FgaBaseObjectAttribute
 ```
 
 An additional pre-made attribute that allows all tuple values to be hardcoded strings ships with the package (`FgaStringAttribute`). This attribute is useful for testing and debug purposes, but should not be used in a real application.
+
+### Contextual Tuples
+
+All attributes supports specifying contextual tuples as part of a check. Inherit & override `GetContextualTuple` to provide the relevant logic in your own attribute.
 
 ## Client Injection
 

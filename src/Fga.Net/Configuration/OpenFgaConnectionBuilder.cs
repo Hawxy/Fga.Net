@@ -26,20 +26,7 @@ namespace Fga.Net.DependencyInjection.Configuration;
 public sealed class OpenFgaConnectionBuilder
 {
     private string? _apiUrl;
-
-    /// <summary>
-    /// Sets the connection configuration for the host.
-    /// </summary>
-    /// <param name="apiScheme">API scheme, either http or https.</param>
-    /// <param name="apiHost">API host, should be in be plain URI format</param>
-    /// <returns></returns>
-    [Obsolete("Passing in a split scheme & host is obsolete and will be removed in a future release. Use SetConnection(string apiUrl)")]
-    public OpenFgaConnectionBuilder SetConnection(string apiScheme, string apiHost)
-    {
-        _apiUrl = $"{apiScheme}://{apiHost}";
-        return this;
-    }
-
+    
     /// <summary>
     /// Sets the connection configuration for the host.
     /// </summary>
