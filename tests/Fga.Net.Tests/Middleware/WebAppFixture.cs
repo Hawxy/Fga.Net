@@ -17,7 +17,7 @@ public class WebAppFixture : IAsyncLifetime
 {
     public IAlbaHost AlbaHost = null!;
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         var authorizationClientMock = new Mock<IFgaCheckDecorator>();
 
@@ -44,7 +44,7 @@ public class WebAppFixture : IAsyncLifetime
         }, MockJwtConfiguration.GetDefaultStubConfiguration());
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         if (AlbaHost is not null)
             await AlbaHost.DisposeAsync();

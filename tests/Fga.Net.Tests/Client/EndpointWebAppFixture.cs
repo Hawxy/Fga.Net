@@ -9,12 +9,12 @@ public class EndpointWebAppFixture : IAsyncLifetime
 {
     public IAlbaHost AlbaHost = null!;
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         AlbaHost = await Alba.AlbaHost.For<Program>(_ => { }, MockJwtConfiguration.GetDefaultStubConfiguration());
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         await AlbaHost.DisposeAsync();
     }

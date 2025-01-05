@@ -1,6 +1,6 @@
 using System;
 using Fga.Net.DependencyInjection;
-using Xunit.Abstractions;
+using Xunit.Sdk;
 
 namespace Fga.Net.Tests.Unit;
 
