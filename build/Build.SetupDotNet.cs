@@ -48,7 +48,7 @@ public class GithubActionsExtendedAttribute : GitHubActionsAttribute
 
         var newSteps = new List<GitHubActionsStep>(job.Steps);
         newSteps.Insert(0, new GitHubActionsSetupDotNetStep([
-            "8.0"
+            "8.0", "9.0"
         ]));
 
         job.Steps = newSteps.ToArray();
