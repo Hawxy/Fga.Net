@@ -13,18 +13,16 @@ using static Nuke.Common.Tools.DotNet.DotNetTasks;
 [GitHubActions(
     "Build & Test",
     GitHubActionsImage.UbuntuLatest,
-    AutoGenerate = false,
-    OnPushBranches = new []{ "main" },
-    OnPullRequestBranches = new []{ "main" },
-    InvokedTargets = new[] { nameof(Test) },
-    ImportSecrets = new []{ nameof(FgaStoreId), nameof(FgaClientId), nameof(FgaClientSecret) })]
+    OnPushBranches = ["main"],
+    OnPullRequestBranches = ["main"],
+    InvokedTargets = [nameof(Test)],
+    ImportSecrets = [nameof(FgaStoreId), nameof(FgaClientId), nameof(FgaClientSecret)])]
 [GitHubActions(
     "Manual Nuget Push",
     GitHubActionsImage.UbuntuLatest,
-    AutoGenerate = false,
-    On = new[] { GitHubActionsTrigger.WorkflowDispatch },
-    InvokedTargets = new[] { nameof(NugetPush) },
-    ImportSecrets = new[] { nameof(NugetApiKey) })]
+    On = [GitHubActionsTrigger.WorkflowDispatch],
+    InvokedTargets = [nameof(NugetPush)],
+    ImportSecrets = [nameof(NugetApiKey)])]
 class Build : NukeBuild
 {
     /// Support plugins are available for:
