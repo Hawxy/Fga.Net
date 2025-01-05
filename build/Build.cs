@@ -10,14 +10,14 @@ using static Nuke.Common.IO.FileSystemTasks;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 
 [ShutdownDotNetAfterServerBuild]
-[GitHubActions(
+[GithubActionsExtended(
     "Build & Test",
     GitHubActionsImage.UbuntuLatest,
     OnPushBranches = ["main"],
     OnPullRequestBranches = ["main"],
     InvokedTargets = [nameof(Test)],
     ImportSecrets = [nameof(FgaStoreId), nameof(FgaClientId), nameof(FgaClientSecret)])]
-[GitHubActions(
+[GithubActionsExtended(
     "Manual Nuget Push",
     GitHubActionsImage.UbuntuLatest,
     On = [GitHubActionsTrigger.WorkflowDispatch],
