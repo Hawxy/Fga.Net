@@ -1,19 +1,19 @@
 using Fga.Net.AspNetCore.Authorization;
-using Xunit;
+using FluentAssertions;
 
 namespace Fga.Net.Tests.Unit;
 
 public class ValidationTests
 {
-    [Theory]
-    [InlineData("*", true)]
-    [InlineData("type:id", true)]
-    [InlineData("*asdf", false)]
-    [InlineData("type:", false)]
-    [InlineData(":user", false)]
-    [InlineData(":", false)]
+    [Test]
+    [Arguments("*", true)]
+    [Arguments("type:id", true)]
+    [Arguments("*asdf", false)]
+    [Arguments("type:", false)]
+    [Arguments(":user", false)]
+    [Arguments(":", false)]
     public void UserValidation_ValidatesCorrectly(string user, bool expected)
     {
-        Assert.Equal(expected, Validation.IsValidUser(user)); 
+        Validation.IsValidUser(user).Should().Be(expected);
     }
 }

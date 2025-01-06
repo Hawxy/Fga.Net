@@ -1,34 +1,26 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using Alba;
-using Xunit;
 
 namespace Fga.Net.Tests.Middleware;
 
-[Collection(nameof(WebAppCollection))]
-public class MiddlewareTests
+[ClassDataSource<WebAppFixture>(Shared = SharedType.PerAssembly)]
+public class MiddlewareTests(WebAppFixture fixture) : WebAppBase(fixture)
 {
-    private readonly IAlbaHost _alba;
-
-    public MiddlewareTests(WebAppFixture fixture)
-    {
-        _alba = fixture.AlbaHost;
-    }
-    [Fact]
+    [Test]
     public async Task Authorization_HappyPath_Succeeds()
     {
-        await _alba.Scenario(_ =>
+        await Host.Scenario(_ =>
         {
             _.Get.Url($"/test/{Guid.NewGuid()}");
             _.StatusCodeShouldBeOk();
         });
     }
-    [Fact]
+    
+    [Test]
     public async Task Authorization_UnhappyPath_Forbidden()
     {
-        await _alba.Scenario(_ =>
+        await Host.Scenario(_ =>
         {
             _.RemoveClaim(ClaimTypes.NameIdentifier);
             _.WithClaim(new Claim(ClaimTypes.NameIdentifier, MockJwtConfiguration.FakeUser));

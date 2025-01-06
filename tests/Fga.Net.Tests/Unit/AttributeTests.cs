@@ -1,23 +1,16 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using System.Threading.Tasks;
-using Fga.Net.AspNetCore.Authorization.Attributes;
+﻿using Fga.Net.AspNetCore.Authorization.Attributes;
 using Fga.Net.AspNetCore.Exceptions;
+using FluentAssertions;
 using HttpContextMoq;
 using HttpContextMoq.Extensions;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Primitives;
-using Moq;
-using Xunit;
 
 namespace Fga.Net.Tests.Unit;
 
 public class AttributeTests
 {
-    [Fact]
+    [Test]
     public async Task HeaderObjectAttribute_WorksAsExpected()
     {
         var httpContext = new HttpContextMock()
@@ -27,10 +20,10 @@ public class AttributeTests
 
         var obj = await attribute.GetObject(httpContext);
 
-        Assert.Equal("type:12345", obj);
+        obj.Should().Be("type:12345");
     }
 
-    [Fact]
+    [Test]
     public async Task HeaderObjectAttribute_ThrowsOnMissingHeader()
     {
         var httpContext = new HttpContextMock()
@@ -39,10 +32,11 @@ public class AttributeTests
         var attribute = new FgaHeaderObjectAttribute("relation", "type", "randomHeader");
 
         var exception = await Assert.ThrowsAsync<FgaMiddlewareException>(async () => await attribute.GetObject(httpContext));
-        Assert.Equal("Header randomHeader was not present in the request", exception.Message);
+
+        exception.Message.Should().Be("Header randomHeader was not present in the request");
     }
 
-    [Fact]
+    [Test]
     public async Task PropertyObjectAttribute_WorksAsExpected()
     {
         var data = "{\"Foo\":\"Bar\",\"Array\":[]}"u8.ToArray();
@@ -58,10 +52,10 @@ public class AttributeTests
 
         var obj = await attribute.GetObject(httpContext);
 
-        Assert.Equal("type:Bar", obj);
+        obj.Should().Be("type:Bar");
     }
 
-    [Fact]
+    [Test]
     public async Task PropertyObjectAttribute_ThrowsOnMissingProperty()
     {
         var data = "{\"Foo\":\"Bar\",\"Array\":[]}"u8.ToArray();
@@ -75,12 +69,12 @@ public class AttributeTests
 
         var attribute = new FgaPropertyObjectAttribute("relation", "type", "RandomProperty");
 
-        var exception = await Assert.ThrowsAsync<FgaMiddlewareException>(async () => await attribute.GetObject(httpContext)); 
-        
-        Assert.Equal("Unable to resolve JSON property RandomProperty", exception.Message);
+        var exception = await Assert.ThrowsAsync<FgaMiddlewareException>(async () => await attribute.GetObject(httpContext));
+
+        exception.Message.Should().Be("Unable to resolve JSON property RandomProperty");
     }
     
-    [Fact]
+    [Test]
     public async Task QueryObjectAttribute_WorksAsExpected()
     {
         var httpContext = new HttpContextMock()
@@ -89,11 +83,11 @@ public class AttributeTests
         var attribute = new FgaQueryObjectAttribute("relation", "type", "documentId");
 
         var obj = await attribute.GetObject(httpContext);
-
-        Assert.Equal("type:12345", obj);
+        
+        obj.Should().Be("type:12345");
     }
     
-    [Fact]
+    [Test]
     public async Task QueryObjectAttribute_ThrowsOnMissingQueryKey()
     {
         var httpContext = new HttpContextMock()
@@ -102,10 +96,11 @@ public class AttributeTests
         var attribute = new FgaQueryObjectAttribute("relation", "type", "randomQueryKey");
 
         var exception = await Assert.ThrowsAsync<FgaMiddlewareException>(async () => await attribute.GetObject(httpContext));
-        Assert.Equal("Query key randomQueryKey was not present in the request", exception.Message);
+        
+        exception.Message.Should().Be("Query key randomQueryKey was not present in the request");
     }
     
-    [Fact]
+    [Test]
     public async Task RouteObjectAttribute_WorksAsExpected()
     {
         var httpContext = new HttpContextMock()
@@ -120,10 +115,10 @@ public class AttributeTests
 
         var obj = await attribute.GetObject(httpContext);
 
-        Assert.Equal("type:12345", obj);
+        obj.Should().Be("type:12345");
     }
 
-    [Fact]
+    [Test]
     public async Task RouteObjectAttribute_ThrowsOnMissingRouteValue()
     {
         var httpContext = new HttpContextMock()
@@ -133,7 +128,7 @@ public class AttributeTests
 
         var exception = await Assert.ThrowsAsync<FgaMiddlewareException>(async () => await attribute.GetObject(httpContext));
 
-        Assert.Equal("Route value randomKey was not present in the request", exception.Message);
+        exception.Message.Should().Be("Route value randomKey was not present in the request");
     }
 
 }

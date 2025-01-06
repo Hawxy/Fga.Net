@@ -1,12 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Fga.Net.AspNetCore;
 using Fga.Net.AspNetCore.Authorization;
 using Fga.Net.AspNetCore.Authorization.Attributes;
 using Fga.Net.DependencyInjection;
 using Fga.Net.DependencyInjection.Configuration;
+using FluentAssertions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
@@ -14,53 +11,87 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OpenFga.Sdk.Api;
 using OpenFga.Sdk.Client;
-using OpenFga.Sdk.Configuration;
-using Xunit;
 
 namespace Fga.Net.Tests.Unit;
 
-public class ExtensionTests
+public static class ExtensionTestDataSource
 {
-    public static TheoryData<ExtensionScenario> BadExtensions =>
-    [
-        new ExtensionScenario("Empty Extension Config - Auth0 FGA",
-            config => config.ConfigureAuth0Fga(x => { })),
+    public static IEnumerable<Func<ExtensionScenario>> BadExtensions()
+    {
+        yield return () => new ExtensionScenario("Empty Extension Config - Auth0 FGA",
+            config => config.ConfigureAuth0Fga(x => { }));
 
-        new ExtensionScenario("Empty Schema",
-            config => config.ConfigureOpenFga(x => { x.SetConnection("localhost"); })),
+        yield return () => new ExtensionScenario("Empty Schema",
+            config => config.ConfigureOpenFga(x => { x.SetConnection("localhost"); }));
 
-        new ExtensionScenario("Empty API Key", config => config.ConfigureOpenFga(x =>
+        yield return () => new ExtensionScenario("Empty API Key", config => config.ConfigureOpenFga(x =>
         {
             x.SetConnection("http://localhost")
                 .WithApiKeyAuthentication("");
-        })),
+        }));
 
-        new ExtensionScenario("Empty OIDC configuration", config => config.ConfigureOpenFga(x =>
+        yield return () => new ExtensionScenario("Empty OIDC configuration", config => config.ConfigureOpenFga(x =>
         {
             x.SetConnection("http://localhost")
                 .WithOidcAuthentication("clientId", "", "issuer", "audience");
-        }))
+        }));
+    }
 
-    ];
+    public static IEnumerable<Func<ExtensionScenario>> WorkingExtensions()
+    {
+        yield return () => new ExtensionScenario("Auth0 FGA",
+            config => config.ConfigureAuth0Fga(x =>
+            {
+                x.SetEnvironment(FgaEnvironment.AU)
+                    .WithAuthentication(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
+            }));
 
-    [Theory]
-    [MemberData(nameof(BadExtensions))]
+        yield return () => new ExtensionScenario("Auth0 FGA",
+            config => config.ConfigureAuth0Fga(x =>
+            {
+                x.SetEnvironment(FgaEnvironment.AU)
+                    .WithAuthentication(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
+            }));
+        yield return () => new ExtensionScenario("OpenFGA - No Credentials",
+            config => config.ConfigureOpenFga(x =>
+            {
+                x.SetConnection("http://localhost");
+
+            }));
+        yield return () => new ExtensionScenario("OpenFGA - API Key Auth",
+            config => config.ConfigureOpenFga(x =>
+            {
+                x.SetConnection("http://localhost")
+                    .WithApiKeyAuthentication("my-special-key");
+            }));
+        yield return () => new ExtensionScenario("OpenFGA - OIDC Auth",
+            config => config.ConfigureOpenFga(x =>
+            {
+                x.SetConnection("http://localhost")
+                    .WithOidcAuthentication("clientId", "clientSecret", "issuer", "audience");
+            }));
+    }
+}
+public class ExtensionTests
+{
+    [Test]
+    [MethodDataSource(typeof(ExtensionTestDataSource), nameof(ExtensionTestDataSource.BadExtensions))]
     public void InvalidConfiguration_ThrowsException(ExtensionScenario scenario)
     {
         var collection = new ServiceCollection();
 
-        collection.AddOpenFgaClient(config =>
+        collection.Invoking(x => x.AddOpenFgaClient(config =>
         {
             config.SetStoreId(Guid.NewGuid().ToString());
 
             scenario.Configuration(config);
-        });
+        }))
+            .Should()
+            .ThrowExactly<InvalidOperationException>();
     }
-        
-
-        
-    [Theory]
-    [MemberData(nameof(WorkingExtensions))]
+    
+    [Test]
+    [MethodDataSource(typeof(ExtensionTestDataSource), nameof(ExtensionTestDataSource.WorkingExtensions))]
     public void ClientExtensions_RegisterCorrectly(ExtensionScenario scenario)
     {
         var collection = new ServiceCollection();
@@ -76,17 +107,17 @@ public class ExtensionTests
         var provider = collection.BuildServiceProvider();
 
         var apiClient = provider.GetService<OpenFgaApi>();
-        Assert.NotNull(apiClient);
-        Assert.IsType<InjectableFgaApi>(apiClient);
+        apiClient.Should().NotBeNull();
+        apiClient.Should().BeOfType<InjectableFgaApi>();
 
         var fgaClient = provider.GetService<OpenFgaClient>();
-        Assert.NotNull(fgaClient);
-        Assert.IsType<InjectableFgaClient>(fgaClient);
+        fgaClient.Should().NotBeNull();
+        fgaClient.Should().BeOfType<InjectableFgaClient>();
     }
 
 
-    [Theory]
-    [MemberData(nameof(WorkingExtensions))]
+    [Test]
+    [MethodDataSource(typeof(ExtensionTestDataSource), nameof(ExtensionTestDataSource.WorkingExtensions))]
     public void AspNetCoreServiceExtensions_RegisterCorrectly(ExtensionScenario scenario)
     {
         var collection = new ServiceCollection();
@@ -106,46 +137,18 @@ public class ExtensionTests
 
         var col = provider.GetServices<IAuthorizationHandler>();
 
-        Assert.Contains(col, handler => handler is FineGrainedAuthorizationHandler);
+        col.Should().Contain(handler => handler is FineGrainedAuthorizationHandler);
     }
 
-    public static TheoryData<ExtensionScenario> WorkingExtensions =>
-        new()
-        {
-            new ExtensionScenario("Auth0 FGA", 
-                config => config.ConfigureAuth0Fga(x =>
-                {
-                    x.SetEnvironment(FgaEnvironment.AU)
-                        .WithAuthentication(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
-                })),
-            new ExtensionScenario("OpenFGA - No Credentials",
-                config => config.ConfigureOpenFga(x =>
-                { x.SetConnection("http://localhost"); 
-                        
-                })),
-            new ExtensionScenario("OpenFGA - API Key Auth", 
-                config => config.ConfigureOpenFga(x =>
-                {
-                    x.SetConnection("http://localhost")
-                        .WithApiKeyAuthentication("my-special-key");
-                })),
-            new ExtensionScenario("OpenFGA - OIDC Auth", 
-                config => config.ConfigureOpenFga(x =>
-                {
-                    x.SetConnection("http://localhost")
-                        .WithOidcAuthentication("clientId", "clientSecret", "issuer", "audience");
-                })),
-        };
-
-    [Fact]
+    [Test]
     public void AuthorizationPolicyExtension_RegisterCorrectly()
     {
         var policy = new AuthorizationPolicyBuilder().AddFgaRequirement().Build();
 
-        Assert.Contains(policy.Requirements, requirement => requirement is FineGrainedAuthorizationRequirement);
+        policy.Requirements.Should().Contain(requirement => requirement is FineGrainedAuthorizationRequirement);
     }
 
-    [Fact]
+    [Test]
     public void MinimalExtensions_RegisterAttributesCorrectly()
     {
         var builder = new TestEndpointRouteBuilder();
@@ -159,13 +162,11 @@ public class ExtensionTests
         var endpoint = builder.DataSources.Single().Endpoints.Single();
 
         var metadata = endpoint.Metadata.GetOrderedMetadata<FgaAttribute>();
-            
-        Assert.Equal(4, metadata.Count);
-        Assert.Contains(metadata, attribute => attribute is FgaHeaderObjectAttribute);
-        Assert.Contains(metadata, attribute => attribute is FgaRouteObjectAttribute);
-        Assert.Contains(metadata, attribute => attribute is FgaQueryObjectAttribute);
-        Assert.Contains(metadata, attribute => attribute is FgaPropertyObjectAttribute);
-
+        metadata.Count.Should().Be(4);
+        metadata.Should().Contain(attribute => attribute is FgaHeaderObjectAttribute);
+        metadata.Should().Contain(attribute => attribute is FgaRouteObjectAttribute);
+        metadata.Should().Contain(attribute => attribute is FgaQueryObjectAttribute);
+        metadata.Should().Contain(attribute => attribute is FgaPropertyObjectAttribute);
     }
 
     private class TestEndpointRouteBuilder : IEndpointRouteBuilder
@@ -179,7 +180,7 @@ public class ExtensionTests
     }
 
 
-    [Fact]
+    [Test]
     public void PostConfigureOptions_OverridesSettings()
     {
         var collection = new ServiceCollection();
@@ -205,10 +206,9 @@ public class ExtensionTests
         var provider = collection.BuildServiceProvider();
 
         var config = provider.GetRequiredService<IOptions<FgaClientConfiguration>>().Value;
-        
-        Assert.Null(config.Credentials);
-        Assert.Equal(openFgaUrl, config.ApiUrl);
 
+        config.Credentials.Should().BeNull();
+        config.ApiUrl.Should().Be(openFgaUrl);
     }
 
 }
