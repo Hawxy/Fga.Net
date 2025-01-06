@@ -1,15 +1,9 @@
-using System;
 using Fga.Net.DependencyInjection;
-using Xunit.Abstractions;
 
 namespace Fga.Net.Tests.Unit;
 
-public sealed class ExtensionScenario : IXunitSerializable 
+public sealed class ExtensionScenario
 {
-    public ExtensionScenario()
-    {
-    }
-
     public ExtensionScenario(string description, Action<FgaConfigurationBuilder> configuration)
     {
         Description = description;
@@ -20,15 +14,7 @@ public sealed class ExtensionScenario : IXunitSerializable
     {
         return Description;
     }
-
-    public void Deserialize(IXunitSerializationInfo info)
-    { }
-
-    public void Serialize(IXunitSerializationInfo info)
-    {
-        info.AddValue(nameof(Description), Description);
-    }
-
-    public string Description { get; init; } = null!;
-    public Action<FgaConfigurationBuilder> Configuration { get; } = null!;
+    
+    public string Description { get; }
+    public Action<FgaConfigurationBuilder> Configuration { get; private set; }
 }

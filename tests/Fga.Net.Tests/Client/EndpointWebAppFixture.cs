@@ -1,11 +1,10 @@
-﻿using System.Threading.Tasks;
-using Alba;
+﻿using Alba;
 using Fga.Net.Tests.Middleware;
-using Xunit;
+using TUnit.Core.Interfaces;
 
 namespace Fga.Net.Tests.Client;
 
-public class EndpointWebAppFixture : IAsyncLifetime
+public class EndpointWebAppFixture : IAsyncInitializer, IAsyncDisposable
 {
     public IAlbaHost AlbaHost = null!;
 
@@ -14,13 +13,13 @@ public class EndpointWebAppFixture : IAsyncLifetime
         AlbaHost = await Alba.AlbaHost.For<Program>(_ => { }, MockJwtConfiguration.GetDefaultStubConfiguration());
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         await AlbaHost.DisposeAsync();
     }
 }
 
-[CollectionDefinition(nameof(EndpointWebAppCollection))]
-public class EndpointWebAppCollection : ICollectionFixture<EndpointWebAppFixture>
+public abstract class EndpointWebAppBase(EndpointWebAppFixture fixture)
 {
+    protected IAlbaHost Host => fixture.AlbaHost;
 }

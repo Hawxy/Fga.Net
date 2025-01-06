@@ -1,19 +1,14 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Alba;
+﻿using Alba;
 using Fga.Net.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Moq;
 using OpenFga.Sdk.Client.Model;
-using OpenFga.Sdk.Model;
-using Xunit;
+using TUnit.Core.Interfaces;
 
 namespace Fga.Net.Tests.Middleware;
 
-public class WebAppFixture : IAsyncLifetime
+public class WebAppFixture : IAsyncInitializer, IAsyncDisposable
 {
     public IAlbaHost AlbaHost = null!;
 
@@ -28,11 +23,9 @@ public class WebAppFixture : IAsyncLifetime
             {
                 var entry = res.First();
                 return entry.User == $"user:{MockJwtConfiguration.DefaultUser}"
-                    ? new BatchCheckResponse() { Responses = new List<BatchCheckSingleResponse>() { new(true, entry) } }
-                    : new BatchCheckResponse() { Responses = new List<BatchCheckSingleResponse>() { new(false, entry) } };
+                    ? new BatchCheckResponse() { Responses = [new(true, entry)] }
+                    : new BatchCheckResponse() { Responses = [new(false, entry)] };
             });
-
-
 
         AlbaHost = await Alba.AlbaHost.For<Program>(builder =>
         {
@@ -44,14 +37,14 @@ public class WebAppFixture : IAsyncLifetime
         }, MockJwtConfiguration.GetDefaultStubConfiguration());
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         if (AlbaHost is not null)
             await AlbaHost.DisposeAsync();
     }
 }
 
-[CollectionDefinition(nameof(WebAppCollection))]
-public class WebAppCollection : ICollectionFixture<WebAppFixture>
+public abstract class WebAppBase(WebAppFixture fixture)
 {
+    protected IAlbaHost Host => fixture.AlbaHost;
 }
