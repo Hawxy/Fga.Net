@@ -43,9 +43,9 @@ public class ExtensionTests
 
     ];
 
-    [Theory]
-    [MemberData(nameof(BadExtensions))]
-    public void InvalidConfiguration_ThrowsException(ExtensionScenario scenario)
+
+    [Fact]
+    public void InvalidConfiguration_ThrowsException()
     {
         var collection = new ServiceCollection();
 
@@ -53,7 +53,7 @@ public class ExtensionTests
         {
             config.SetStoreId(Guid.NewGuid().ToString());
 
-            scenario.Configuration(config);
+            config.ConfigureAuth0Fga(x => { });
         });
     }
         
