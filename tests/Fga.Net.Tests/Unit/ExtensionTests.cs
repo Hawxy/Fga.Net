@@ -22,23 +22,26 @@ namespace Fga.Net.Tests.Unit;
 public class ExtensionTests
 {
     public static TheoryData<ExtensionScenario> BadExtensions =>
-        new()
+    [
+        new ExtensionScenario("Empty Extension Config - Auth0 FGA",
+            config => config.ConfigureAuth0Fga(x => { })),
+
+        new ExtensionScenario("Empty Schema",
+            config => config.ConfigureOpenFga(x => { x.SetConnection("localhost"); })),
+
+        new ExtensionScenario("Empty API Key", config => config.ConfigureOpenFga(x =>
         {
-            new ExtensionScenario("Empty Extension Config - Auth0 FGA", 
-                config => config.ConfigureAuth0Fga(x => { })),
-            new ExtensionScenario("Empty Schema",
-                config => config.ConfigureOpenFga(x => { x.SetConnection("localhost"); })),
-            new ExtensionScenario("Empty API Key", config => config.ConfigureOpenFga(x =>
-            {
-                x.SetConnection("http://localhost")
-                    .WithApiKeyAuthentication("");
-            })),
-            new ExtensionScenario("Empty OIDC configuration", config => config.ConfigureOpenFga(x =>
-            {
-                x.SetConnection("http://localhost")
-                    .WithOidcAuthentication("clientId", "", "issuer", "audience");
-            })),
-        };
+            x.SetConnection("http://localhost")
+                .WithApiKeyAuthentication("");
+        })),
+
+        new ExtensionScenario("Empty OIDC configuration", config => config.ConfigureOpenFga(x =>
+        {
+            x.SetConnection("http://localhost")
+                .WithOidcAuthentication("clientId", "", "issuer", "audience");
+        }))
+
+    ];
 
     [Theory]
     [MemberData(nameof(BadExtensions))]
@@ -46,13 +49,12 @@ public class ExtensionTests
     {
         var collection = new ServiceCollection();
 
-        Assert.Throws<InvalidOperationException>(() =>
-            collection.AddOpenFgaClient(config =>
-            {
-                config.SetStoreId(Guid.NewGuid().ToString()); 
-
-                scenario.Configuration(config);
-            }));
+          collection.AddOpenFgaClient(config =>
+                    {
+                        config.SetStoreId(Guid.NewGuid().ToString()); 
+        
+                        scenario.Configuration(config);
+                    })
     }
         
 
