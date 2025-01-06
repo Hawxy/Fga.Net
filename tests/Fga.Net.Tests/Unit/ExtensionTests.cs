@@ -49,12 +49,12 @@ public class ExtensionTests
     {
         var collection = new ServiceCollection();
 
-          collection.AddOpenFgaClient(config =>
-                    {
-                        config.SetStoreId(Guid.NewGuid().ToString()); 
-        
-                        scenario.Configuration(config);
-                    })
+        collection.AddOpenFgaClient(config =>
+        {
+            config.SetStoreId(Guid.NewGuid().ToString());
+
+            scenario.Configuration(config);
+        });
     }
         
 
