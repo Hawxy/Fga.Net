@@ -1,6 +1,6 @@
 ﻿#region License
 /*
-   Copyright 2021-2024 Hawxy (JT)
+   Copyright 2021-2025 Hawxy (JT)
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -62,7 +62,9 @@ internal sealed class FineGrainedAuthorizationHandler : AuthorizationHandler<Fin
                 user = await attribute.GetUser(httpContext);
                 relation = await attribute.GetRelation(httpContext);
                 @object = await attribute.GetObject(httpContext);
-                contextualTuples = await attribute.GetContextualTuple(httpContext);
+#pragma warning disable CS0618 // Type or member is obsolete
+                contextualTuples = await attribute.GetContextualTuples(httpContext) ?? await attribute.GetContextualTuple(httpContext);
+#pragma warning restore CS0618 // Type or member is obsolete
             }
             catch (FgaMiddlewareException ex)
             {

@@ -19,7 +19,7 @@ public static class ExtensionTestDataSource
     public static IEnumerable<Func<ExtensionScenario>> BadExtensions()
     {
         yield return () => new ExtensionScenario("Empty Extension Config - Auth0 FGA",
-            config => config.ConfigureAuth0Fga(x => { }));
+            config => config.ConfigureOktaFga(x => { }));
 
         yield return () => new ExtensionScenario("Empty Schema",
             config => config.ConfigureOpenFga(x => { x.SetConnection("localhost"); }));
@@ -40,14 +40,14 @@ public static class ExtensionTestDataSource
     public static IEnumerable<Func<ExtensionScenario>> WorkingExtensions()
     {
         yield return () => new ExtensionScenario("Auth0 FGA",
-            config => config.ConfigureAuth0Fga(x =>
+            config => config.ConfigureOktaFga(x =>
             {
                 x.SetEnvironment(FgaEnvironment.AU)
                     .WithAuthentication(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
             }));
 
         yield return () => new ExtensionScenario("Auth0 FGA",
-            config => config.ConfigureAuth0Fga(x =>
+            config => config.ConfigureOktaFga(x =>
             {
                 x.SetEnvironment(FgaEnvironment.AU)
                     .WithAuthentication(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
@@ -189,7 +189,7 @@ public class ExtensionTests
         {
             config.SetStoreId(Guid.NewGuid().ToString()); 
 
-            config.ConfigureAuth0Fga(x=> x.WithAuthentication("FgaClientId", "FgaClientSecret"));
+            config.ConfigureOktaFga(x=> x.WithAuthentication("FgaClientId", "FgaClientSecret"));
 
         });
 

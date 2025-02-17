@@ -1,6 +1,6 @@
 #region License
 /*
-   Copyright 2021-2024 Hawxy (JT)
+   Copyright 2021-2025 Hawxy (JT)
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -91,14 +91,25 @@ public sealed class FgaConfigurationBuilder
     /// Configures the client for use with Auth0 Fga
     /// </summary>
     /// <param name="config"></param>
-    public void ConfigureAuth0Fga(Action<Auth0FgaConnectionBuilder> config)
+    [Obsolete("Replace with ConfigureOktaFga. This will be removed in the next major release.")]
+    public void ConfigureAuth0Fga(Action<OktaFgaConnectionBuilder> config)
+    {
+        ConfigureOktaFga(config);
+    }
+    
+    /// <summary>
+    /// Configures the client for use with Okta Fga
+    /// </summary>
+    /// <param name="config"></param>
+    public void ConfigureOktaFga(Action<OktaFgaConnectionBuilder> config)
     {
         ArgumentNullException.ThrowIfNull(config);
         
-        var configuration = new Auth0FgaConnectionBuilder();
+        var configuration = new OktaFgaConnectionBuilder();
         config.Invoke(configuration);
         _fgaConfiguration = configuration.Build();
     }
+
     
     internal FgaBuiltConfiguration Build()
     {
