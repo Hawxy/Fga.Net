@@ -7,8 +7,8 @@
 
   <PropertyGroup>
     <PackageId>Fga.Net.DependencyInjection</PackageId>
-    <Description>Auth0 Fine Grained Authorization for .NET. This package includes DI collection extensions for the FGA Client.</Description>
-    <PackageTags>fga,auth0,sandcastle</PackageTags>
+    <Description>OpenFGA/Okta FGA for .NET. This package includes DI collection extensions for the FGA Client.</Description>
+    <PackageTags>fga,auth0,okta,sandcastle</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

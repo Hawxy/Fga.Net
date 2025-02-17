@@ -1,6 +1,6 @@
 #region License
 /*
-   Copyright 2021-2024 Hawxy (JT)
+   Copyright 2021-2025 Hawxy (JT)
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ using OpenFga.Sdk.Configuration;
 namespace Fga.Net.DependencyInjection.Configuration;
 
 /// <summary>
-/// Available environments for Auth0 FGA
+/// Available environments for Okta FGA
 /// </summary>
 public enum FgaEnvironment
 {
@@ -40,30 +40,30 @@ public enum FgaEnvironment
     EU
 }
 
-internal sealed record Auth0FgaEnvironment(string ApiHost, string ApiTokenIssuer, string ApiAudience);
+internal sealed record OktaFgaEnvironment(string ApiHost, string ApiTokenIssuer, string ApiAudience);
 
 
 /// <summary>
-/// Configuration for Auth0 FGA environments
+/// Configuration for Okta FGA environments
 /// </summary>
-public sealed class Auth0FgaConnectionBuilder
+public sealed class OktaFgaConnectionBuilder
 {
     private const string FgaIssuer = "auth.fga.dev";
     
-    private readonly Dictionary<FgaEnvironment, Auth0FgaEnvironment> _fgaEnvironments =
+    private readonly Dictionary<FgaEnvironment, OktaFgaEnvironment> _fgaEnvironments =
         new()
         {
             {
                 FgaEnvironment.US,
-                new Auth0FgaEnvironment("https://api.us1.fga.dev", FgaIssuer, "https://api.us1.fga.dev/")
+                new OktaFgaEnvironment("https://api.us1.fga.dev", FgaIssuer, "https://api.us1.fga.dev/")
             },
             {
                 FgaEnvironment.EU,
-                new Auth0FgaEnvironment("https://api.eu1.fga.dev", FgaIssuer, "https://api.eu1.fga.dev/")
+                new OktaFgaEnvironment("https://api.eu1.fga.dev", FgaIssuer, "https://api.eu1.fga.dev/")
             },
             {
                 FgaEnvironment.AU,
-                new Auth0FgaEnvironment("https://api.au1.fga.dev", FgaIssuer, "https://api.au1.fga.dev/")
+                new OktaFgaEnvironment("https://api.au1.fga.dev", FgaIssuer, "https://api.au1.fga.dev/")
             }
         };
 
@@ -76,7 +76,7 @@ public sealed class Auth0FgaConnectionBuilder
     /// Set the region/environment that your Auth0 FGA store lives in. Defaults to <see cref="FgaEnvironment.US"/> if not set.
     /// </summary>
     /// <param name="environment">An Auth0 FGA region</param>
-    public Auth0FgaConnectionBuilder SetEnvironment(FgaEnvironment environment)
+    public OktaFgaConnectionBuilder SetEnvironment(FgaEnvironment environment)
     {
         _environment = environment;
         return this;
@@ -87,7 +87,7 @@ public sealed class Auth0FgaConnectionBuilder
     /// </summary>
     /// <param name="clientId">Client Id from your  Auth0 FGA Account</param>
     /// <param name="clientSecret">Client Secret from your Auth0 FGA Account</param>
-    public Auth0FgaConnectionBuilder WithAuthentication(string clientId, string clientSecret)
+    public OktaFgaConnectionBuilder WithAuthentication(string clientId, string clientSecret)
     {
         ArgumentNullException.ThrowIfNull(clientId);
         ArgumentNullException.ThrowIfNull(clientSecret);
