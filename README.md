@@ -77,7 +77,6 @@ config.ConfigureOpenFga(x =>
         context.Configuration["Fga:Issuer"], 
         context.Configuration["Fga:Audience"]);
 });
-
 ```
 
 ### Authorization Policy Setup
@@ -85,13 +84,11 @@ config.ConfigureOpenFga(x =>
 Your authorization policy should be configured with `RequireAuthenticatedUser` and `AddFgaRequirement` at minimum:
 
 ```cs
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy(FgaAuthorizationDefaults.PolicyKey, 
-        p => p
+builder.Services.AddAuthorizationBuilder()
+    // Replace `.AddPolicy` with `.AddFallbackPolicy` to apply the policy by default
+    .AddPolicy(FgaAuthorizationDefaults.PolicyKey, p => p
             .RequireAuthenticatedUser()
             .AddFgaRequirement());
-});
 ```
 
 A constant authorization key is included for convenience, but `AddFgaRequirement` can be used with any additional policy as required.

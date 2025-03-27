@@ -55,13 +55,10 @@ builder.Services.AddOpenFgaMiddleware(middlewareConfig =>
     middlewareConfig.SetUserIdentifier("user", principal => principal.Identity!.Name!);
 });
 
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy(FgaAuthorizationDefaults.PolicyKey, 
-        p => p
+builder.Services.AddAuthorizationBuilder()
+    .AddPolicy(FgaAuthorizationDefaults.PolicyKey, p => p
             .RequireAuthenticatedUser()
             .AddFgaRequirement());
-});
 
 
 var app = builder.Build();
