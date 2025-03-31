@@ -20,6 +20,7 @@ using Fga.Net.AspNetCore.Authorization.Attributes;
 using Fga.Net.AspNetCore.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 using OpenFga.Sdk.Client.Model;
 
@@ -43,6 +44,14 @@ internal sealed class FineGrainedAuthorizationHandler : AuthorizationHandler<Fin
         var endpoint = httpContext.GetEndpoint();
         if (endpoint is null)
             throw new InvalidOperationException($"{nameof(FineGrainedAuthorizationHandler)} was unable to resolve the current endpoint. This handler is only compatible with endpoint routing.");
+
+        var bypass = endpoint.Metadata.GetMetadata<FgaBypass>();
+        if (bypass is not null)
+        {
+            _logger.BypassFound(httpContext.Request.Path);
+            context.Succeed(requirement);
+            return;
+        }
         
         var attributes = endpoint.Metadata.GetOrderedMetadata<FgaAttribute>();
         // The user is enforcing the fga policy but there's no attributes here.

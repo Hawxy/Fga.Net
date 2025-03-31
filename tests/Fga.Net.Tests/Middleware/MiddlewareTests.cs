@@ -4,7 +4,7 @@ using Alba;
 
 namespace Fga.Net.Tests.Middleware;
 
-[ClassDataSource<WebAppFixture>(Shared = SharedType.PerAssembly)]
+[ClassDataSource<WebAppFixture>(Shared = SharedType.PerTestSession)]
 public class MiddlewareTests(WebAppFixture fixture) : WebAppBase(fixture)
 {
     [Test]
@@ -26,6 +26,16 @@ public class MiddlewareTests(WebAppFixture fixture) : WebAppBase(fixture)
             _.WithClaim(new Claim(ClaimTypes.NameIdentifier, MockJwtConfiguration.FakeUser));
             _.Get.Url($"/test/{Guid.NewGuid()}");
             _.StatusCodeShouldBe(HttpStatusCode.Forbidden);
+        });
+    }
+    
+    [Test]
+    public async Task Authorization_IgnoredPath_Succeeds()
+    {
+        await Host.Scenario(_ =>
+        {
+            _.Get.Url("/test/ignored");
+            _.StatusCodeShouldBeOk();
         });
     }
 }
