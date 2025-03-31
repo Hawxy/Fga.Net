@@ -17,6 +17,13 @@ public class TestController : ControllerBase
     {
         return documentId;
     }
+    
+    [HttpGet("/ignored")]
+    [FgaBypass]
+    public string GetIgnored()
+    {
+        return string.Empty;
+    }
 
 
 }

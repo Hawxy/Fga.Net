@@ -9,11 +9,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Alba" Version="8.1.0" />
-    <PackageReference Include="FluentAssertions" Version="7.0.0" />
+    <PackageReference Include="Alba" Version="8.1.1" />
+    <PackageReference Include="FluentAssertions" Version="8.2.0" />
     <PackageReference Include="HttpContextMoq" Version="1.6.0" />
     <PackageReference Include="Ulid" Version="1.3.4" />
-    <PackageReference Include="TUnit" Version="0.6.33" />
+    <PackageReference Include="TUnit" Version="0.19.32" />
   </ItemGroup>
 
   <ItemGroup>

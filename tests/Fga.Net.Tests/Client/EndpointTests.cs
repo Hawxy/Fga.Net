@@ -7,7 +7,7 @@ using OpenFga.Sdk.Client;
 
 namespace Fga.Net.Tests.Client;
 
-[ClassDataSource<EndpointWebAppFixture>(Shared = SharedType.PerAssembly)]
+[ClassDataSource<EndpointWebAppFixture>(Shared = SharedType.PerTestSession)]
 public class EndpointTests(EndpointWebAppFixture fixture) : EndpointWebAppBase(fixture)
 {
     [Test]
