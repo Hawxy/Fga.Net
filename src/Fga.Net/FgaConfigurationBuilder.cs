@@ -91,23 +91,23 @@ public sealed class FgaConfigurationBuilder
     /// Configures the client for use with Auth0 Fga
     /// </summary>
     /// <param name="config"></param>
-    [Obsolete("Replace with ConfigureOktaFga. This will be removed in the next major release.")]
-    public void ConfigureAuth0Fga(Action<OktaFgaConnectionBuilder> config)
+    public void ConfigureAuth0Fga(Action<Auth0FgaConnectionBuilder> config)
     {
-        ConfigureOktaFga(config);
+        ArgumentNullException.ThrowIfNull(config);
+        
+        var configuration = new Auth0FgaConnectionBuilder();
+        config.Invoke(configuration);
+        _fgaConfiguration = configuration.Build();
     }
     
     /// <summary>
     /// Configures the client for use with Okta Fga
     /// </summary>
     /// <param name="config"></param>
-    public void ConfigureOktaFga(Action<OktaFgaConnectionBuilder> config)
+    [Obsolete("Change to ConfigureAuth0Fga as FGA has reverted its naming change.")]
+    public void ConfigureOktaFga(Action<Auth0FgaConnectionBuilder> config)
     {
-        ArgumentNullException.ThrowIfNull(config);
-        
-        var configuration = new OktaFgaConnectionBuilder();
-        config.Invoke(configuration);
-        _fgaConfiguration = configuration.Build();
+        ConfigureAuth0Fga(config);
     }
 
     

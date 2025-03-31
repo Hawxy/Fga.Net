@@ -1,4 +1,4 @@
-## OpenFGA & Okta FGA for ASP.NET Core + Worker Services
+## OpenFGA & Auth0 FGA for ASP.NET Core + Worker Services
 
 [![Nuget (with prereleases)](https://img.shields.io/nuget/vpre/Fga.Net.DependencyInjection?label=Fga.Net.DependencyInjection&style=flat-square)](https://www.nuget.org/packages/Fga.Net.DependencyInjection)
 [![Nuget (with prereleases)](https://img.shields.io/nuget/vpre/Fga.Net.AspNetCore?label=Fga.Net.AspNetCore&style=flat-square)](https://www.nuget.org/packages/Fga.Net.AspNetCore)
@@ -10,9 +10,9 @@
 
 ## Getting Started
 
-This package is compatible with the OSS OpenFGA as well as the managed Okta FGA service.
+This package is compatible with the OSS OpenFGA as well as the managed Auth0 FGA service.
 
-Please ensure you have a basic understanding of how FGA works before continuing: [OpenFGA Docs](https://openfga.dev/) or [Okta FGA Docs](https://docs.fga.dev/)
+Please ensure you have a basic understanding of how FGA works before continuing: [OpenFGA Docs](https://openfga.dev/) or [Auth0 FGA Docs](https://docs.fga.dev/)
 
 ## ASP.NET Core Setup
 
@@ -20,7 +20,7 @@ This tutorial assumes you have authentication setup within your project, such as
 
 Install `Fga.Net.AspNetCore` from Nuget before continuing.
 
-### Okta FGA
+### Auth0 FGA
 
 Ensure you have a Store ID, Client ID, and Client Secret ready from [How to get your API keys](https://docs.fga.dev/integration/getting-your-api-keys).
 
@@ -29,20 +29,20 @@ Ensure you have a Store ID, Client ID, and Client Secret ready from [How to get 
 ```cs
 builder.Services.AddOpenFgaClient(config =>
 {
-    config.ConfigureOktaFga(x =>
+    config.ConfigureAuth0Fga(x =>
     {
         // Change to EU/AUS depending on where your store is located
         x.SetEnvironment(FgaEnvironment.US);
-        x.WithAuthentication(builder.Configuration["OktaFga:ClientId"]!, builder.Configuration["OktaFga:ClientSecret"]!);
+        x.WithAuthentication(builder.Configuration["Auth0Fga:ClientId"]!, builder.Configuration["Auth0Fga:ClientSecret"]!);
     });
 
-    config.SetStoreId(builder.Configuration["OktaFga:StoreId"]!);
+    config.SetStoreId(builder.Configuration["Auth0Fga:StoreId"]!);
 });
 
 builder.Services.AddOpenFgaMiddleware();
 ```
 
-The `ConfigureOktaFga` extension will configure the client to work with the Okta US environment. An environment selector will be added as additional regions come online.
+The `ConfigureAuth0Fga` extension will configure the client to work with the Auth0 US environment. An environment selector will be added as additional regions come online.
 
 ### OpenFGA
 
@@ -203,21 +203,21 @@ services.PostConfigureFgaClient(config =>
 To get started:
 
 1. Install `Fga.Net.DependencyInjection`
-2. Add your `StoreId`, `ClientId` and `ClientSecret` Okta FGA configuration **OR** `ApiUrl` & `StoreId` OpenFGA configuration to your application configuration, ideally via the [dotnet secrets manager](https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-6.0&tabs=windows#enable-secret-storage).
+2. Add your `StoreId`, `ClientId` and `ClientSecret` Auth0 FGA configuration **OR** `ApiUrl` & `StoreId` OpenFGA configuration to your application configuration, ideally via the [dotnet secrets manager](https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-6.0&tabs=windows#enable-secret-storage).
 3. Register the authorization client:
 
 ```cs
 var host = Host.CreateDefaultBuilder(args)
     .ConfigureServices((context, services) =>
     {
-         // Okta FGA
+         // Auth0 FGA
         services.AddOpenFgaClient(config =>
         {
-            config.ConfigureOktaFga(x =>
+            config.ConfigureAuth0Fga(x =>
             {
-                x.WithAuthentication(context.Configuration["OktaFga:ClientId"], context.Configuration["OktaFga:ClientSecret"]);
+                x.WithAuthentication(context.Configuration["Auth0Fga:ClientId"], context.Configuration["Auth0Fga:ClientSecret"]);
             });
-            config.SetStoreId(context.Configuration["OktaFga:StoreId"]);
+            config.SetStoreId(context.Configuration["Auth0Fga:StoreId"]);
         });
         
         // OpenFGA
@@ -270,4 +270,4 @@ See the [OpenFGA.Sdk docs](https://openfga.dev/docs/getting-started/setup-sdk-cl
 
 ## Disclaimer
 
-I am not affiliated with nor represent Okta or OpenFGA. All support queries regarding the underlying service should go to the respective support channels.
+I am not affiliated with nor represent Auth0 or OpenFGA. All support queries regarding the underlying service should go to the respective support channels.

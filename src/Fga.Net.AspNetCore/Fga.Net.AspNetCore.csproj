@@ -8,7 +8,7 @@
 
   <PropertyGroup>
     <PackageId>Fga.Net.AspNetCore</PackageId>
-    <Description>OpenFGA/Okta FGA for ASP.NET Core. This package includes ASP.NET Core authorization extensions.</Description>
+    <Description>OpenFGA/Auth0 FGA for ASP.NET Core. This package includes ASP.NET Core authorization extensions.</Description>
     <PackageTags>fga,auth0,okta,sandcastle,asp.net</PackageTags>
   </PropertyGroup>
 
