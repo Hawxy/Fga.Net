@@ -12,7 +12,7 @@ public class MiddlewareTests(WebAppFixture fixture) : WebAppBase(fixture)
     {
         await Host.Scenario(_ =>
         {
-            _.Get.Url($"/test/{Guid.NewGuid()}");
+            _.Get.Url($"/test/document/{Guid.NewGuid()}");
             _.StatusCodeShouldBeOk();
         });
     }
@@ -24,7 +24,7 @@ public class MiddlewareTests(WebAppFixture fixture) : WebAppBase(fixture)
         {
             _.RemoveClaim(ClaimTypes.NameIdentifier);
             _.WithClaim(new Claim(ClaimTypes.NameIdentifier, MockJwtConfiguration.FakeUser));
-            _.Get.Url($"/test/{Guid.NewGuid()}");
+            _.Get.Url($"/test/document/{Guid.NewGuid()}");
             _.StatusCodeShouldBe(HttpStatusCode.Forbidden);
         });
     }
@@ -34,6 +34,8 @@ public class MiddlewareTests(WebAppFixture fixture) : WebAppBase(fixture)
     {
         await Host.Scenario(_ =>
         {
+            _.RemoveClaim(ClaimTypes.NameIdentifier);
+            _.WithClaim(new Claim(ClaimTypes.NameIdentifier, MockJwtConfiguration.FakeUser));
             _.Get.Url("/test/ignored");
             _.StatusCodeShouldBeOk();
         });
