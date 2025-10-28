@@ -11,7 +11,7 @@ namespace Fga.Net.Tests.Client;
 public class EndpointTests(EndpointWebAppFixture fixture) : EndpointWebAppBase(fixture)
 {
     [Test]
-    private async Task GetEndpoints_OpenFgaApi_Return_200()
+    public async Task GetEndpoints_OpenFgaApi_Return_200()
     {
         using var scope = Host.Services.CreateScope();
         var client = scope.ServiceProvider.GetRequiredService<OpenFgaApi>();
@@ -24,7 +24,7 @@ public class EndpointTests(EndpointWebAppFixture fixture) : EndpointWebAppBase(f
     }
 
     [Test]
-    private async Task GetEndpoints_OpenFgaClient_Return_200()
+    public async Task GetEndpoints_OpenFgaClient_Return_200()
     {
         using var scope = Host.Services.CreateScope();
         var client = scope.ServiceProvider.GetRequiredService<OpenFgaClient>();

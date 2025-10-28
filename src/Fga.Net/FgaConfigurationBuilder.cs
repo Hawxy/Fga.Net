@@ -18,6 +18,7 @@
 
 using Fga.Net.DependencyInjection.Configuration;
 using OpenFga.Sdk.Client;
+using OpenFga.Sdk.Client.Model;
 using OpenFga.Sdk.Configuration;
 
 namespace Fga.Net.DependencyInjection;
@@ -49,7 +50,7 @@ public sealed class FgaConfigurationBuilder
 
     private int? _maxRetry;
 
-    /// <inheritdoc cref="ClientConfiguration.MaxRetry"/>
+    /// <inheritdoc cref="RetryParams.MaxRetry"/>
     public FgaConfigurationBuilder SetMaxRetry(int maxRetry)
     {
         _maxRetry = maxRetry;
@@ -57,7 +58,7 @@ public sealed class FgaConfigurationBuilder
     }
 
     private int? _minWaitInMs;
-    /// <inheritdoc cref="ClientConfiguration.MinWaitInMs"/>
+    /// <inheritdoc cref="RetryParams.MinWaitInMs"/>
     public FgaConfigurationBuilder SetWaitInMs(int waitInMs)
     {
         _minWaitInMs = waitInMs;
@@ -66,7 +67,7 @@ public sealed class FgaConfigurationBuilder
 
     private TelemetryConfig? _telemetryConfig;
     
-    /// <inheritdoc cref="ClientConfiguration.Telemetry"/>
+    /// <inheritdoc cref="TelemetryConfig"/>
     public FgaConfigurationBuilder SetTelemetry(TelemetryConfig config)
     {
         _telemetryConfig = config;
