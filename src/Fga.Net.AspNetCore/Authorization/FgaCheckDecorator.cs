@@ -43,7 +43,7 @@ public class FgaCheckDecorator : IFgaCheckDecorator
     /// <param name="request"></param>
     /// <param name="ct"></param>
     /// <returns></returns>
-    public virtual Task<BatchCheckResponse> BatchCheck(List<ClientCheckRequest> request, CancellationToken ct) => _auth0FgaApi.BatchCheck(request, cancellationToken: ct);
+    public virtual Task<ClientBatchCheckClientResponse> BatchCheck(List<ClientCheckRequest> request, CancellationToken ct) => _auth0FgaApi.BatchCheck(request, cancellationToken: ct);
 }
 
 /// <summary>
@@ -58,5 +58,5 @@ public interface IFgaCheckDecorator
     /// <param name="request"></param>
     /// <param name="ct"></param>
     /// <returns></returns>
-    Task<BatchCheckResponse> BatchCheck(List<ClientCheckRequest> request, CancellationToken ct);
+    Task<ClientBatchCheckClientResponse> BatchCheck(List<ClientCheckRequest> request, CancellationToken ct);
 }

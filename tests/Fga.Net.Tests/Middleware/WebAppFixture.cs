@@ -23,8 +23,8 @@ public class WebAppFixture : IAsyncInitializer, IAsyncDisposable
             {
                 var entry = res.First();
                 return entry.User == $"user:{MockJwtConfiguration.DefaultUser}"
-                    ? new BatchCheckResponse() { Responses = [new(true, entry)] }
-                    : new BatchCheckResponse() { Responses = [new(false, entry)] };
+                    ? new ClientBatchCheckClientResponse() { Responses = [new(true, entry)] }
+                    : new ClientBatchCheckClientResponse() { Responses = [new(false, entry)] };
             });
 
         AlbaHost = await Alba.AlbaHost.For<Program>(builder =>
