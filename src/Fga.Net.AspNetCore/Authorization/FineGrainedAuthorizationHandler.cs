@@ -1,6 +1,6 @@
 ﻿#region License
 /*
-   Copyright 2021-2025 Hawxy (JT)
+   Copyright 2021-2026 Hawxy (JT)
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 using OpenFga.Sdk.Client.Model;
+using OpenFga.Sdk.Model;
 
 namespace Fga.Net.AspNetCore.Authorization;
 
@@ -57,23 +58,21 @@ internal sealed class FineGrainedAuthorizationHandler : AuthorizationHandler<Fin
         // The user is enforcing the fga policy but there's no attributes here.
         if (attributes.Count == 0)
             return;
-        
-        var checks = new List<ClientCheckRequest>();
+
+        var checks = new ClientBatchCheckRequest();
             
         foreach (var attribute in attributes)
         {
             string? user;
             string? relation;
             string? @object;
-            List<ClientTupleKey>? contextualTuples;
+            ContextualTupleKeys? contextualTuples;
             try
             {
                 user = await attribute.GetUser(httpContext);
                 relation = await attribute.GetRelation(httpContext);
                 @object = await attribute.GetObject(httpContext);
-#pragma warning disable CS0618 // Type or member is obsolete
-                contextualTuples = await attribute.GetContextualTuples(httpContext) ?? await attribute.GetContextualTuple(httpContext);
-#pragma warning restore CS0618 // Type or member is obsolete
+                contextualTuples = await attribute.GetContextualTuples(httpContext);
             }
             catch (FgaMiddlewareException ex)
             {
@@ -93,19 +92,14 @@ internal sealed class FineGrainedAuthorizationHandler : AuthorizationHandler<Fin
                 _logger.InvalidUser(user);
                 return;
             }
-                
-            checks.Add(new ClientCheckRequest
-            {
-                User = user,
-                Relation = relation,
-                Object = @object,
-                ContextualTuples = contextualTuples
-            });
+            
+            checks.Checks.Add(new ClientBatchCheckItem(user, relation, @object, contextualTuples: contextualTuples));
+            
         }
           
         var results = await _client.BatchCheck(checks, httpContext.RequestAborted);
 
-        var failedChecks = results.Responses.Where(x=> x.Allowed is false).ToArray();
+        var failedChecks = results.Result.Where(x=> !x.Allowed).ToArray();
             
         // log all of reasons for the failed checks
         if (failedChecks.Length > 0)
@@ -114,9 +108,9 @@ internal sealed class FineGrainedAuthorizationHandler : AuthorizationHandler<Fin
             {
                 if (response.Error is not null)
                 {
-                    _logger.CheckException(response.Request.User, response.Request.Relation, response.Request.Object, response.Error);
+                    _logger.CheckException(response.Request.User, response.Request.Relation, response.Request.Object, response.Error.Message!);
                 }
-                else if (response.Allowed is false)
+                else if (!response.Allowed)
                 {
                     _logger.CheckFailure(response.Request.User, response.Request.Relation, response.Request.Object);
                 }

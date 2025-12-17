@@ -1,6 +1,6 @@
 ﻿#region License
 /*
-   Copyright 2021-2025 Hawxy (JT)
+   Copyright 2021-2026 Hawxy (JT)
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -17,8 +17,7 @@
 #endregion
 
 using Microsoft.AspNetCore.Http;
-using OpenFga.Sdk.Client.Model;
-using Tuple = OpenFga.Sdk.Model.Tuple;
+using OpenFga.Sdk.Model;
 
 namespace Fga.Net.AspNetCore.Authorization.Attributes;
 
@@ -46,21 +45,13 @@ public abstract class FgaAttribute : Attribute
     /// <param name="context">The context of the current request</param>
     /// <returns>Usually a string in an entity-identifier format: document:id</returns>
     public abstract ValueTask<string> GetObject(HttpContext context);
-    
+
     /// <summary>
     /// Contextual tuple(s) to apply the check generated from this attribute.
     /// </summary>
     /// <param name="context">The context of the current request</param>
     /// <returns>The list of contextual tuples, or null if none were provided</returns>
-    [Obsolete("Replace with GetContextualTuples")]
-    public virtual ValueTask<List<ClientTupleKey>?> GetContextualTuple(HttpContext context) => new((List<ClientTupleKey>?)null);
-    
-    /// <summary>
-    /// Contextual tuple(s) to apply the check generated from this attribute.
-    /// </summary>
-    /// <param name="context">The context of the current request</param>
-    /// <returns>The list of contextual tuples, or null if none were provided</returns>
-    public virtual ValueTask<List<ClientTupleKey>?> GetContextualTuples(HttpContext context) => new((List<ClientTupleKey>?)null);
+    public virtual ValueTask<ContextualTupleKeys?> GetContextualTuples(HttpContext context) => ValueTask.FromResult<ContextualTupleKeys?>(null);
 
     /// <summary>
     /// Concats the type and identifier into the object format

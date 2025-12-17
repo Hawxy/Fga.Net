@@ -17,14 +17,14 @@ public class WebAppFixture : IAsyncInitializer, IAsyncDisposable
         var authorizationClientMock = new Mock<IFgaCheckDecorator>();
 
         authorizationClientMock.Setup(c =>
-                c.BatchCheck(It.IsAny<List<ClientCheckRequest>>(),
+                c.BatchCheck(It.IsAny<ClientBatchCheckRequest>(),
                     It.IsAny<CancellationToken>()))
-            .ReturnsAsync((List<ClientCheckRequest> res, CancellationToken _) =>
+            .ReturnsAsync((ClientBatchCheckRequest res, CancellationToken _) =>
             {
-                var entry = res.First();
+                var entry = res.Checks.First();
                 return entry.User == $"user:{MockJwtConfiguration.DefaultUser}"
-                    ? new ClientBatchCheckClientResponse() { Responses = [new(true, entry)] }
-                    : new ClientBatchCheckClientResponse() { Responses = [new(false, entry)] };
+                    ? new ClientBatchCheckResponse() { Result = [new() { Allowed = true, Request = entry }] }
+                    : new ClientBatchCheckResponse() { Result = [new() { Allowed = false, Request = entry }] };
             });
 
         AlbaHost = await Alba.AlbaHost.For<Program>(builder =>
