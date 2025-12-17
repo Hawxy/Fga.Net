@@ -1,6 +1,6 @@
 ﻿#region License
 /*
-   Copyright 2021-2025 Hawxy (JT)
+   Copyright 2021-2026 Hawxy (JT)
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -32,8 +32,8 @@ internal static partial class Log
     [LoggerMessage(3003, LogLevel.Information, "Unable to compute FGA Object.")]
     public static partial void MiddlewareException(this ILogger logger, FgaMiddlewareException ex);
     
-    [LoggerMessage(3004, LogLevel.Warning, "Error occurred whilst attempting to perform middleware check for User: {user}, Relation: {relation}, Object: {object}")]
-    public static partial void CheckException(this ILogger logger, string user, string relation, string @object, Exception ex);
+    [LoggerMessage(3004, LogLevel.Warning, "Error occurred whilst attempting to perform middleware check for User: {user}, Relation: {relation}, Object: {object}. Message: {message}")]
+    public static partial void CheckException(this ILogger logger, string user, string relation, string @object, string message);
 
     [LoggerMessage(3005, LogLevel.Debug, "User was not in a valid format of 'type:id' or '*'. Computed user as '{user}'")]
     public static partial void InvalidUser(this ILogger logger, string user);

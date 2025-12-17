@@ -1,6 +1,6 @@
 ﻿#region License
 /*
-   Copyright 2021-2025 Hawxy (JT)
+   Copyright 2021-2026 Hawxy (JT)
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -43,7 +43,7 @@ public class FgaCheckDecorator : IFgaCheckDecorator
     /// <param name="request"></param>
     /// <param name="ct"></param>
     /// <returns></returns>
-    public virtual Task<ClientBatchCheckClientResponse> BatchCheck(List<ClientCheckRequest> request, CancellationToken ct) => _auth0FgaApi.BatchCheck(request, cancellationToken: ct);
+    public virtual Task<ClientBatchCheckResponse> BatchCheck(ClientBatchCheckRequest request, CancellationToken ct) => _auth0FgaApi.BatchCheck(request, cancellationToken: ct);
 }
 
 /// <summary>
@@ -58,5 +58,5 @@ public interface IFgaCheckDecorator
     /// <param name="request"></param>
     /// <param name="ct"></param>
     /// <returns></returns>
-    Task<ClientBatchCheckClientResponse> BatchCheck(List<ClientCheckRequest> request, CancellationToken ct);
+    Task<ClientBatchCheckResponse> BatchCheck(ClientBatchCheckRequest request, CancellationToken ct);
 }

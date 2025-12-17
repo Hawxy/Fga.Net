@@ -71,7 +71,7 @@ class Build : NukeBuild
             DotNetTest(s =>
             {
                 var config = s
-                    .SetProjectFile(Solution.Fga_Net_Tests);
+                    .AddProcessAdditionalArguments("--project", Solution.Fga_Net_Tests.Directory);
                 if (!string.IsNullOrEmpty(FgaStoreId))
                 {
                    return config.AddProcessEnvironmentVariable("AUTH0FGA__STOREID", FgaStoreId)
